@@ -136,6 +136,7 @@ public class MainActivity extends Activity {
 		int minutes = seconds / 60;
 		seconds = seconds % 60;
 		int hours = minutes / 60;
+		minutes = minutes % 60;
 		mChrono.setText(String.format("%03d:%02d:%02d", hours, minutes, seconds));
 	}
 	
