@@ -16,3 +16,4 @@ TODO in next version
 	- Setup a convention for version numbers with 3 digits (mayor, minor, point)
 	- Save the system time for each button press and calculate the accumulated
 	time "In"
+	- Use a acroprint model for the icon
