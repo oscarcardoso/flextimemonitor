@@ -125,37 +125,6 @@ public class MainActivity extends Activity {
 	    }
 	}
 	
-	public void updateChrono(){
-		long millis = 0;
-		if(mPauseTime != 0){
-			millis = System.currentTimeMillis() - mStartTime + mPauseTime;	
-		}else{
-			millis = System.currentTimeMillis() - mStartTime;
-		}
-		int seconds = (int) (millis / 1000);
-		int minutes = seconds / 60;
-		seconds = seconds % 60;
-		int hours = minutes / 60;
-		minutes = minutes % 60;
-		mChrono.setText(String.format("%03d:%02d:%02d", hours, minutes, seconds));
-	}
-	
-	public void stopChrono(){
-		mPauseTime = System.currentTimeMillis() - mStartTime + mPauseTime;
-		timer.cancel();
-		timer.purge();
-		mStartedChrono = false;
-		Log.i("FTM", "Stopped Chrono at: " + DateFormat.format("dd/MM kk:mm:ss", mPauseTime));
-	}
-	
-	public void startChrono(){
-		mStartTime = System.currentTimeMillis();
-		timer = new Timer();
-		timer.schedule(new firstTask(), 0,500);
-		mStartedChrono = true;
-		Log.i("FTM", "Started Chrono at: " + DateFormat.format("dd/MM kk:mm:ss", mStartTime));
-	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		// Handle item selection
@@ -213,5 +182,38 @@ public class MainActivity extends Activity {
 		}
 		
 	}
+
+	public void updateChrono(){
+		long millis = 0;
+		if(mPauseTime != 0){
+			millis = System.currentTimeMillis() - mStartTime + mPauseTime;	
+		}else{
+			millis = System.currentTimeMillis() - mStartTime;
+		}
+		int seconds = (int) (millis / 1000);
+		int minutes = seconds / 60;
+		seconds = seconds % 60;
+		int hours = minutes / 60;
+		minutes = minutes % 60;
+		mChrono.setText(String.format("%03d:%02d:%02d", hours, minutes, seconds));
+	}
+	
+	public void stopChrono(){
+		mPauseTime = System.currentTimeMillis() - mStartTime + mPauseTime;
+		timer.cancel();
+		timer.purge();
+		mStartedChrono = false;
+		Log.i("FTM", "Stopped Chrono at: " + DateFormat.format("dd/MM kk:mm:ss", mPauseTime));
+	}
+	
+	public void startChrono(){
+		mStartTime = System.currentTimeMillis();
+		timer = new Timer();
+		timer.schedule(new firstTask(), 0,500);
+		mStartedChrono = true;
+		Log.i("FTM", "Started Chrono at: " + DateFormat.format("dd/MM kk:mm:ss", mStartTime));
+	}
+
+	
 	
 }
