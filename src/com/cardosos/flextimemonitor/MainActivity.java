@@ -102,10 +102,15 @@ public class MainActivity extends Activity {
 				
 			}
 		});
+
+		if(mPauseTime == 0){
+			//set text to default time
+			mChrono.setText("000:00:00");
+		}else{
+			//set the text to the paused time
+			mChrono.setText(resumeChrono(mPauseTime));
+		}
 		/*
-		String dateString = (String) DateFormat.format("hh:mm:ss", System.currentTimeMillis());
-		Toast.makeText(MainActivity.this, "Start time: " +dateString, Toast.LENGTH_SHORT).show();
-		*/
 		if(mPauseTime != 0){
 			int seconds = (int) (mPauseTime / 1000);
 			int minutes = seconds / 60;
@@ -116,6 +121,7 @@ public class MainActivity extends Activity {
 		}else{
 			mChrono.setText("000:00:00");
 		}
+		*/
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 	        // For the main activity, make sure the app icon in the action bar
@@ -137,6 +143,7 @@ public class MainActivity extends Activity {
 			}
 			return true;
 		case R.id.menu_settings:
+			Toast.makeText(MainActivity.this, "The settings activity is not yet implemented :P", Toast.LENGTH_SHORT).show();
 			return true;
 		default:
 				return super.onOptionsItemSelected(item);
@@ -183,6 +190,13 @@ public class MainActivity extends Activity {
 		
 	}
 
+	@Override
+	public void onResume(){
+		super.onResume();
+		Log.i("FTM", "onResume()");
+		updateChrono();
+	}
+
 	public void updateChrono(){
 		long millis = 0;
 		if(mPauseTime != 0){
@@ -214,6 +228,22 @@ public class MainActivity extends Activity {
 		Log.i("FTM", "Started Chrono at: " + DateFormat.format("dd/MM kk:mm:ss", mStartTime));
 	}
 
-	
+	public String resumeChrono(Long pausedTime){
+		if(pausedTime != 0){
+			int seconds = (int) (pausedTime / 1000);
+			int minutes = seconds / 60;
+			seconds = seconds % 60;
+			int hours = minutes / 60;
+			minutes = minutes % 60;
+
+			if(mStartedChrono){
+				timer = new Timer();
+				timer.schedule(new firstTask(), 0,500);
+			}
+
+			return String.format("%03d:%02d:%02d", hours, minutes, seconds);
+		}else
+			return "000:00:00";
+	}
 	
 }
