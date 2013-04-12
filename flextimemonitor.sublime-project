@@ -1,9 +1,18 @@
 {
+	"build_systems":
+	[
+		{
+			"cmd":
+			[
+				"ls"
+			],
+			"name": "List"
+		}
+	],
 	"folders":
 	[
 		{
-			"path": "/home/oscar/dxd/flextimemonitor",
-			"folder_exclude_patterns": 
+			"folder_exclude_patterns":
 			[
 				"bin",
 				"gen",
@@ -11,22 +20,16 @@
 				"src",
 				"assets",
 				"libs"
-			]
+			],
+			"path": ""
 		},
 		{
 			"name": "Source Code",
-			"path": "/home/oscar/dxd/flextimemonitor/src"
+			"path": "src"
 		},
 		{
 			"name": "Resources",
-			"path": "/home/oscar/dxd/flextimemonitor/res"
-		}
-	],
-	"build_systems":
-	[
-		{
-			"name": "List",
-			"cmd": ["ls"]
+			"path": "res"
 		}
 	]
 }
