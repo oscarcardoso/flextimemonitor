@@ -79,7 +79,7 @@ public class MainActivity extends ListActivity {
 
 		// Use the SimpleCursorAdapter to show the
 		// elements in a ListView
-		ArrayAdapter<Event> adapte r= new ArrayAdapter<Event>(this, android.R.layout.simple_list_item_1, values);
+		ArrayAdapter<Event> adapter= new ArrayAdapter<Event>(this, android.R.layout.simple_list_item_1, values);
 		setListAdapter(adapter);
 		// Vogella end
 
@@ -170,7 +170,7 @@ public class MainActivity extends ListActivity {
 				} else {
 					if(eventType == Event.CHECK_IN){
 						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
-						eventType.Event.CHECK_OUT;
+						eventType = Event.CHECK_OUT;
 						Log.i("FTM", "Add Event.CHECK_OUT");
 					} else {
 						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
@@ -181,7 +181,7 @@ public class MainActivity extends ListActivity {
 				adapter.add(event);
 				break;
 			case R.id.delete:
-				if(getListAdapter.getCount() > 0){
+				if(getListAdapter().getCount() > 0){
 					event = (Event) getListAdapter().getItem(0);
 					Log.i("FTM", "Remove " + event.getType());
 					datasource.deleteEvent(event);
