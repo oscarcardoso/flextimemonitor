@@ -33,7 +33,8 @@ public class EventsDataSource {
 		values.put(MySQLiteHelper.COLUMN_TIME, time);
 		values.put(MySQLiteHelper.COLUMN_TYPE, type);
 		long insertId = database.insert(MySQLiteHelper.TABLE_EVENTS, null, values);
-		Cursor cursor = database.query(MySQLiteHelper.TABLE_EVENTS, allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null, cursor.moveToFirst();
+		Cursor cursor = database.query(MySQLiteHelper.TABLE_EVENTS, allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
+		cursor.moveToFirst();
 		Event newEvent = cursorToEvent(cursor);
 		cursor.close();
 		return newEvent;
@@ -68,7 +69,7 @@ public class EventsDataSource {
 		Event event = new Event();
 		event.setId(cursor.getLong(0));
 		event.setTime(cursor.getLong(1));
-		event.setType(cursor.getLong(2));
+		event.setType(cursor.getString(2));
 		return event;
 	}
 }

@@ -7,13 +7,13 @@
     <Button
         android:id="@+id/button1"
         android:layout_width="fill_parent"
-        android:layout_height="150dp"
+        android:layout_height="50dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:text="@string/check_button"
-        android:textSize="50sp"
+        android:textSize="25sp"
         android:onClick="checkButtonAction" />
 
     <TextView
@@ -25,6 +25,7 @@
         android:textSize="50sp" />
     
 	<View
+        android:id="@+id/separator1"
 	    android:layout_width="fill_parent"
 	    android:layout_height="2dp"
         android:layout_below="@+id/chronometer1"
@@ -32,5 +33,30 @@
         android:layout_marginRight="10dp"
 	    android:background="#ff0099cc"/>
 
-	
+    <LinearLayout 
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:layout_below="@+id/separator1" >
+        <Button
+            android:id="@+id/add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add new"
+            android:onClick="onClick" />
+        <Button
+            android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete First"
+            android:onClick="onClick" />
+    </LinearLayout>
+    
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/hello"
+        android:layout_below="@+id/group" />    
+
 </RelativeLayout>

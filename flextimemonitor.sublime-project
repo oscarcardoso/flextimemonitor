@@ -21,7 +21,8 @@
 				"assets",
 				"libs"
 			],
-			"path": ""
+			"name": "Root",
+			"path": "."
 		},
 		{
 			"name": "Source Code",

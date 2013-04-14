@@ -29,10 +29,21 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+// Vogella SQL tutorial imports
+import java.util.List;
+import java.util.Random;
+
+import android.app.ListActivity;
+//import android.os.Bundle;
+//import android.view.View;
+import android.widget.ArrayAdapter;
+
 @SuppressLint("NewApi")
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class MainActivity extends Activity {
+public class MainActivity extends ListActivity {
 
+	private EventsDataSource datasource; // Vogella
+	private String eventType = " ";
 	private TextView mChrono;
 	private boolean mStartedChrono;
 	private long mPauseTime = 0;
@@ -60,6 +71,18 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		// Vogella start
+		datasource = new EventsDataSource(this);
+		datasource.open();
+
+		List<Event> values = datasource.getAllEvents();
+
+		// Use the SimpleCursorAdapter to show the
+		// elements in a ListView
+		ArrayAdapter<Event> adapte r= new ArrayAdapter<Event>(this, android.R.layout.simple_list_item_1, values);
+		setListAdapter(adapter);
+		// Vogella end
+
 		StringBuffer fileContent = new StringBuffer("");
 		FileInputStream fis;
 		int ch;
@@ -81,7 +104,6 @@ public class MainActivity extends Activity {
 			Log.e("FTM", "File Not Found! Expected file->" + FILENAME);
 			e.printStackTrace();
 		}
-		
 		
 		mChrono = (TextView) findViewById(R.id.chronometer1);
 		
@@ -131,6 +153,45 @@ public class MainActivity extends Activity {
 	    }
 	}
 	
+	// Vogella start
+	// Will be called via the onClick attribute
+	// of the buttons in main.xml
+	public void onClick(View view){
+		@SuppressWarnings("unchecked")
+		ArrayAdapter<Event> adapter = (ArrayAdapter<Event>) getListAdapter();
+		Event event = null;
+		switch(view.getId()){
+			case R.id.add:
+				// Save the new comment to the database
+				if(eventType == " "){
+					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
+					eventType = Event.CHECK_IN;
+					Log.i("FTM", "Add Event.CHECK_IN");
+				} else {
+					if(eventType == Event.CHECK_IN){
+						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
+						eventType.Event.CHECK_OUT;
+						Log.i("FTM", "Add Event.CHECK_OUT");
+					} else {
+						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
+						eventType = Event.CHECK_IN;
+						Log.i("FTM", "Add Event.CHECK_IN");
+					}
+				}
+				adapter.add(event);
+				break;
+			case R.id.delete:
+				if(getListAdapter.getCount() > 0){
+					event = (Event) getListAdapter().getItem(0);
+					Log.i("FTM", "Remove " + event.getType());
+					datasource.deleteEvent(event);
+					adapter.remove(event);
+				}
+				break;
+		}
+		adapter.notifyDataSetChanged();
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		// Handle item selection
@@ -192,9 +253,17 @@ public class MainActivity extends Activity {
 
 	@Override
 	public void onResume(){
+		datasource.open();
 		super.onResume();
 		Log.i("FTM", "onResume()");
 		updateChrono();
+	}
+
+	@Override
+	public void onPause(){
+		datasource.close();
+		super.onPause();
+		Log.i("FTM", "onPause()");
 	}
 
 	public void updateChrono(){
