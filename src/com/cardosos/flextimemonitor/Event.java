@@ -1,5 +1,7 @@
 package com.cardosos.flextimemonitor;
 
+import android.text.format.DateFormat;
+
 public class Event {
 	private long id;
 	private long time;
@@ -34,6 +36,7 @@ public class Event {
 	// Will be used by the ArrayAdapter in the ListView
 	@Override
 	public String toString() {
+		//return type + " in " + DateFormat.format("dd/MM kk:mm:ss", time);
 		return type + " in " + Long.toString(time);
 	}
 }

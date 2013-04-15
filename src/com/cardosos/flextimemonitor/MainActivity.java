@@ -43,7 +43,7 @@ import android.widget.ArrayAdapter;
 public class MainActivity extends ListActivity {
 
 	private EventsDataSource datasource; // Vogella
-	private String eventType = " ";
+	private String previousEventType = " ";
 	private TextView mChrono;
 	private boolean mStartedChrono;
 	private long mPauseTime = 0;
@@ -83,6 +83,9 @@ public class MainActivity extends ListActivity {
 		setListAdapter(adapter);
 		// Vogella end
 
+		// dxd this is the part of the code that reads the file to get
+		// the cached last time
+		// TODO: Make this read before the database check
 		StringBuffer fileContent = new StringBuffer("");
 		FileInputStream fis;
 		int ch;
@@ -104,13 +107,14 @@ public class MainActivity extends ListActivity {
 			Log.e("FTM", "File Not Found! Expected file->" + FILENAME);
 			e.printStackTrace();
 		}
+		// dxd file read part end
 		
 		mChrono = (TextView) findViewById(R.id.chronometer1);
 		
-		Button checkButton = (Button)findViewById(R.id.button1);
+		Button checkButton = (Button)findViewById(R.id.checkButton);
 		checkButton.setText("CHECK IN");
+		/*
 		checkButton.setOnClickListener(new View.OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
 				Button b = (Button)v;
@@ -124,6 +128,8 @@ public class MainActivity extends ListActivity {
 				
 			}
 		});
+		*/
+		mChrono.setText("000:00:00");
 
 		if(mPauseTime == 0){
 			//set text to default time
@@ -160,21 +166,37 @@ public class MainActivity extends ListActivity {
 		@SuppressWarnings("unchecked")
 		ArrayAdapter<Event> adapter = (ArrayAdapter<Event>) getListAdapter();
 		Event event = null;
+		Button b = (Button) view;
 		switch(view.getId()){
-			case R.id.add:
-				// Save the new comment to the database
-				if(eventType == " "){
+			case R.id.checkButton:
+				// just check that the button has the proper name
+				if(previousEventType == Event.CHECK_OUT){
+					b.setText("CHECK IN");
 					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-					eventType = Event.CHECK_IN;
+					previousEventType = Event.CHECK_IN;
 					Log.i("FTM", "Add Event.CHECK_IN");
 				} else {
-					if(eventType == Event.CHECK_IN){
+					b.setText("CHECK OUT");
+					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
+					previousEventType = Event.CHECK_OUT;
+					Log.i("FTM", "Add Event.CHECK_OUT");
+				}
+				adapter.add(event);
+				break;
+			case R.id.add:
+				// Save the new comment to the database
+				if(previousEventType == " "){
+					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
+					previousEventType = Event.CHECK_IN;
+					Log.i("FTM", "Add Event.CHECK_IN");
+				} else {
+					if(previousEventType == Event.CHECK_IN){
 						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
-						eventType = Event.CHECK_OUT;
+						previousEventType = Event.CHECK_OUT;
 						Log.i("FTM", "Add Event.CHECK_OUT");
 					} else {
 						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-						eventType = Event.CHECK_IN;
+						previousEventType = Event.CHECK_IN;
 						Log.i("FTM", "Add Event.CHECK_IN");
 					}
 				}
@@ -229,6 +251,7 @@ public class MainActivity extends ListActivity {
 	public void onStop(){
 		super.onStop(); // Always call the superclass method first
 		Log.i("FTM", "onStop()");
+		/*
 		// Save the timer paused time so that the progress is not lost
 		String time_data = "";
 		
@@ -236,7 +259,33 @@ public class MainActivity extends ListActivity {
 			stopChrono();
 		}
 		time_data = String.valueOf(mPauseTime);
-		
+		*/
+
+		/*
+		List<Event> values = datasource.getAllEvents();
+
+		long timeToSave = 0;
+		long previousCheckIn = 0;
+		for(int i=0; i<values.size(); i++){
+			long thisTime = values.get(i).getTime();
+			String thisType = values.get(i).getType();
+			if(thisType.equals(Event.CHECK_IN)){
+				// This is a CHECK_IN, save the time to compare it to the
+				// next event, a CHECK_OUT
+				//timeToSave =+ values.get(i).getTime();
+				previousCheckIn = thisTime;
+			} else {
+				// This is a CHECK_OUT
+				// Add the difference between the last check in and this
+				// check out. Only if this is NOT the first event in the list
+				if(timeToSave != 0){
+					timeToSave =+ thisTime - previousCheckIn;
+				}
+			}
+			Log.i("FTM", "So far you have " + DateFormat.format("kkk:mm:ss", timeToSave) + " flex time covered");
+		}
+		*/
+		/*
 		try {
 			FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
 			fos.write(time_data.getBytes());
@@ -248,7 +297,7 @@ public class MainActivity extends ListActivity {
 			Log.e("FTM", "File Write/Read Error");
 			e.printStackTrace();
 		}
-		
+		*/
 	}
 
 	@Override
@@ -261,6 +310,44 @@ public class MainActivity extends ListActivity {
 
 	@Override
 	public void onPause(){
+
+		List<Event> values = datasource.getAllEvents();
+
+		long timeToSave = 0;
+		long previousCheckIn = 0;
+		for(int i=0; i<values.size(); i++){
+			long thisTime = values.get(i).getTime();
+			String thisType = values.get(i).getType();
+			if(thisType.equals(Event.CHECK_IN)){
+				// This is a CHECK_IN, save the time to compare it to the
+				// next event, a CHECK_OUT
+				//timeToSave =+ values.get(i).getTime();
+				previousCheckIn = thisTime;
+				Log.i("FTM", "previousCheckIn = " + previousCheckIn);
+			} else {
+				// This is a CHECK_OUT
+				// Add the difference between the last check in and this
+				// check out. Only if this is NOT the first event in the list
+				if(previousCheckIn != 0){
+					timeToSave =+ thisTime - previousCheckIn;
+					Log.i("FTM", "timeToSave = " + timeToSave);
+				}
+			}
+			Log.i("FTM", "So far you have " + DateFormat.format("kk:mm:ss", timeToSave) + " flex time covered");
+		}
+
+		try {
+			FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+			fos.write(Long.toString(timeToSave).getBytes());
+			fos.close();
+		} catch (FileNotFoundException e) {
+			Log.e("FTM", "File Not Found! Expected file->" + FILENAME);
+			e.printStackTrace();
+		} catch (IOException e){
+			Log.e("FTM", "File Write/Read Error");
+			e.printStackTrace();
+		}
+
 		datasource.close();
 		super.onPause();
 		Log.i("FTM", "onPause()");
