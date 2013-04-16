@@ -50,6 +50,7 @@ public class MainActivity extends ListActivity {
 	private long mStartTime = 0;
 	private Timer timer = new Timer();
 	private static String FILENAME = "flex_time_data";
+	private TimeManager timeManager = new TimeManager();
 	
 	final Handler h = new Handler(new Callback(){
 		@Override
@@ -82,6 +83,13 @@ public class MainActivity extends ListActivity {
 		ArrayAdapter<Event> adapter= new ArrayAdapter<Event>(this, android.R.layout.simple_list_item_1, values);
 		setListAdapter(adapter);
 		// Vogella end
+		if(!values.isEmpty()){
+			for(int i = values.size() - 1; i<0; i--){
+				if(values.get(i).equals(Event.CHECK_IN)){
+					timeManager.setLastCheckIn(values.get(i).getTime());
+				}
+			}
+		}
 
 		// dxd this is the part of the code that reads the file to get
 		// the cached last time
@@ -102,7 +110,7 @@ public class MainActivity extends ListActivity {
 				e.printStackTrace();
 			}
 			mPauseTime = Long.parseLong(new String(fileContent));
-			Log.i("FTM", "Saved time: " + mPauseTime);
+			Log.i("FTM", "Saved time: (" + mPauseTime + ") " + TimeManager.longToString(mPauseTime));
 		} catch (FileNotFoundException e) {
 			Log.e("FTM", "File Not Found! Expected file->" + FILENAME);
 			e.printStackTrace();
@@ -131,12 +139,8 @@ public class MainActivity extends ListActivity {
 		*/
 		mChrono.setText("000:00:00");
 
-		if(mPauseTime == 0){
-			//set text to default time
-			mChrono.setText("000:00:00");
-		}else{
-			//set the text to the paused time
-			mChrono.setText(resumeChrono(mPauseTime));
+		if(mPauseTime != 0){
+			mChrono.setText(TimeManager.longToString(mPauseTime));
 		}
 		/*
 		if(mPauseTime != 0){
@@ -302,10 +306,16 @@ public class MainActivity extends ListActivity {
 
 	@Override
 	public void onResume(){
+		mChrono = (TextView) findViewById(R.id.chronometer1);
+		mChrono.setText("000:00:00");
+
+		if(mPauseTime != 0){
+			mChrono.setText(TimeManager.longToString(mPauseTime));
+		}
 		datasource.open();
 		super.onResume();
 		Log.i("FTM", "onResume()");
-		updateChrono();
+		//updateChrono();
 	}
 
 	@Override
@@ -333,7 +343,7 @@ public class MainActivity extends ListActivity {
 					Log.i("FTM", "timeToSave = " + timeToSave);
 				}
 			}
-			Log.i("FTM", "So far you have " + DateFormat.format("kk:mm:ss", timeToSave) + " flex time covered");
+			Log.i("FTM", "So far you have " +  TimeManager.longToString(timeToSave) + " flex time covered");
 		}
 
 		try {
@@ -354,20 +364,19 @@ public class MainActivity extends ListActivity {
 	}
 
 	public void updateChrono(){
-		long millis = 0;
-		if(mPauseTime != 0){
-			millis = System.currentTimeMillis() - mStartTime + mPauseTime;	
-		}else{
-			millis = System.currentTimeMillis() - mStartTime;
+		if(previousEventType.equals(" ") || previousEventType.equals(Event.CHECK_OUT)){
+			return;
 		}
-		int seconds = (int) (millis / 1000);
-		int minutes = seconds / 60;
-		seconds = seconds % 60;
-		int hours = minutes / 60;
-		minutes = minutes % 60;
-		mChrono.setText(String.format("%03d:%02d:%02d", hours, minutes, seconds));
+		long millis = 0;
+		if(mPauseTime > 0){
+			millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + mPauseTime;	
+		}else{
+			millis = System.currentTimeMillis() - timeManager.getLastCheckIn();
+		}
+		mChrono.setText(TimeManager.longToString(millis));
 	}
-	
+
+	/*
 	public void stopChrono(){
 		mPauseTime = System.currentTimeMillis() - mStartTime + mPauseTime;
 		timer.cancel();
@@ -375,7 +384,9 @@ public class MainActivity extends ListActivity {
 		mStartedChrono = false;
 		Log.i("FTM", "Stopped Chrono at: " + DateFormat.format("dd/MM kk:mm:ss", mPauseTime));
 	}
+	*/
 	
+	/*
 	public void startChrono(){
 		mStartTime = System.currentTimeMillis();
 		timer = new Timer();
@@ -383,7 +394,9 @@ public class MainActivity extends ListActivity {
 		mStartedChrono = true;
 		Log.i("FTM", "Started Chrono at: " + DateFormat.format("dd/MM kk:mm:ss", mStartTime));
 	}
+	*/
 
+	/*
 	public String resumeChrono(Long pausedTime){
 		if(pausedTime != 0){
 			int seconds = (int) (pausedTime / 1000);
@@ -401,5 +414,6 @@ public class MainActivity extends ListActivity {
 		}else
 			return "000:00:00";
 	}
+	*/
 	
 }
