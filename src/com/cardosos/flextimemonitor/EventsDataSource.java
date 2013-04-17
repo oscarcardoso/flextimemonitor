@@ -27,6 +27,10 @@ public class EventsDataSource {
 	public void close(){
 		dbHelper.close();
 	}
+
+	public boolean isOpen(){
+		return database.isOpen();
+	}
 	
 	public Event createEvent(long time, String type){
 		ContentValues values = new ContentValues();
@@ -65,11 +69,42 @@ public class EventsDataSource {
 		return events;
 	}
 
+	public Event getLastEvent(){
+		List<Event> events = new ArrayList<Event>();
+
+		Cursor cursor = database.query(MySQLiteHelper.TABLE_EVENTS,
+			allColumns, null, null, null, null, null);
+		
+		if(cursor.getCount() < 0)
+			return new Event();
+
+		cursor.moveToLast();
+		Event event = cursorToEvent(cursor);
+		// Make sure to close the cursor
+		cursor.close();
+		return event;
+	}
+
 	private Event cursorToEvent(Cursor cursor) {
+		if(cursor == null && cursor.getCount() < 0)
+			return null;
+
 		Event event = new Event();
 		event.setId(cursor.getLong(0));
 		event.setTime(cursor.getLong(1));
 		event.setType(cursor.getString(2));
 		return event;
+	}
+
+	public boolean isEmpty(){
+		Cursor cursor = database.query(MySQLiteHelper.TABLE_EVENTS,
+			allColumns, null, null, null, null, null);
+		boolean isEmpty = true;
+		if(cursor != null && cursor.getCount() > 0 )
+			isEmpty = false;
+
+		cursor.close();
+
+		return isEmpty;
 	}
 }

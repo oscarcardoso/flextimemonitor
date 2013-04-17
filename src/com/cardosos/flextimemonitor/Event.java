@@ -4,8 +4,8 @@ import android.text.format.DateFormat;
 
 public class Event {
 	private long id;
-	private long time;
-	private String type;
+	private long time = 0;
+	private String type = " ";
 	public static final String CHECK_IN = "check_in";
 	public static final String CHECK_OUT = "check_out";
 
