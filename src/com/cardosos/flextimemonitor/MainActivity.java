@@ -272,9 +272,8 @@ public class MainActivity extends ListActivity {
 			updatePreviousEventType();
 		}
 
-		if(!mStartedChrono && previousEventType.equals(Event.CHECK_IN)){
-			timer = new Timer();
-			timer.schedule(new firstTask(), 0, 500);
+		if(previousEventType.equals(Event.CHECK_IN)){
+			startTimer();
 		}
 		//updateChrono();
 	}
@@ -300,7 +299,7 @@ public class MainActivity extends ListActivity {
 				// Add the difference between the last check in and this
 				// check out. Only if this is NOT the first event in the list
 				if(previousCheckIn != 0){
-					timeToSave =+ thisTime - previousCheckIn;
+					timeToSave += thisTime - previousCheckIn;
 					Log.i("FTM", "timeToSave = " + timeToSave);
 				}
 			}
@@ -319,8 +318,7 @@ public class MainActivity extends ListActivity {
 			e.printStackTrace();
 		}
 
-		timer.cancel();
-		timer.purge();
+		stopTimer();
 
 		datasource.close();
 		super.onPause();
