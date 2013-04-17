@@ -86,6 +86,7 @@ public class MainActivity extends ListActivity {
 		if(!values.isEmpty()){
 			updatePreviousEventType();
 			Log.i("FTM", "Values are not empty");
+			Log.i("FTM", (previousEventType.equals(Event.CHECK_IN)) ? "Last Event was a CHECK_IN" : "Last Event was not a CHECK_IN");
 			for(int i = values.size() - 1; i>=0; i--){
 				Log.i("FTM", "Checking value #" + i);
 				if(values.get(i).getType().equals(Event.CHECK_IN)){
@@ -132,6 +133,7 @@ public class MainActivity extends ListActivity {
 		mChrono.setText("000:00:00");
 
 		if(mPauseTime != 0){
+			Log.i("FTM", "We've got some saved time, update the timer text");
 			mChrono.setText(TimeManager.longToString(mPauseTime));
 		}
 
@@ -159,7 +161,9 @@ public class MainActivity extends ListActivity {
 		switch(view.getId()){
 			case R.id.checkButton:
 				// just check that the button has the proper name
-				if(previousEventType == Event.CHECK_OUT){
+				if(previousEventType.equals(Event.CHECK_OUT)){
+					// You are doing a CHECK_IN
+					// So, set the button text to CHECK_OUT.
 					b.setText("CHECK OUT");
 					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
 					previousEventType = Event.CHECK_IN;
@@ -176,25 +180,27 @@ public class MainActivity extends ListActivity {
 				break;
 			case R.id.add:
 				// Save the new comment to the database
-				if(previousEventType == " "){
+				if(previousEventType.equals(" ")){
 					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
 					previousEventType = Event.CHECK_IN;
 					if(!mStartedChrono)
 						startTimer();
-					Log.i("FTM", "Add Event.CHECK_IN");
+					Log.i("FTM", "previousEventType == \" \". Add Event.CHECK_IN");
 				} else {
-					if(previousEventType == Event.CHECK_IN){
+					if(previousEventType.equals(Event.CHECK_IN)){
 						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
 						previousEventType = Event.CHECK_OUT;
 						if(mStartedChrono)
 							stopTimer();
-						Log.i("FTM", "Add Event.CHECK_OUT");
+						Log.i("FTM", "previousEventType == Event.CHECK_IN. Add Event.CHECK_OUT");
 					} else {
-						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-						previousEventType = Event.CHECK_IN;
-						if(!mStartedChrono)
-							startTimer();
-						Log.i("FTM", "Add Event.CHECK_IN");
+						if(previousEventType.equals(Event.CHECK_OUT)){
+							event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
+							previousEventType = Event.CHECK_IN;
+							if(!mStartedChrono)
+								startTimer();
+							Log.i("FTM", "previousEventType == Event.CHECK_OUT. Add Event.CHECK_IN");
+						}
 					}
 				}
 				adapter.add(event);
@@ -256,6 +262,10 @@ public class MainActivity extends ListActivity {
 		Log.i("FTM", "onResume()");
 		mChrono = (TextView) findViewById(R.id.chronometer1);
 		mChrono.setText("000:00:00");
+		if(mPauseTime != 0){
+			Log.i("FTM", "We've got some saved time, update the timer text");
+			mChrono.setText(TimeManager.longToString(mPauseTime));
+		}
 
 		datasource.open();
 		if(!datasource.isEmpty()){
@@ -343,6 +353,8 @@ public class MainActivity extends ListActivity {
 
 	public void stopTimer(){
 		timer.cancel();
+		timer.purge();
+		mStartedChrono = false;
 	}
 
 	public void updatePreviousEventType(){
