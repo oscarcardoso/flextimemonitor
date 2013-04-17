@@ -309,6 +309,9 @@ public class MainActivity extends ListActivity {
 			e.printStackTrace();
 		}
 
+		timer.cancel();
+		timer.purge();
+
 		datasource.close();
 		super.onPause();
 		Log.i("FTM", "onPause()");
