@@ -37,6 +37,6 @@ public class Event {
 	@Override
 	public String toString() {
 		//return type + " in " + DateFormat.format("dd/MM kk:mm:ss", time);
-		return type + " in " + Long.toString(time);
+		return type + ": (" + Long.toString(time) + ") - " + DateFormat.format("kk:mm:ss dd/MM", time);
 	}
 }
