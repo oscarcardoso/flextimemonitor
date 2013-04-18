@@ -48,24 +48,17 @@ public class MainActivity extends ListActivity {
 	private boolean mStartedChrono = false;
 	private long mPauseTime = 0;
 	private long mStartTime = 0;
-	private Timer timer = new Timer();
 	private static String FILENAME = "flex_time_data";
 	private TimeManager timeManager = new TimeManager();
-	
-	final Handler h = new Handler(new Callback(){
+	private Handler handler = new Handler();
+
+	private Runnable runnable = new Runnable() {
 		@Override
-		public boolean handleMessage(Message msg){
+		public void run() {
 			updateChrono();
-			return false;
+			handler.postDelayed(this, 500);
 		}
-	});
-	
-	class firstTask extends TimerTask {
-		@Override
-		public void run(){
-			h.sendEmptyMessage(0);
-		}
-	}
+	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +75,7 @@ public class MainActivity extends ListActivity {
 		// elements in a ListView
 		ArrayAdapter<Event> adapter= new ArrayAdapter<Event>(this, android.R.layout.simple_list_item_1, values);
 		setListAdapter(adapter);
+		//timeManager.setLastCheckIn(0);
 		// Vogella end
 		if(!values.isEmpty()){
 			updatePreviousEventType();
@@ -91,7 +85,8 @@ public class MainActivity extends ListActivity {
 				Log.i("FTM", "Checking value #" + i);
 				if(values.get(i).getType().equals(Event.CHECK_IN)){
 					timeManager.setLastCheckIn(values.get(i).getTime());
-					Log.i("FTM", "Last Check In: (" + timeManager.getLastCheckIn()+ ") " + DateFormat.format("dd/mm kk:hh:mm", timeManager.getLastCheckIn()));
+					Log.i("FTM", "Last Check In: (" + timeManager.getLastCheckIn()+ ") " + DateFormat.format("dd/mm kk:mm:ss", timeManager.getLastCheckIn()));
+					break;
 				}
 			}
 		}
@@ -273,6 +268,7 @@ public class MainActivity extends ListActivity {
 		}
 
 		if(previousEventType.equals(Event.CHECK_IN)){
+			Log.i("FTM", "Last check: (" + timeManager.getLastCheckIn() + ") " + DateFormat.format("dd/mm kk:mm:ss", timeManager.getLastCheckIn() ) );
 			startTimer();
 		}
 		//updateChrono();
@@ -293,18 +289,18 @@ public class MainActivity extends ListActivity {
 				// next event, a CHECK_OUT
 				//timeToSave =+ values.get(i).getTime();
 				previousCheckIn = thisTime;
-				Log.i("FTM", "previousCheckIn = " + previousCheckIn);
+				Log.i("FTM", "previousCheckIn: (" + previousCheckIn + ") " + DateFormat.format("dd/mm kk:mm:ss", previousCheckIn));
 			} else {
 				// This is a CHECK_OUT
 				// Add the difference between the last check in and this
 				// check out. Only if this is NOT the first event in the list
 				if(previousCheckIn != 0){
 					timeToSave += thisTime - previousCheckIn;
-					Log.i("FTM", "timeToSave = " + timeToSave);
+					Log.i("FTM", "timeToSave: (" + timeToSave + ") " + TimeManager.longToString(timeToSave));
 				}
 			}
-			Log.i("FTM", "So far you have " +  TimeManager.longToString(timeToSave) + " flex time covered");
 		}
+		Log.i("FTM", "So far you have " +  TimeManager.longToString(timeToSave) + " flex time covered");
 
 		try {
 			FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
@@ -338,20 +334,18 @@ public class MainActivity extends ListActivity {
 		}
 
 		mChrono.setText(TimeManager.longToString(millis));
-		Log.i("FTM","Timer: (" + millis + ") " + TimeManager.longToString(millis));
+		//Log.i("FTM","Timer: (" + millis + ") " + TimeManager.longToString(millis));
 	}
 
 	public void startTimer(){
 		if(!mStartedChrono){
-			timer = new Timer();
-			timer.schedule(new firstTask(), 0, 500);
+			handler.postDelayed(runnable, 500);
 			mStartedChrono = true;
 		}
 	}
 
 	public void stopTimer(){
-		timer.cancel();
-		timer.purge();
+		handler.removeCallbacks(runnable);
 		mStartedChrono = false;
 	}
 
