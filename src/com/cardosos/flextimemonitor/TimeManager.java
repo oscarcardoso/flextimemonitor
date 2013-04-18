@@ -2,7 +2,7 @@ package com.cardosos.flextimemonitor;
 
 public class TimeManager{
 
-	private long lastCheckIn;
+	private long lastCheckIn = 0;
 
 	public void TimeManager(){
 		
