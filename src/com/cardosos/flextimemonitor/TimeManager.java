@@ -4,11 +4,10 @@ public class TimeManager{
 
 	private long lastCheckIn = 0;
 
-	public void TimeManager(){
-		
+	public TimeManager(){
 	}
 
-	public void TimeManager(long lastCheckIn){
+	public TimeManager(long lastCheckIn){
 		this.lastCheckIn = lastCheckIn;
 	}
 
