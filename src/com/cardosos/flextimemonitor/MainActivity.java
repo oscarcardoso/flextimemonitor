@@ -4,39 +4,29 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.List;
 
-import com.cardosos.flextimemonitor.R;
-
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Handler.Callback;
-import android.os.Message;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 // Vogella SQL tutorial imports
-import java.util.List;
-import java.util.Random;
-
-import android.app.ListActivity;
 //import android.os.Bundle;
 //import android.view.View;
-import android.widget.ArrayAdapter;
 
 @SuppressLint("NewApi")
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -73,7 +63,8 @@ public class MainActivity extends ListActivity {
 
 		// Use the SimpleCursorAdapter to show the
 		// elements in a ListView
-		ArrayAdapter<Event> adapter= new ArrayAdapter<Event>(this, android.R.layout.simple_list_item_1, values);
+		Event[] array = new Event[values.size()];
+		EventAdapter adapter= new EventAdapter(this, android.R.layout.simple_list_item_1, values.toArray(array));
 		setListAdapter(adapter);
 		//timeManager.setLastCheckIn(0);
 		// Vogella end
