@@ -8,6 +8,8 @@ public class Event {
 	private String type = " ";
 	public static final String CHECK_IN = "check_in";
 	public static final String CHECK_OUT = "check_out";
+	public static final int CHECK_IN_ICON = R.drawable.check_in;
+	public static final int CHECK_OUT_ICON = R.drawable.check_out;
 	private int icon;
 	private String title;
 
@@ -64,6 +66,13 @@ public class Event {
 	}
 
 	public int getIcon() {
+		if(this.type.equals(CHECK_IN)){
+			this.icon = CHECK_IN_ICON;
+		} else {
+			if(this.type.equals(CHECK_OUT)){
+				this.icon = CHECK_OUT_ICON;	
+			}
+		}
 		return icon;
 	}
 
