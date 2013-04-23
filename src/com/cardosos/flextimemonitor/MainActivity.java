@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -60,11 +61,17 @@ public class MainActivity extends ListActivity {
 		datasource.open();
 
 		List<Event> values = datasource.getAllEvents();
+		
+		Collections.reverse(values);
 
 		// Use the SimpleCursorAdapter to show the
 		// elements in a ListView
-		Event[] array = new Event[values.size()];
-		EventAdapter adapter= new EventAdapter(this, android.R.layout.simple_list_item_1, values.toArray(array));
+		Log.i("FTM", "Create an Event array with " + values.size() + " events");
+
+//		View header = (View)getLayoutInflater().inflate(R.layout.listview_header_row, null);
+//		this.getListView().addHeaderView(header);
+		
+		EventAdapter adapter= new EventAdapter(this, R.layout.listview_item_row,(List<Event>) values);
 		setListAdapter(adapter);
 		//timeManager.setLastCheckIn(0);
 		// Vogella end
@@ -72,7 +79,7 @@ public class MainActivity extends ListActivity {
 			updatePreviousEventType();
 			Log.i("FTM", "Values are not empty");
 			Log.i("FTM", (previousEventType.equals(Event.CHECK_IN)) ? "Last Event was a CHECK_IN" : "Last Event was not a CHECK_IN");
-			for(int i = values.size() - 1; i>=0; i--){
+			for(int i = 0; i < values.size(); i++){
 				Log.i("FTM", "Checking value #" + i);
 				if(values.get(i).getType().equals(Event.CHECK_IN)){
 					timeManager.setLastCheckIn(values.get(i).getTime());
@@ -141,7 +148,7 @@ public class MainActivity extends ListActivity {
 	// of the buttons in main.xml
 	public void onClick(View view){
 		@SuppressWarnings("unchecked")
-		ArrayAdapter<Event> adapter = (ArrayAdapter<Event>) getListAdapter();
+		EventAdapter adapter = (EventAdapter) getListAdapter();
 		Event event = null;
 		Button b = (Button) view;
 		switch(view.getId()){
@@ -153,6 +160,7 @@ public class MainActivity extends ListActivity {
 					b.setText("CHECK OUT");
 					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
 					previousEventType = Event.CHECK_IN;
+					updatePreviousEventType();
 					if(!mStartedChrono)
 						startTimer();
 					Log.i("FTM", "Add Event.CHECK_IN");
@@ -160,15 +168,21 @@ public class MainActivity extends ListActivity {
 					b.setText("CHECK IN");
 					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
 					previousEventType = Event.CHECK_OUT;
+					updatePreviousEventType();
 					Log.i("FTM", "Add Event.CHECK_OUT");
 				}
-				adapter.add(event);
+				try{
+					adapter.insert(event, 0);
+				}catch(Exception e){
+					e.printStackTrace();
+				}
 				break;
 			case R.id.add:
 				// Save the new comment to the database
 				if(previousEventType.equals(" ")){
 					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
 					previousEventType = Event.CHECK_IN;
+					updatePreviousEventType();
 					if(!mStartedChrono)
 						startTimer();
 					Log.i("FTM", "previousEventType == \" \". Add Event.CHECK_IN");
@@ -176,6 +190,7 @@ public class MainActivity extends ListActivity {
 					if(previousEventType.equals(Event.CHECK_IN)){
 						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
 						previousEventType = Event.CHECK_OUT;
+						updatePreviousEventType();
 						if(mStartedChrono)
 							stopTimer();
 						Log.i("FTM", "previousEventType == Event.CHECK_IN. Add Event.CHECK_OUT");
@@ -183,13 +198,18 @@ public class MainActivity extends ListActivity {
 						if(previousEventType.equals(Event.CHECK_OUT)){
 							event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
 							previousEventType = Event.CHECK_IN;
+							updatePreviousEventType();
 							if(!mStartedChrono)
 								startTimer();
 							Log.i("FTM", "previousEventType == Event.CHECK_OUT. Add Event.CHECK_IN");
 						}
 					}
 				}
-				adapter.add(event);
+				try{
+					adapter.insert(event, 0);
+				}catch(Exception e){
+					e.printStackTrace();
+				}
 				break;
 			case R.id.delete:
 				if(getListAdapter().getCount() > 0){
