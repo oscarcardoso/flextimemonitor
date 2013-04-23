@@ -8,8 +8,8 @@ public class Event {
 	private String type = " ";
 	public static final String CHECK_IN = "check_in";
 	public static final String CHECK_OUT = "check_out";
-	public static final int CHECK_IN_ICON = R.drawable.check_in;
-	public static final int CHECK_OUT_ICON = R.drawable.check_out;
+	public static final int CHECK_IN_ICON = android.R.drawable.presence_online;
+	public static final int CHECK_OUT_ICON = android.R.drawable.presence_offline;
 	private int icon;
 	private String title;
 
@@ -57,7 +57,7 @@ public class Event {
 	}
 
 	public String getTitle() {
-		this.title = (String) DateFormat.format("kk:mm:ss dd/MM", time);
+		this.title = (String) DateFormat.format("dd/MM kk:mm:ss", time);
 		return title;
 	}
 
