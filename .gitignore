@@ -27,3 +27,6 @@ proguard/
 
 # Sublime text 2 files
 *.sublime-workspace
+
+#patch files from work
+patches/
