@@ -69,10 +69,10 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
 		if(event.getType().equals(Event.CHECK_OUT)){
 			holder.colorMark.setBackgroundColor(context.getResources().getColor((R.color.holo_red_light)));
-			holder.imgIcon.setBackgroundColor(context.getResources().getColor((R.color.holo_red_light)));
+//			holder.imgIcon.setBackgroundColor(context.getResources().getColor((R.color.holo_red_light)));
 		} else {
 			holder.colorMark.setBackgroundColor(context.getResources().getColor((R.color.holo_green_light)));
-			holder.imgIcon.setBackgroundColor(context.getResources().getColor((R.color.holo_green_light)));
+//			holder.imgIcon.setBackgroundColor(context.getResources().getColor((R.color.holo_green_light)));
 		}
 
 		if(holder.txtTitle == null){
