@@ -371,4 +371,17 @@ public class MainActivity extends ListActivity {
 		}
 	}
 	
+	public long todaysHours(){
+		long todaysTime = 0;
+		if(datasource.isOpen()){
+			List<Event> todaysEvents = datasource.getTodaysEvents();
+			for(Event e:todaysEvents){
+				todaysTime += e.getTime();
+			}
+		} else {
+			Log.w("FTM", "Datasource is not Open");
+		}		
+		return todaysTime;
+	}
+	
 }
