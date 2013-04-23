@@ -8,6 +8,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.format.DateFormat;
+import android.text.format.DateUtils;
+import android.util.Log;
 
 public class EventsDataSource {
 	// Database fields
@@ -83,6 +86,26 @@ public class EventsDataSource {
 		// Make sure to close the cursor
 		cursor.close();
 		return event;
+	}
+	
+	public List<Event> getTodaysEvents(){
+		List<Event> events = new ArrayList<Event>();
+
+		Log.i("FTM", "Today is (" + DateUtils.DAY_IN_MILLIS + ") " + DateFormat.format("dd/MM/YYYY kk:mm:ss", DateUtils.DAY_IN_MILLIS ));
+		
+		Cursor cursor = database.query(MySQLiteHelper.TABLE_EVENTS,
+			allColumns, MySQLiteHelper.COLUMN_TIME + "=" + DateUtils.DAY_IN_MILLIS , null, null, null, null);
+		
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()) {
+			Event event = cursorToEvent(cursor);
+			events.add(event);
+			cursor.moveToNext();
+		}
+
+		// Make sure to close the cursor
+		cursor.close();
+		return events;
 	}
 
 	private Event cursorToEvent(Cursor cursor) {
