@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +37,7 @@ public class MainActivity extends ListActivity {
 	private EventsDataSource datasource; // Vogella
 	private String previousEventType = " ";
 	private TextView mChrono;
+	private TextView mTodayChrono;
 	private boolean mStartedChrono = false;
 	private long mPauseTime = 0;
 	private long mStartTime = 0;
@@ -114,8 +116,9 @@ public class MainActivity extends ListActivity {
 			e.printStackTrace();
 		}
 		// dxd file read part end
-		
+
 		mChrono = (TextView) findViewById(R.id.chronometer1);
+		mTodayChrono = (TextView) findViewById(R.id.chronometer2);
 		
 		Button checkButton = (Button)findViewById(R.id.checkButton);
 		if(previousEventType.equals(Event.CHECK_IN))
@@ -123,7 +126,7 @@ public class MainActivity extends ListActivity {
 		else
 			checkButton.setText("CHECK IN");
 
-		mChrono.setText("000:00:00");
+		mChrono.setText(R.string.empty_time);
 
 		if(mPauseTime != 0){
 			Log.i("FTM", "We've got some saved time, update the timer text");
@@ -161,6 +164,7 @@ public class MainActivity extends ListActivity {
 					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
 					previousEventType = Event.CHECK_IN;
 					updatePreviousEventType();
+					timeManager.setTodaysTime(getTodaysHours());
 					if(!mStartedChrono)
 						startTimer();
 					Log.i("FTM", "Add Event.CHECK_IN");
@@ -169,6 +173,7 @@ public class MainActivity extends ListActivity {
 					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
 					previousEventType = Event.CHECK_OUT;
 					updatePreviousEventType();
+					timeManager.setTodaysTime(getTodaysHours());
 					Log.i("FTM", "Add Event.CHECK_OUT");
 				}
 				try{
@@ -177,48 +182,51 @@ public class MainActivity extends ListActivity {
 					e.printStackTrace();
 				}
 				break;
-			case R.id.add:
-				// Save the new comment to the database
-				if(previousEventType.equals(" ")){
-					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-					previousEventType = Event.CHECK_IN;
-					updatePreviousEventType();
-					if(!mStartedChrono)
-						startTimer();
-					Log.i("FTM", "previousEventType == \" \". Add Event.CHECK_IN");
-				} else {
-					if(previousEventType.equals(Event.CHECK_IN)){
-						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
-						previousEventType = Event.CHECK_OUT;
-						updatePreviousEventType();
-						if(mStartedChrono)
-							stopTimer();
-						Log.i("FTM", "previousEventType == Event.CHECK_IN. Add Event.CHECK_OUT");
-					} else {
-						if(previousEventType.equals(Event.CHECK_OUT)){
-							event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-							previousEventType = Event.CHECK_IN;
-							updatePreviousEventType();
-							if(!mStartedChrono)
-								startTimer();
-							Log.i("FTM", "previousEventType == Event.CHECK_OUT. Add Event.CHECK_IN");
-						}
-					}
-				}
-				try{
-					adapter.insert(event, 0);
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-				break;
-			case R.id.delete:
-				if(getListAdapter().getCount() > 0){
-					event = (Event) getListAdapter().getItem(0);
-					Log.i("FTM", "Remove " + event.getType());
-					datasource.deleteEvent(event);
-					adapter.remove(event);
-				}
-				break;
+			//enable for debug
+//			case R.id.add:
+//				// Save the new comment to the database
+//				if(previousEventType.equals(" ")){
+//					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
+//					previousEventType = Event.CHECK_IN;
+//					updatePreviousEventType();
+//					if(!mStartedChrono)
+//						startTimer();
+//					Log.i("FTM", "previousEventType == \" \". Add Event.CHECK_IN");
+//				} else {
+//					if(previousEventType.equals(Event.CHECK_IN)){
+//						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
+//						previousEventType = Event.CHECK_OUT;
+//						updatePreviousEventType();
+//						if(mStartedChrono)
+//							stopTimer();
+//						Log.i("FTM", "previousEventType == Event.CHECK_IN. Add Event.CHECK_OUT");
+//					} else {
+//						if(previousEventType.equals(Event.CHECK_OUT)){
+//							event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
+//							previousEventType = Event.CHECK_IN;
+//							updatePreviousEventType();
+//							if(!mStartedChrono)
+//								startTimer();
+//							Log.i("FTM", "previousEventType == Event.CHECK_OUT. Add Event.CHECK_IN");
+//						}
+//					}
+//				}
+//				try{
+//					adapter.insert(event, 0);
+//				}catch(Exception e){
+//					e.printStackTrace();
+//				}
+//				break;
+
+			//enable for debug
+//			case R.id.delete:
+//				if(getListAdapter().getCount() > 0){
+//					event = (Event) getListAdapter().getItem(0);
+//					Log.i("FTM", "Remove " + event.getType());
+//					datasource.deleteEvent(event);
+//					adapter.remove(event);
+//				}
+//				break;
 		}
 		adapter.notifyDataSetChanged();
 	}
@@ -267,7 +275,9 @@ public class MainActivity extends ListActivity {
 		super.onResume();
 		Log.i("FTM", "onResume()");
 		mChrono = (TextView) findViewById(R.id.chronometer1);
-		mChrono.setText("000:00:00");
+		mTodayChrono = (TextView)findViewById(R.id.chronometer2);
+		mChrono.setText(R.string.empty_time);
+		mTodayChrono.setText(R.string.empty_time);
 		if(mPauseTime != 0){
 			Log.i("FTM", "We've got some saved time, update the timer text");
 			mChrono.setText(TimeManager.longToString(mPauseTime));
@@ -277,6 +287,8 @@ public class MainActivity extends ListActivity {
 		if(!datasource.isEmpty()){
 			updatePreviousEventType();
 		}
+		
+		timeManager.setTodaysTime(getTodaysHours());
 
 		if(previousEventType.equals(Event.CHECK_IN)){
 			Log.i("FTM", "Last check: (" + timeManager.getLastCheckIn() + ") " + DateFormat.format("dd/mm kk:mm:ss", timeManager.getLastCheckIn() ) );
@@ -343,8 +355,14 @@ public class MainActivity extends ListActivity {
 		}else{
 			millis = System.currentTimeMillis() - timeManager.getLastCheckIn();
 		}
-
 		mChrono.setText(TimeManager.longToString(millis));
+		
+
+		millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+		mTodayChrono.setText(TimeManager.longToString(millis));
+		if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
+			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+		}
 		//Log.i("FTM","Timer: (" + millis + ") " + TimeManager.longToString(millis));
 	}
 
@@ -371,16 +389,26 @@ public class MainActivity extends ListActivity {
 		}
 	}
 	
-	public long todaysHours(){
+	public long getTodaysHours(){
 		long todaysTime = 0;
+		long lastCheckIn = 0;
 		if(datasource.isOpen()){
-			List<Event> todaysEvents = datasource.getTodaysEvents();
+			List<Event> todaysEvents = datasource.getAllEvents();
 			for(Event e:todaysEvents){
-				todaysTime += e.getTime();
+				if(DateUtils.isToday(e.getTime())){
+					if(e.getType().equals(Event.CHECK_IN)){
+						lastCheckIn = e.getTime();
+					} else {
+						if(e.getType().equals(Event.CHECK_OUT)){
+							todaysTime += e.getTime() - lastCheckIn;
+						} 
+					}
+				}
 			}
 		} else {
 			Log.w("FTM", "Datasource is not Open");
 		}		
+		Log.w("FTM", "Todays Time is (" + todaysTime + ") " + TimeManager.longToString(todaysTime));
 		return todaysTime;
 	}
 	
