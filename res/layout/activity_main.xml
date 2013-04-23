@@ -2,36 +2,90 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
     tools:context=".MainActivity" >
 
     <Button
         android:id="@+id/checkButton"
         android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         android:text="@string/check_button"
         android:textSize="25sp"
         android:onClick="onClick" />
-
-    <TextView
-        android:id="@+id/chronometer1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/checkButton"
-        android:layout_centerHorizontal="true"
-        android:textSize="50sp" />
+    
+    <LinearLayout
+        android:id="@+id/chronogroup"
+	    android:layout_width="fill_parent"
+	    android:layout_height="48dp"
+	    android:layout_below="@+id/checkButton"
+	    android:orientation="horizontal"
+	    android:baselineAligned="false"
+    	>
+        
+    	<LinearLayout 
+    	    android:id="@+id/remaining_group"
+		    android:layout_width="wrap_content"
+		    android:layout_height="fill_parent"
+		    android:layout_weight="1"
+		    android:orientation="vertical"
+		    >
+	    	<TextView
+	       		android:id="@+id/chronometer_label1"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="12sp"
+		        android:textIsSelectable="false"
+		        android:text="@string/remaining_time" />
+	
+	        <TextView
+		        android:id="@+id/chronometer1"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="22sp"
+		        android:textIsSelectable="false"
+		        android:text="@string/empty_time" />
+        </LinearLayout>
+        
+    	<LinearLayout 
+    	    android:id="@+id/today_group"
+		    android:layout_width="wrap_content"
+		    android:layout_height="fill_parent"
+		    android:layout_weight="1"
+		    android:orientation="vertical"
+		    >
+	        <TextView
+	        	android:id="@+id/chronometer_label2"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="12sp"
+		        android:textIsSelectable="false"
+		        android:text="@string/today_time" />
+		    
+		    <TextView
+		        android:id="@+id/chronometer2"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textSize="18sp"
+		        android:textIsSelectable="false"
+		        android:text="@string/empty_time" />
+        </LinearLayout>
+    </LinearLayout>
     
 	<View
         android:id="@+id/separator1"
 	    android:layout_width="fill_parent"
 	    android:layout_height="2dp"
-        android:layout_below="@+id/chronometer1"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-	    android:background="#ff0099cc"/>
+        android:layout_below="@+id/chronogroup"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+	    android:background="@android:color/holo_blue_light"/>
 
     <LinearLayout 
         android:id="@+id/group"
@@ -56,7 +110,8 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/group"
         android:text="@string/hello"
-        android:layout_below="@+id/group" />    
+        tools:listitem="@layout/listview_item_row" />
 
 </RelativeLayout>
