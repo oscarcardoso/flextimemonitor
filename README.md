@@ -3,12 +3,15 @@
 A small Android app for keeping track of flex time hours without having to wait for HR table update.
 
 ## TODO in next version
-- Show flex time covered today when clicking the big timer text 
-    or just right beside it. Enable a setting option to enable or disable
-- Display check event list in a more user friendly way.
-- Edit, Delete, Update each check event individually.
+- Update each check event individually.
 - Set fixed initial flex time.
 - Prepare different layout for landscape view.
+
+## v0.0.3
+- Show todays covered hours in a timer right next to 
+  the months timer.
+- Delete elements by onHold event in the Events list.
+- UI Improvements.
 
 ## v0.0.2
 - New version number convention (major, minor, point).
