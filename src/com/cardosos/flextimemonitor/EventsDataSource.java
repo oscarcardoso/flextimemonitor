@@ -71,6 +71,18 @@ public class EventsDataSource {
 		cursor.close();
 		return events;
 	}
+	
+	public int getEventsCount(){
+		String countQuery = "SELECT * FROM " + MySQLiteHelper.TABLE_EVENTS;
+		Cursor cursor = database.rawQuery(countQuery, null);
+		cursor.close();
+		return cursor.getCount();
+	}
+	
+//	public int updateEvent(Event event){
+//		ContentValues values = new ContentValues();
+//		values.put(KE, value)
+//	}
 
 	public Event getLastEvent(){
 		List<Event> events = new ArrayList<Event>();
