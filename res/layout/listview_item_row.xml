@@ -7,33 +7,30 @@
     
     <View
         android:id="@+id/colormark"
-	    android:layout_width="5dp"
-	    android:layout_height="fill_parent"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="2dp"
+	    android:layout_width="1dp"
+	    android:layout_height="48dp"
 	    />
     
     <ImageView 
         android:id="@+id/imgIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:gravity="center_vertical"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+        android:padding="8dp"
+        android:contentDescription="@string/event_list_header"
         />
     
     <TextView 
         android:id="@+id/txtTitle"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="48dp"
         android:gravity="center_vertical"
-        android:textStyle="bold"
         android:textSize="18sp"
         android:textColor="@color/Black"
         android:textIsSelectable="false"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="23/04 00:00:00"
         />
 
 </LinearLayout>
