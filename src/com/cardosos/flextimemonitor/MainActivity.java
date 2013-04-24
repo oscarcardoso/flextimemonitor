@@ -10,8 +10,10 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,8 +24,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 // Vogella SQL tutorial imports
@@ -144,13 +148,25 @@ public class MainActivity extends ListActivity {
 	        ActionBar actionBar = getActionBar();
 	        actionBar.setHomeButtonEnabled(false);
 	    }
+		
+		ListView eventList = getListView();
+		eventList.setOnItemLongClickListener( new OnItemLongClickListener() {
+			
+			@Override
+		      public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+		        //Toast.makeText(MainActivity.this, "Item in position " + position + " clicked", Toast.LENGTH_LONG).show();
+		        onLongListItemClick(view, position, id);
+		        // Return true to consume the click event. In this case the
+		        // onListItemClick listener is not called anymore.
+		        return true;
+		      }
+		});
 	}
 	
 	// Vogella start
 	// Will be called via the onClick attribute
 	// of the buttons in main.xml
 	public void onClick(View view){
-		@SuppressWarnings("unchecked")
 		EventAdapter adapter = (EventAdapter) getListAdapter();
 		Event event = null;
 		Button b = (Button) view;
@@ -230,7 +246,52 @@ public class MainActivity extends ListActivity {
 		}
 		adapter.notifyDataSetChanged();
 	}
-
+	
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+	    // Get the item that was clicked
+		Event event = (Event) this.getListAdapter().getItem(position);
+		String keyword = event.toString();
+		Toast.makeText(this, "You selected: " + keyword, Toast.LENGTH_SHORT).show();
+	
+	}
+	
+	protected void onLongListItemClick(View v, int position, long id){
+		Log.i("FTM", "onLongListItemClick id =" + id);
+		Toast.makeText(this, "You selected: " + id, Toast.LENGTH_SHORT).show();
+		final Event event = (Event) this.getListAdapter().getItem(position);
+		final EventAdapter eventAdapter = (EventAdapter)getListAdapter();
+		
+		AlertDialog dialog;
+		final CharSequence[] items = { "Edit Event..", "Delete Event" };
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Edit event");
+		builder.setItems(items, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int pos) {
+				switch (pos) {
+				case 0: {
+					Toast.makeText(MainActivity.this, "Clicked on: " + items[pos], Toast.LENGTH_LONG).show();
+					
+				}
+					break;
+				case 1: {
+						Toast.makeText(MainActivity.this, "Deleted Event on:" + event.toString(), Toast.LENGTH_LONG).show();
+						if(eventAdapter.getCount() > 0){
+							Log.i("FTM", "Remove " + event.getType());
+							datasource.deleteEvent(event);
+							eventAdapter.remove(event);
+						}
+						eventAdapter.notifyDataSetChanged();
+					}
+					break;
+				}
+			}
+		});
+		dialog = builder.create();
+		dialog.show();
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		// Handle item selection
@@ -289,6 +350,7 @@ public class MainActivity extends ListActivity {
 		}
 		
 		timeManager.setTodaysTime(getTodaysHours());
+		mTodayChrono.setText(TimeManager.longToString(timeManager.getTodaysTime()));
 
 		if(previousEventType.equals(Event.CHECK_IN)){
 			Log.i("FTM", "Last check: (" + timeManager.getLastCheckIn() + ") " + DateFormat.format("dd/mm kk:mm:ss", timeManager.getLastCheckIn() ) );
@@ -400,7 +462,9 @@ public class MainActivity extends ListActivity {
 						lastCheckIn = e.getTime();
 					} else {
 						if(e.getType().equals(Event.CHECK_OUT)){
-							todaysTime += e.getTime() - lastCheckIn;
+							if(lastCheckIn > 0){
+								todaysTime += e.getTime() - lastCheckIn;
+							}
 						} 
 					}
 				}
