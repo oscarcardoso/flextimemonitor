@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -271,8 +272,11 @@ public class MainActivity extends ListActivity {
 			public void onClick(DialogInterface dialog, int pos) {
 				switch (pos) {
 				case 0: {
-					Toast.makeText(MainActivity.this, "Clicked on: " + items[pos], Toast.LENGTH_LONG).show();
+					DialogFragment timeFragment = new TimePickerFragment();
+					timeFragment.show(getFragmentManager(), "timePicker");
 					
+				    DialogFragment dateFragment = new DatePickerFragment();
+				    dateFragment.show(getFragmentManager(), "datePicker");
 				}
 					break;
 				case 1: {
@@ -476,4 +480,8 @@ public class MainActivity extends ListActivity {
 		return todaysTime;
 	}
 	
+	public void showTimePickerDialog(View v) {
+	    DialogFragment newFragment = new TimePickerFragment();
+	    newFragment.show(getFragmentManager(), "timePicker");
+	}
 }
