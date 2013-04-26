@@ -272,10 +272,10 @@ public class MainActivity extends ListActivity {
 			public void onClick(DialogInterface dialog, int pos) {
 				switch (pos) {
 				case 0: {
-					DialogFragment timeFragment = new TimePickerFragment();
+					DialogFragment timeFragment = new TimePickerFragment(TimeManager.getHourInt(event.getTime()), TimeManager.getMinutesInt(event.getTime()));
 					timeFragment.show(getFragmentManager(), "timePicker");
 					
-				    DialogFragment dateFragment = new DatePickerFragment();
+				    DialogFragment dateFragment = new DatePickerFragment(TimeManager.getDayInt(event.getTime()), TimeManager.getMonthInt(event.getTime()), TimeManager.getYearInt(event.getTime()));
 				    dateFragment.show(getFragmentManager(), "datePicker");
 				}
 					break;
