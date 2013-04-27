@@ -79,10 +79,14 @@ public class EventsDataSource {
 		return cursor.getCount();
 	}
 	
-//	public int updateEvent(Event event){
-//		ContentValues values = new ContentValues();
-//		values.put(KE, value)
-//	}
+	public int updateEvent(Event event){
+		ContentValues values = new ContentValues();
+		values.put(MySQLiteHelper.COLUMN_TIME, event.getTime());
+		values.put(MySQLiteHelper.COLUMN_TYPE, event.getType());
+		
+		// updating row
+	    return database.update(MySQLiteHelper.TABLE_EVENTS, values, MySQLiteHelper.COLUMN_ID + " = ?", new String[] { String.valueOf(event.getId()) });
+	}
 
 	public Event getLastEvent(){
 		List<Event> events = new ArrayList<Event>();
