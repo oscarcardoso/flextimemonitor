@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import com.cardosos.flextimemonitor.DatePickerFragment.DatePickedListener;
+import com.cardosos.flextimemonitor.TimePickerFragment.TimePickedListener;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
@@ -37,7 +40,7 @@ import android.widget.Toast;
 
 @SuppressLint("NewApi")
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class MainActivity extends ListActivity {
+public class MainActivity extends ListActivity implements TimePickedListener, DatePickedListener{
 
 	private EventsDataSource datasource; // Vogella
 	private String previousEventType = " ";
@@ -272,10 +275,10 @@ public class MainActivity extends ListActivity {
 			public void onClick(DialogInterface dialog, int pos) {
 				switch (pos) {
 				case 0: {
-					DialogFragment timeFragment = new TimePickerFragment(TimeManager.getHourInt(event.getTime()), TimeManager.getMinutesInt(event.getTime()));
+					DialogFragment timeFragment = new TimePickerFragment(event.getId(), TimeManager.getHourInt(event.getTime()), TimeManager.getMinutesInt(event.getTime()));
 					timeFragment.show(getFragmentManager(), "timePicker");
 					
-				    DialogFragment dateFragment = new DatePickerFragment(TimeManager.getDayInt(event.getTime()), TimeManager.getMonthInt(event.getTime()), TimeManager.getYearInt(event.getTime()));
+				    DialogFragment dateFragment = new DatePickerFragment(event.getId(), TimeManager.getDayInt(event.getTime()), TimeManager.getMonthInt(event.getTime()), TimeManager.getYearInt(event.getTime()));
 				    dateFragment.show(getFragmentManager(), "datePicker");
 				}
 					break;
@@ -483,5 +486,19 @@ public class MainActivity extends ListActivity {
 	public void showTimePickerDialog(View v) {
 	    DialogFragment newFragment = new TimePickerFragment();
 	    newFragment.show(getFragmentManager(), "timePicker");
+	}
+
+	@Override
+	public void onDatePicked(long id, int day, int month, int year) {
+		// TODO Use the retrived picked date
+		if(!datasource.isOpen()){
+			datasource.updateEvent()
+		}
+	}
+
+	@Override
+	public void onTimePicked(long id, int hour, int minute) {
+		// TODO Use the retrived picked time
+		
 	}
 }
