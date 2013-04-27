@@ -5,6 +5,7 @@ package com.cardosos.flextimemonitor;
 
 import java.util.Calendar;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
@@ -21,9 +22,11 @@ import android.widget.Toast;
 public class DatePickerFragment extends DialogFragment implements
 		OnDateSetListener {
 	
+	private long id;
 	private int day;
 	private int month; // this is zero based
 	private int year;
+	private DatePickedListener mListener;
 
 	/**
 	 * 
@@ -42,6 +45,15 @@ public class DatePickerFragment extends DialogFragment implements
 		this.year = year;
 	}
 
+	public DatePickerFragment(long id, int dayInt, int monthInt, int yearInt) {
+		// TODO Create a date picker with a defined date and id
+		this.id = id;
+		this.day = dayInt;
+		this.month = monthInt;
+		this.year = yearInt;
+		
+	}
+
 	/* (non-Javadoc)
 	 * @see android.app.DatePickerDialog.OnDateSetListener#onDateSet(android.widget.DatePicker, int, int, int)
 	 */
@@ -52,6 +64,7 @@ public class DatePickerFragment extends DialogFragment implements
 		//		and the year.
 		Toast.makeText(view.getContext(), "Date: " + dayOfMonth + "/" + monthOfYear + "/" + year, Toast.LENGTH_LONG).show();
 		Log.i("FTM", "Date: " + dayOfMonth + "/" + monthOfYear + "/" + year);
+		mListener.onDatePicked(this.id, dayOfMonth, monthOfYear, year);
 	}
 	
 	@Override
@@ -65,5 +78,18 @@ public class DatePickerFragment extends DialogFragment implements
 		// Create a new instance of DatePickerDialog and return it
 		return new DatePickerDialog(getActivity(), this, this.year, this.month, this.day);		
 	}
+	
+	@Override
+	public void onAttach(Activity activity){
+		super.onAttach(activity);
+		try{
+			mListener = (DatePickedListener) activity;
+		} catch(ClassCastException e){
+			throw new ClassCastException(activity.toString() + " must implement " + DatePickedListener.class.getName());
+		}
+	}
 
+	public static interface DatePickedListener{
+		public void onDatePicked(long id, int day, int month, int year);
+	}
 }
