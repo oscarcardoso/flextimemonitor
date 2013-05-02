@@ -24,6 +24,13 @@ public class Event {
 		this.time = time;
 		this.type = type;
 	}
+	
+	public Event(long id, long time, String type){
+		super();
+		this.id = id;
+		this.time = time;
+		this.type = type;
+	}
 
 	public long getId() {
 		return id;
