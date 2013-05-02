@@ -1,9 +1,11 @@
 package com.cardosos.flextimemonitor;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,6 +23,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
@@ -313,6 +316,11 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		case R.id.menu_settings:
 			Toast.makeText(MainActivity.this, "The settings activity is not yet implemented :P", Toast.LENGTH_SHORT).show();
 			return true;
+		case R.id.export:
+			Toast.makeText(MainActivity.this, "Exporting database data", Toast.LENGTH_LONG).show();
+			backupDatabaseToSD();
+			Toast.makeText(MainActivity.this, "Exporting finished!", Toast.LENGTH_SHORT).show();
+			return true;
 		default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -492,7 +500,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	public void onDatePicked(long id, int day, int month, int year) {
 		// TODO Use the retrived picked date
 		if(!datasource.isOpen()){
-			datasource.updateEvent()
+			//datasource.updateEvent();
 		}
 	}
 
@@ -500,5 +508,29 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	public void onTimePicked(long id, int hour, int minute) {
 		// TODO Use the retrived picked time
 		
+	}
+	
+	public void backupDatabaseToSD(){
+		try {
+	        File sd = Environment.getExternalStorageDirectory();
+	        File data = Environment.getDataDirectory();
+
+	        if (sd.canWrite()) {
+	            String currentDBPath = "//data//com.cardosos.flextimemonitor//databases//events.db";
+	            String backupDBPath = "events.db";
+	            File currentDB = new File(data, currentDBPath);
+	            File backupDB = new File(sd, backupDBPath);
+
+	            if (currentDB.exists()) {
+	                FileChannel src = new FileInputStream(currentDB).getChannel();
+	                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+	                dst.transferFrom(src, 0, src.size());
+	                src.close();
+	                dst.close();
+	            }
+	        }
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	    }	
 	}
 }
