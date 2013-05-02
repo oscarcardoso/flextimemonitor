@@ -321,6 +321,11 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			backupDatabaseToSD();
 			Toast.makeText(MainActivity.this, "Exporting finished!", Toast.LENGTH_SHORT).show();
 			return true;
+		case R.id.restore:
+			Toast.makeText(MainActivity.this, "Importing database", Toast.LENGTH_LONG).show();
+			restoreFromBackup();
+			Toast.makeText(MainActivity.this, "Importing finished!", Toast.LENGTH_SHORT).show();
+			return true;
 		default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -461,6 +466,8 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			previousEventType = lastEvent.getType();
 			if(previousEventType.equals(Event.CHECK_IN))
 				timeManager.setLastCheckIn(lastEvent.getTime());
+			else
+				Log.i("FTM", "Previous event type is not a CHECK_IN");
 		} else {
 			Log.w("FTM", "Datasource is not Open");
 		}
@@ -512,25 +519,37 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	
 	public void backupDatabaseToSD(){
 		try {
-	        File sd = Environment.getExternalStorageDirectory();
-	        File data = Environment.getDataDirectory();
+			File sd = Environment.getExternalStorageDirectory();
+			File data = Environment.getDataDirectory();
 
-	        if (sd.canWrite()) {
-	            String currentDBPath = "//data//com.cardosos.flextimemonitor//databases//events.db";
-	            String backupDBPath = "events.db";
-	            File currentDB = new File(data, currentDBPath);
-	            File backupDB = new File(sd, backupDBPath);
+			if (sd.canWrite()) {
+				String currentDBPath = "//data//com.cardosos.flextimemonitor//databases//events.db";
+				String backupDBPath = "events.db";
+				File currentDB = new File(data, currentDBPath);
+				File backupDB = new File(sd, backupDBPath);
 
-	            if (currentDB.exists()) {
-	                FileChannel src = new FileInputStream(currentDB).getChannel();
-	                FileChannel dst = new FileOutputStream(backupDB).getChannel();
-	                dst.transferFrom(src, 0, src.size());
-	                src.close();
-	                dst.close();
-	            }
-	        }
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	    }	
+				if (currentDB.exists()) {
+					FileChannel src = new FileInputStream(currentDB).getChannel();
+					FileChannel dst = new FileOutputStream(backupDB).getChannel();
+					dst.transferFrom(src, 0, src.size());
+					src.close();
+					dst.close();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+	}
+	
+	public void restoreFromBackup(){
+		
+		try {
+			Log.i("FTM", "Restoring database");
+			
+			datasource.restoreFromFile("events.sql");
+			Log.i("FTM", "Database restored!");
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 }
