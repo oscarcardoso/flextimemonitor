@@ -1,5 +1,8 @@
 package com.cardosos.flextimemonitor;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +11,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -18,6 +22,7 @@ public class EventsDataSource {
 	private SQLiteDatabase database;
 	private MySQLiteHelper dbHelper;
 	private String[] allColumns = { MySQLiteHelper.COLUMN_ID, MySQLiteHelper.COLUMN_TIME, MySQLiteHelper.COLUMN_TYPE};
+	private String fil;
 
 	public EventsDataSource(Context context){
 		dbHelper = new MySQLiteHelper(context);
@@ -45,6 +50,18 @@ public class EventsDataSource {
 		Event newEvent = cursorToEvent(cursor);
 		cursor.close();
 		return newEvent;
+	}
+	
+	public boolean insertEvent(long id, long time, String type){
+		ContentValues values = new ContentValues();
+		values.put(MySQLiteHelper.COLUMN_ID, id);
+		values.put(MySQLiteHelper.COLUMN_TIME, time);
+		values.put(MySQLiteHelper.COLUMN_TYPE, type);
+		long err = database.insert(MySQLiteHelper.TABLE_EVENTS, null, values);
+		if(err == -1)
+			return false;
+		else
+			return true;
 	}
 
 	public void deleteEvent(Event event) {
@@ -99,6 +116,7 @@ public class EventsDataSource {
 
 		cursor.moveToLast();
 		Event event = cursorToEvent(cursor);
+		Log.i("FTM", "Last event: " + event.getId() + ", " + event.getTime() + ", " + event.getType());
 		// Make sure to close the cursor
 		cursor.close();
 		return event;
@@ -145,5 +163,31 @@ public class EventsDataSource {
 		cursor.close();
 
 		return isEmpty;
+	}
+	
+	public boolean restoreFromFile(String filename){
+		try{
+			File sdcard = Environment.getExternalStorageDirectory();
+			File backupFile = new File(sdcard, filename);
+			if(backupFile.exists()){
+				BufferedReader reader = new BufferedReader(new FileReader(backupFile));
+				String line;
+				while ((line = reader.readLine() ) != null){
+					line = line.replaceAll("\"", "");
+					String[] row = line.split(",");
+					String id = row[0];
+					String time = row[1];
+					String type = row[2];
+					insertEvent(Long.parseLong(id), Long.parseLong(time), type);
+				}
+				reader.close();
+			}else{
+				return false;
+			}
+		} catch(Exception e){
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }
