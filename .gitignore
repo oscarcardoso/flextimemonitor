@@ -30,3 +30,5 @@ proguard/
 
 #patch files from work
 patches/
+events.db
+events.csv
