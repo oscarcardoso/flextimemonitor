@@ -11,6 +11,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper{
 	public static final String COLUMN_ID = "_id";
 	public static final String COLUMN_TIME = "time";
 	public static final String COLUMN_TYPE = "type";
+	public static final String[] COLUMN_NAMES = {COLUMN_ID, COLUMN_TIME, COLUMN_TYPE};
 
 	private static final String DATABASE_NAME = "events.db";
 	private static final int DATABASE_VERSION = 1;
