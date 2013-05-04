@@ -5,7 +5,6 @@
         android:title="@string/check_in"
         android:orderInCategory="1"
         android:showAsAction="always"
-        android:actionLayout="@layout/action_button_foo"
         android:icon="@drawable/ic_check_in_dark"/>
     <item 
         android:id="@+id/check_out" 
