@@ -2,18 +2,19 @@
 
 A small Android app for keeping track of flex time hours without having to wait for HR table update.
 
-## TODO in next version
+## TODO in unstable version
 - Update each check event individually.
 - Set fixed initial flex time.
-- Prepare different layout for landscape view.
 
-## v0.0.3
+## v0.0.3 UNSTABLE
+- Export database to CSV.
 - Show todays covered hours in a timer right next to 
   the months timer.
 - Delete elements by onHold event in the Events list.
 - UI Improvements.
+- Forced portrait layout for now.
 
-## v0.0.2
+## v0.0.2 STABLE
 - New version number convention (major, minor, point).
 - SQLite implementation.
 - Save the Checked In time in a file for quick access.

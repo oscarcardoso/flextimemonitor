@@ -1,8 +1,11 @@
 package com.cardosos.flextimemonitor;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,7 +119,7 @@ public class EventsDataSource {
 
 		cursor.moveToLast();
 		Event event = cursorToEvent(cursor);
-		Log.i("FTM", "Last event: " + event.getId() + ", " + event.getTime() + ", " + event.getType());
+		Log.i(MainActivity.TAG, "Last event: " + event.getId() + ", " + event.getTime() + ", " + event.getType());
 		// Make sure to close the cursor
 		cursor.close();
 		return event;
@@ -125,7 +128,7 @@ public class EventsDataSource {
 	public List<Event> getTodaysEvents(){
 		List<Event> events = new ArrayList<Event>();
 
-		Log.i("FTM", "Today is (" + DateUtils.DAY_IN_MILLIS + ") " + DateFormat.format("dd/MM/YYYY kk:mm:ss", DateUtils.DAY_IN_MILLIS ));
+		Log.i(MainActivity.TAG, "Today is (" + DateUtils.DAY_IN_MILLIS + ") " + DateFormat.format("dd/MM/YYYY kk:mm:ss", DateUtils.DAY_IN_MILLIS ));
 		
 		Cursor cursor = database.query(MySQLiteHelper.TABLE_EVENTS,
 			allColumns, MySQLiteHelper.COLUMN_TIME + "=" + DateUtils.DAY_IN_MILLIS , null, null, null, null);
@@ -165,6 +168,54 @@ public class EventsDataSource {
 		return isEmpty;
 	}
 	
+	public boolean backupToFile(String filename){
+		Log.d(MainActivity.TAG, "backupToFile");
+		Boolean returnCode = false;
+		int i = 0;
+		String csvHeader = "";
+		String csvValues = "";
+		
+		// Do I need to save the header? Nope!
+//		for (i = 0; i < MySQLiteHelper.COLUMN_NAMES.length; i++){
+//			if (csvHeader.length() > 0){
+//				csvHeader += ",";
+//			}
+//			csvHeader += "\"" + MySQLiteHelper.COLUMN_NAMES[i] + "\"";
+//		}
+//		
+//		csvHeader += "\n";
+//		Log.d(MainActivity.TAG, "header=" + csvHeader);
+		
+		try {
+			File sd = Environment.getExternalStorageDirectory();
+			if (sd.canWrite()){
+				String backupDBPath = filename;
+				File backupDB = new File(sd, backupDBPath);
+				FileWriter fileWriter = new FileWriter(backupDB);
+				BufferedWriter out = new BufferedWriter(fileWriter);
+				Cursor cursor = database.query(MySQLiteHelper.TABLE_EVENTS,
+					allColumns, null, null, null, null, null);
+				if(cursor != null){
+					out.write(csvHeader);
+					while (cursor.moveToNext()){
+						csvValues = Long.toString(cursor.getLong(0)) + ",";
+						csvValues += Long.toString(cursor.getLong(1)) + ",";
+						csvValues += cursor.getString(2) + "\n";
+						out.write(csvValues);
+						Log.d(MainActivity.TAG, "values=" + csvValues);
+					}
+					cursor.close();
+				}
+				out.close();
+				returnCode = true;
+			}
+		} catch(IOException e){
+			returnCode = false;
+			e.printStackTrace();
+		}
+		return returnCode;
+	}
+	
 	public boolean restoreFromFile(String filename){
 		try{
 			File sdcard = Environment.getExternalStorageDirectory();
@@ -189,5 +240,9 @@ public class EventsDataSource {
 			return false;
 		}
 		return true;
+	}
+	
+	public void deleteAllEvents(){
+		database.delete(MySQLiteHelper.TABLE_EVENTS, null, null);
 	}
 }

@@ -1,16 +1,11 @@
 package com.cardosos.flextimemonitor;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.util.Collections;
 import java.util.List;
-
-import com.cardosos.flextimemonitor.DatePickerFragment.DatePickedListener;
-import com.cardosos.flextimemonitor.TimePickerFragment.TimePickedListener;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -23,7 +18,6 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
@@ -37,6 +31,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.cardosos.flextimemonitor.DatePickerFragment.DatePickedListener;
+import com.cardosos.flextimemonitor.TimePickerFragment.TimePickedListener;
 // Vogella SQL tutorial imports
 //import android.os.Bundle;
 //import android.view.View;
@@ -55,6 +52,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	private static String FILENAME = "flex_time_data";
 	private TimeManager timeManager = new TimeManager();
 	private Handler handler = new Handler();
+	public static final String TAG = "FTM";
 
 	private Runnable runnable = new Runnable() {
 		@Override
@@ -326,6 +324,10 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			restoreFromBackup();
 			Toast.makeText(MainActivity.this, "Importing finished!", Toast.LENGTH_SHORT).show();
 			return true;
+		case R.id.check_in:
+			return true;
+		case R.id.check_out:
+			return true;
 		default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -335,6 +337,20 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_main, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu){
+		Log.d(TAG, "onPrepareOptionsMenu");
+		MenuItem check_in_item = menu.findItem(R.id.check_in);
+		MenuItem check_out_item = menu.findItem(R.id.check_out);
+		updatePreviousEventType();
+		if(previousEventType.equals(Event.CHECK_IN))
+			check_in_item.setVisible(false);
+		else
+			check_out_item.setVisible(false);
+		super.onPrepareOptionsMenu(menu);
 		return true;
 	}
 	
@@ -518,35 +534,15 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	}
 	
 	public void backupDatabaseToSD(){
-		try {
-			File sd = Environment.getExternalStorageDirectory();
-			File data = Environment.getDataDirectory();
-
-			if (sd.canWrite()) {
-				String currentDBPath = "//data//com.cardosos.flextimemonitor//databases//events.db";
-				String backupDBPath = "events.db";
-				File currentDB = new File(data, currentDBPath);
-				File backupDB = new File(sd, backupDBPath);
-
-				if (currentDB.exists()) {
-					FileChannel src = new FileInputStream(currentDB).getChannel();
-					FileChannel dst = new FileOutputStream(backupDB).getChannel();
-					dst.transferFrom(src, 0, src.size());
-					src.close();
-					dst.close();
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
+		Log.d(TAG, "Backing up database");
+		datasource.backupToFile("events.csv");
+		Log.d(TAG, "Database backed up!");
 	}
 	
 	public void restoreFromBackup(){
-		
 		try {
 			Log.i("FTM", "Restoring database");
-			
-			datasource.restoreFromFile("events.sql");
+			datasource.restoreFromFile("events.csv");
 			Log.i("FTM", "Database restored!");
 		} catch (Exception e){
 			e.printStackTrace();
