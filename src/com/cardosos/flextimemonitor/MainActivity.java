@@ -345,7 +345,10 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		Log.d(TAG, "onPrepareOptionsMenu");
 		MenuItem check_in_item = menu.findItem(R.id.check_in);
 		MenuItem check_out_item = menu.findItem(R.id.check_out);
-		updatePreviousEventType();
+		datasource.open();
+		if(!datasource.isEmpty()){
+			updatePreviousEventType();
+		}
 		if(previousEventType.equals(Event.CHECK_IN))
 			check_in_item.setVisible(false);
 		else
