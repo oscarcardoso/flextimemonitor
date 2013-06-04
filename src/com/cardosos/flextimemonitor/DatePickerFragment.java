@@ -3,8 +3,6 @@
  */
 package com.cardosos.flextimemonitor;
 
-import java.util.Calendar;
-
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
