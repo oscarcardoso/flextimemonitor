@@ -258,7 +258,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	    // Get the item that was clicked
 		Event event = (Event) this.getListAdapter().getItem(position);
 		String keyword = event.toString();
-		Toast.makeText(this, "You selected: " + keyword, Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, "You selected: " + keyword, Toast.LENGTH_SHORT).show();
 	
 	}
 	
