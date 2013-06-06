@@ -2,11 +2,20 @@
 
 A small Android app for keeping track of flex time hours without having to wait for HR table update.
 
-## TODO in unstable version
+## TODO in v0.0.4
+- Get the working days in a month.
+- Show the due hours in this month, at the start of the month.
+- Save previous month events in a monthly database.
+- Average each previous day into a single list element.
+- Count just the Flex Time Hours.
+- Proper action bar usage.
+- 
+
+## TODO in v0.0.3
 - Update each check event individually.
 - Set fixed initial flex time.
 
-## v0.0.3 UNSTABLE
+## v0.0.3 STABLE
 - Export database to CSV.
 - Show todays covered hours in a timer right next to 
   the months timer.
@@ -14,7 +23,7 @@ A small Android app for keeping track of flex time hours without having to wait 
 - UI Improvements.
 - Forced portrait layout for now.
 
-## v0.0.2 STABLE
+## v0.0.2
 - New version number convention (major, minor, point).
 - SQLite implementation.
 - Save the Checked In time in a file for quick access.
