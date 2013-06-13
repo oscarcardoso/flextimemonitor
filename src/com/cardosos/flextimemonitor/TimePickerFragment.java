@@ -21,7 +21,7 @@ import android.widget.Toast;
 public class TimePickerFragment extends DialogFragment implements
 		OnTimeSetListener {
 
-	private long id;
+	private int id;
 	private int hour;
 	private int minute;
 	private TimePickedListener mListener;
@@ -40,13 +40,15 @@ public class TimePickerFragment extends DialogFragment implements
 		// TODO Create a timepicker with a specific time
 		this.hour = hour;
 		this.minute = minute;
+		Log.i("FTM", "Hour: " + this.hour + " Minute:" + this.minute);
 	}
 
-	public TimePickerFragment(long id, int hourInt, int minutesInt) {
+	public TimePickerFragment(int id, int hourInt, int minutesInt) {
 		// TODO Create a timepicker with a specific time and id
 		this.id = id;
 		this.hour = hourInt;
 		this.minute = minutesInt;
+		Log.i("FTM", "id: " + this.id + "Hour: " + this.hour + " Minute:" + this.minute);
 	}
 
 	/* (non-Javadoc)
@@ -83,6 +85,6 @@ public class TimePickerFragment extends DialogFragment implements
 	}
 	
 	public static interface TimePickedListener{
-		public void onTimePicked(long id, int hour, int minute);
+		public void onTimePicked(int id, int hour, int minute);
 	}
 }
