@@ -116,4 +116,55 @@ public class Event {
 	public void setIcon(int icon) {
 		this.icon = icon;
 	}
+		
+	public int getDay(){
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(this.time);
+		int day = cal.get(Calendar.DAY_OF_MONTH);
+		return day;
+	}
+		
+	public int getMonth(){
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(this.time);
+		int month = cal.get(Calendar.MONTH);
+		return month;
+	}
+	
+	public int getYear(){
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(this.time);
+		int year = cal.get(Calendar.YEAR);
+		return year;
+	}
+	
+	public void setDay(int day) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(this.time);
+		cal.set(Calendar.DAY_OF_MONTH, day);
+		this.time = cal.getTimeInMillis();
+	}
+	
+	public void setMonth(int month) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(this.time);
+		cal.set(Calendar.MONTH, month);
+		this.time = cal.getTimeInMillis();
+	}
+	
+	public void setYear(int year) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(this.time);
+		cal.set(Calendar.YEAR, year);
+		this.time = cal.getTimeInMillis();
+	}
+	
+	public void setDate(int day, int month, int year) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(this.time);
+		cal.set(Calendar.DAY_OF_MONTH, day);
+		cal.set(Calendar.MONTH, month);
+		cal.set(Calendar.YEAR, year);
+		this.time = cal.getTimeInMillis();
+	}
 }
