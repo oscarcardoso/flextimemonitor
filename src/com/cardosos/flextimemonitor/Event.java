@@ -56,6 +56,13 @@ public class Event {
 		int dayTimeHours = cal.get(Calendar.HOUR_OF_DAY);
 		return dayTimeHours;
 	}
+	
+	public void setDayTimeHours(int hours){
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(this.time);
+		cal.set(Calendar.HOUR_OF_DAY, hours);
+		this.time = cal.getTimeInMillis();
+	}
 
 	public int getDayTimeMinutes(){
 		Calendar cal = Calendar.getInstance();
@@ -64,6 +71,13 @@ public class Event {
 		return dayTimeMinutes;
 	}
 	
+	public void setDayTimeMinutes(int minutes){
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(this.time);
+		cal.set(Calendar.MINUTE, minutes);
+		this.time = cal.getTimeInMillis();
+	}
+
 	public String getType() {
 		return type;
 	}
