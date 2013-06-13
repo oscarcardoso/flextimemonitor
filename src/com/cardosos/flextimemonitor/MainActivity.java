@@ -284,7 +284,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 				break;
 				case 1: {
 					// Edit the event date.
-				    DialogFragment dateFragment = new DatePickerFragment(event.getId(), TimeManager.getDayInt(event.getTime()), TimeManager.getMonthInt(event.getTime()), TimeManager.getYearInt(event.getTime()));
+				    DialogFragment dateFragment = new DatePickerFragment(longListItemClickPosition, event.getDay(), event.getMonth(), event.getYear());
 				    dateFragment.show(getFragmentManager(), "datePicker");
 				}
 					break;
@@ -528,11 +528,20 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	}
 
 	@Override
-	public void onDatePicked(long id, int day, int month, int year) {
+	public void onDatePicked(int id, int day, int month, int year) {
 		// TODO Use the retrived picked date
-		if(!datasource.isOpen()){
+		Log.i("FTM", "Date Picked");
+		if(datasource.isOpen()){
 			//datasource.updateEvent();
-		}
+			//datasource.updateEvent(modifiedEvent);
+			Event modifiedEvent = (Event)this.getListAdapter().getItem(id);
+			modifiedEvent.setDate(day, month, year);
+			datasource.updateEvent(modifiedEvent);
+			((EventAdapter)getListAdapter()).notifyDataSetChanged();
+			Log.i("FTM", "Event " + modifiedEvent.getId() + " was modified");
+		} else {
+			Log.w("FTM", "Datasource is not Open");
+		}		
 	}
 
 	@Override
