@@ -20,7 +20,7 @@ import android.widget.Toast;
 public class DatePickerFragment extends DialogFragment implements
 		OnDateSetListener {
 	
-	private long id;
+	private int id;
 	private int day;
 	private int month; // this is zero based
 	private int year;
@@ -43,7 +43,7 @@ public class DatePickerFragment extends DialogFragment implements
 		this.year = year;
 	}
 
-	public DatePickerFragment(long id, int dayInt, int monthInt, int yearInt) {
+	public DatePickerFragment(int id, int dayInt, int monthInt, int yearInt) {
 		// TODO Create a date picker with a defined date and id
 		this.id = id;
 		this.day = dayInt;
@@ -88,6 +88,6 @@ public class DatePickerFragment extends DialogFragment implements
 	}
 
 	public static interface DatePickedListener{
-		public void onDatePicked(long id, int day, int month, int year);
+		public void onDatePicked(int id, int day, int month, int year);
 	}
 }
