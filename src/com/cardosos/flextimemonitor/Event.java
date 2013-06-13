@@ -1,5 +1,7 @@
 package com.cardosos.flextimemonitor;
 
+import java.util.Calendar;
+
 import android.text.format.DateFormat;
 
 public class Event {
@@ -47,7 +49,21 @@ public class Event {
 	public void setTime(long time) {
 		this.time = time;
 	}
+	
+	public int getDayTimeHours(){
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(this.time);
+		int dayTimeHours = cal.get(Calendar.HOUR_OF_DAY);
+		return dayTimeHours;
+	}
 
+	public int getDayTimeMinutes(){
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(this.time);
+		int dayTimeMinutes = cal.get(Calendar.MINUTE);
+		return dayTimeMinutes;
+	}
+	
 	public String getType() {
 		return type;
 	}
