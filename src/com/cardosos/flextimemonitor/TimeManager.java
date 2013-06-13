@@ -39,6 +39,11 @@ public class TimeManager{
 		return String.format("%03d", hours);	
 	}
 	
+	/**
+	 * Get the hour from a long based time.
+	 * @param time - the time in long.
+	 * @return An int with the amount of hours in the input time.
+	 */
 	public static int getHourInt(long time){
 		int seconds = (int) (time / 1000);
 		int minutes = seconds / 60;
