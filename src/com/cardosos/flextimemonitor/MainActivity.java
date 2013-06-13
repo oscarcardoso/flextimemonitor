@@ -267,23 +267,28 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		Toast.makeText(this, "You selected: " + id, Toast.LENGTH_SHORT).show();
 		final Event event = (Event) this.getListAdapter().getItem(position);
 		final EventAdapter eventAdapter = (EventAdapter)getListAdapter();
+		final int longListItemClickPosition = position;
 		
 		AlertDialog dialog;
-		final CharSequence[] items = { "Edit Event..", "Delete Event" };
+		final CharSequence[] items = { "Edit Event time..", "Edit Event date...", "Delete Event" };
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Edit event");
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int pos) {
 				switch (pos) {
 				case 0: {
-					DialogFragment timeFragment = new TimePickerFragment(event.getId(), TimeManager.getHourInt(event.getTime()), TimeManager.getMinutesInt(event.getTime()));
+					// Edit the event time.
+					DialogFragment timeFragment = new TimePickerFragment(longListItemClickPosition, event.getDayTimeHours(), event.getDayTimeMinutes());
 					timeFragment.show(getFragmentManager(), "timePicker");
-					
+				}
+				break;
+				case 1: {
+					// Edit the event date.
 				    DialogFragment dateFragment = new DatePickerFragment(event.getId(), TimeManager.getDayInt(event.getTime()), TimeManager.getMonthInt(event.getTime()), TimeManager.getYearInt(event.getTime()));
 				    dateFragment.show(getFragmentManager(), "datePicker");
 				}
 					break;
-				case 1: {
+				case 2: {
 						Toast.makeText(MainActivity.this, "Deleted Event on:" + event.toString(), Toast.LENGTH_LONG).show();
 						if(eventAdapter.getCount() > 0){
 							Log.i("FTM", "Remove " + event.getType());
@@ -531,9 +536,20 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	}
 
 	@Override
-	public void onTimePicked(long id, int hour, int minute) {
+	public void onTimePicked(int id, int hour, int minute) {
 		// TODO Use the retrived picked time
-		
+		Log.i("FTM", "Time Picked");
+		if(datasource.isOpen()){
+			//datasource.updateEvent();
+			Event modifiedEvent = (Event)this.getListAdapter().getItem(id);
+			modifiedEvent.setDayTimeHours(hour);
+			modifiedEvent.setDayTimeMinutes(minute);
+			datasource.updateEvent(modifiedEvent);
+			((EventAdapter)getListAdapter()).notifyDataSetChanged();
+			Log.i("FTM", "Event " + modifiedEvent.getId() + " was modified");
+		} else {
+			Log.w("FTM", "Datasource is not Open");
+		}		
 	}
 	
 	public void backupDatabaseToSD(){
