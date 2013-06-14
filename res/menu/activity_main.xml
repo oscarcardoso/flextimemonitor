@@ -23,6 +23,11 @@
         android:showAsAction="never"
         android:title="@string/restore"/>
     <item
+        android:id="@+id/delete_previous_month"
+        android:orderInCategory="96"
+        android:showAsAction="never"
+        android:title="@string/delete_previous_month"/>
+    <item
         android:id="@+id/menu_settings"
         android:orderInCategory="100"
         android:showAsAction="never"

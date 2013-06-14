@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -100,30 +102,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			}
 		}
 
-		// dxd this is the part of the code that reads the file to get
-		// the cached last time
-		StringBuffer fileContent = new StringBuffer("");
-		FileInputStream fis;
-		int ch;
-				
-		try {
-			fis = openFileInput(FILENAME);
-			try{
-				while( (ch = fis.read() ) != -1 ){
-					fileContent.append((char)ch);
-				}
-				fis.close();
-			} catch (IOException e){
-				Log.e("FTM", "File Read Error");
-				e.printStackTrace();
-			}
-			mPauseTime = Long.parseLong(new String(fileContent));
-			Log.i("FTM", "Saved time: (" + mPauseTime + ") " + TimeManager.longToString(mPauseTime));
-		} catch (FileNotFoundException e) {
-			Log.e("FTM", "File Not Found! Expected file->" + FILENAME);
-			e.printStackTrace();
-		}
-		// dxd file read part end
+		loadEventsInTempFile();
 
 		mChrono = (TextView) findViewById(R.id.chronometer1);
 		mTodayChrono = (TextView) findViewById(R.id.chronometer2);
@@ -318,6 +297,16 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		case R.id.menu_settings:
 			Toast.makeText(MainActivity.this, "The settings activity is not yet implemented :P", Toast.LENGTH_SHORT).show();
 			return true;
+		case R.id.delete_previous_month:
+			Toast.makeText(MainActivity.this, "Trying to delete previous months events.", Toast.LENGTH_SHORT).show();
+			deletePreviousMonthsEvents(getPreviousMonthEvents());
+			Toast.makeText(MainActivity.this, "Previous months events, if any, are now deleted.", Toast.LENGTH_SHORT).show();
+			Log.d(TAG, "Refreshing list adapter and stuff");
+			((EventAdapter)getListAdapter()).notifyDataSetChanged();
+			updatePreviousEventType();
+			saveEventsInTempFile();
+			loadEventsInTempFile();
+			return true;
 		case R.id.export:
 			Toast.makeText(MainActivity.this, "Exporting database data", Toast.LENGTH_LONG).show();
 			backupDatabaseToSD();
@@ -371,19 +360,19 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	@Override
 	public void onStop(){
 		super.onStop(); // Always call the superclass method first
-		Log.i("FTM", "onStop()");
+		Log.i(TAG, "onStop()");
 	}
 
 	@Override
 	public void onResume(){
 		super.onResume();
-		Log.i("FTM", "onResume()");
+		Log.i(TAG, "onResume()");
 		mChrono = (TextView) findViewById(R.id.chronometer1);
 		mTodayChrono = (TextView)findViewById(R.id.chronometer2);
 		mChrono.setText(R.string.empty_time);
 		mTodayChrono.setText(R.string.empty_time);
 		if(mPauseTime != 0){
-			Log.i("FTM", "We've got some saved time, update the timer text");
+			Log.i(TAG, "We've got some saved time, update the timer text");
 			mChrono.setText(TimeManager.longToString(mPauseTime));
 		}
 
@@ -396,7 +385,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		mTodayChrono.setText(TimeManager.longToString(timeManager.getTodaysTime()));
 
 		if(previousEventType.equals(Event.CHECK_IN)){
-			Log.i("FTM", "Last check: (" + timeManager.getLastCheckIn() + ") " + DateFormat.format("dd/mm kk:mm:ss", timeManager.getLastCheckIn() ) );
+			Log.i(TAG, "Last check: (" + timeManager.getLastCheckIn() + ") " + DateFormat.format("dd/mm kk:mm:ss", timeManager.getLastCheckIn() ) );
 			startTimer();
 		}
 		//updateChrono();
@@ -404,49 +393,11 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 
 	@Override
 	public void onPause(){
-
-		List<Event> values = datasource.getAllEvents();
-
-		long timeToSave = 0;
-		long previousCheckIn = 0;
-		for(int i=0; i<values.size(); i++){
-			long thisTime = values.get(i).getTime();
-			String thisType = values.get(i).getType();
-			if(thisType.equals(Event.CHECK_IN)){
-				// This is a CHECK_IN, save the time to compare it to the
-				// next event, a CHECK_OUT
-				//timeToSave =+ values.get(i).getTime();
-				previousCheckIn = thisTime;
-				Log.i("FTM", "previousCheckIn: (" + previousCheckIn + ") " + DateFormat.format("dd/mm kk:mm:ss", previousCheckIn));
-			} else {
-				// This is a CHECK_OUT
-				// Add the difference between the last check in and this
-				// check out. Only if this is NOT the first event in the list
-				if(previousCheckIn != 0){
-					timeToSave += thisTime - previousCheckIn;
-					Log.i("FTM", "timeToSave: (" + timeToSave + ") " + TimeManager.longToString(timeToSave));
-				}
-			}
-		}
-		Log.i("FTM", "So far you have " +  TimeManager.longToString(timeToSave) + " flex time covered");
-
-		try {
-			FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-			fos.write(Long.toString(timeToSave).getBytes());
-			fos.close();
-		} catch (FileNotFoundException e) {
-			Log.e("FTM", "File Not Found! Expected file->" + FILENAME);
-			e.printStackTrace();
-		} catch (IOException e){
-			Log.e("FTM", "File Write/Read Error");
-			e.printStackTrace();
-		}
-
+		saveEventsInTempFile();
 		stopTimer();
-
 		datasource.close();
 		super.onPause();
-		Log.i("FTM", "onPause()");
+		Log.i(TAG, "onPause()");
 	}
 
 	public void updateChrono(){
@@ -490,9 +441,9 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			if(previousEventType.equals(Event.CHECK_IN))
 				timeManager.setLastCheckIn(lastEvent.getTime());
 			else
-				Log.i("FTM", "Previous event type is not a CHECK_IN");
+				Log.i(TAG, "Previous event type is not a CHECK_IN");
 		} else {
-			Log.w("FTM", "Datasource is not Open");
+			Log.w(TAG, "Datasource is not Open");
 		}
 	}
 	
@@ -515,9 +466,9 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 				}
 			}
 		} else {
-			Log.w("FTM", "Datasource is not Open");
+			Log.w(TAG, "Datasource is not Open");
 		}		
-		Log.w("FTM", "Todays Time is (" + todaysTime + ") " + TimeManager.longToString(todaysTime));
+		Log.w(TAG, "Todays Time is (" + todaysTime + ") " + TimeManager.longToString(todaysTime));
 		return todaysTime;
 	}
 	
@@ -528,7 +479,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 
 	@Override
 	public void onDatePicked(int id, int day, int month, int year) {
-		Log.i("FTM", "Date Picked");
+		Log.i(TAG, "Date Picked");
 		if(datasource.isOpen()){
 			//datasource.updateEvent();
 			//datasource.updateEvent(modifiedEvent);
@@ -536,15 +487,19 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			modifiedEvent.setDate(day, month, year);
 			datasource.updateEvent(modifiedEvent);
 			((EventAdapter)getListAdapter()).notifyDataSetChanged();
-			Log.i("FTM", "Event " + modifiedEvent.getId() + " was modified");
+			if(id == 0)
+				updatePreviousEventType();
+			saveEventsInTempFile();
+			loadEventsInTempFile();
+			Log.i(TAG, "Event " + modifiedEvent.getId() + " was modified");
 		} else {
-			Log.w("FTM", "Datasource is not Open");
+			Log.w(TAG, "Datasource is not Open");
 		}		
 	}
 
 	@Override
 	public void onTimePicked(int id, int hour, int minute) {
-		Log.i("FTM", "Time Picked");
+		Log.i(TAG, "Time Picked");
 		if(datasource.isOpen()){
 			//datasource.updateEvent();
 			Event modifiedEvent = (Event)this.getListAdapter().getItem(id);
@@ -552,9 +507,13 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			modifiedEvent.setDayTimeMinutes(minute);
 			datasource.updateEvent(modifiedEvent);
 			((EventAdapter)getListAdapter()).notifyDataSetChanged();
-			Log.i("FTM", "Event " + modifiedEvent.getId() + " was modified");
+			if(id == 0)
+				updatePreviousEventType();
+			saveEventsInTempFile();
+			loadEventsInTempFile();
+			Log.i(TAG, "Event " + modifiedEvent.getId() + " was modified");
 		} else {
-			Log.w("FTM", "Datasource is not Open");
+			Log.w(TAG, "Datasource is not Open");
 		}		
 	}
 	
@@ -566,11 +525,109 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	
 	public void restoreFromBackup(){
 		try {
-			Log.i("FTM", "Restoring database");
+			Log.i(TAG, "Restoring database");
 			datasource.restoreFromFile("events.csv");
-			Log.i("FTM", "Database restored!");
+			Log.i(TAG, "Database restored!");
 		} catch (Exception e){
 			e.printStackTrace();
+		}
+	}
+	
+	public void saveEventsInTempFile(){
+		
+		List<Event> values = datasource.getAllEvents();
+
+		long timeToSave = 0;
+		long previousCheckIn = 0;
+		for(int i=0; i<values.size(); i++){
+			long thisTime = values.get(i).getTime();
+			String thisType = values.get(i).getType();
+			if(thisType.equals(Event.CHECK_IN)){
+				// This is a CHECK_IN, save the time to compare it to the
+				// next event, a CHECK_OUT
+				//timeToSave =+ values.get(i).getTime();
+				previousCheckIn = thisTime;
+				Log.i(TAG, "previousCheckIn: (" + previousCheckIn + ") " + DateFormat.format("dd/mm kk:mm:ss", previousCheckIn));
+			} else {
+				// This is a CHECK_OUT
+				// Add the difference between the last check in and this
+				// check out. Only if this is NOT the first event in the list
+				if(previousCheckIn != 0){
+					timeToSave += thisTime - previousCheckIn;
+					Log.i(TAG, "timeToSave: (" + timeToSave + ") " + TimeManager.longToString(timeToSave));
+				}
+			}
+		}
+		Log.i(TAG, "So far you have " +  TimeManager.longToString(timeToSave) + " flex time covered");
+
+		try {
+			FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+			fos.write(Long.toString(timeToSave).getBytes());
+			fos.close();
+		} catch (FileNotFoundException e) {
+			Log.e(TAG, "File Not Found! Expected file->" + FILENAME);
+			e.printStackTrace();
+		} catch (IOException e){
+			Log.e(TAG, "File Write/Read Error");
+			e.printStackTrace();
+		}
+	}
+	
+	public void loadEventsInTempFile(){
+		// dxd this is the part of the code that reads the file to get
+		// the cached last time
+		StringBuffer fileContent = new StringBuffer("");
+		FileInputStream fis;
+		int ch;
+				
+		try {
+			fis = openFileInput(FILENAME);
+			try{
+				while( (ch = fis.read() ) != -1 ){
+					fileContent.append((char)ch);
+				}
+				fis.close();
+			} catch (IOException e){
+				Log.e(TAG, "File Read Error");
+				e.printStackTrace();
+			}
+			mPauseTime = Long.parseLong(new String(fileContent));
+			Log.i(TAG, "Saved time: (" + mPauseTime + ") " + TimeManager.longToString(mPauseTime));
+		} catch (FileNotFoundException e) {
+			Log.e(TAG, "File Not Found! Expected file->" + FILENAME);
+			e.printStackTrace();
+		}
+		// dxd file read part end
+	}
+	
+	public List<Event> getPreviousMonthEvents(){
+		List<Event> eventList = new ArrayList<Event>();
+		if(datasource.isOpen() && !datasource.isEmpty()){
+			List<Event> values = datasource.getAllEvents();
+			Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.DAY_OF_MONTH, 1);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			long thisMonth = cal.getTimeInMillis();
+			for(int i=0; i<values.size(); i++){
+				if(thisMonth > ((Event)values.get(i)).getTime()){
+					eventList.add((Event)values.get(i));
+				}
+			}
+		}
+		return eventList;
+	}
+	
+	public void deletePreviousMonthsEvents(List<Event> previousMonthEvents){
+		if(!datasource.isOpen() || datasource.isEmpty() || previousMonthEvents.isEmpty()){
+			Log.i(TAG,"Datasource is NOT open, or is empty, or there are no previous month events.");
+			return;
+		}
+		for(int i=0; i < previousMonthEvents.size(); i++){
+			long id = previousMonthEvents.get(i).getId();
+			datasource.deleteEvent(previousMonthEvents.get(i));
+			Log.i(TAG,"Deleted event id:" + id);
 		}
 	}
 }

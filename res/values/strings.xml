@@ -14,5 +14,6 @@
     <string name="restore">Restore...</string>
     <string name="check_in">Check In</string>
     <string name="check_out">Check Out</string>
+    <string name="delete_previous_month">Delete Previous Month</string>
     
 </resources>
