@@ -9,13 +9,12 @@ A small Android app for keeping track of flex time hours without having to wait 
 - Average each previous day into a single list element.
 - Count just the Flex Time Hours.
 - Proper action bar usage.
-- 
 
 ## TODO in v0.0.3
-- Update each check event individually.
 - Set fixed initial flex time.
 
 ## v0.0.3 STABLE
+- Update each check event individually.
 - Export database to CSV.
 - Show todays covered hours in a timer right next to 
   the months timer.
