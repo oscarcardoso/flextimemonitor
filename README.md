@@ -21,6 +21,7 @@ A small Android app for keeping track of flex time hours without having to wait 
 - Delete elements by onHold event in the Events list.
 - UI Improvements.
 - Forced portrait layout for now.
+- Delete previous month events. (For testing purposes)
 
 ## v0.0.2
 - New version number convention (major, minor, point).
