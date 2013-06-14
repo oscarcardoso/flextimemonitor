@@ -102,7 +102,6 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 
 		// dxd this is the part of the code that reads the file to get
 		// the cached last time
-		// TODO: Make this read before the database check
 		StringBuffer fileContent = new StringBuffer("");
 		FileInputStream fis;
 		int ch;
@@ -529,7 +528,6 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 
 	@Override
 	public void onDatePicked(int id, int day, int month, int year) {
-		// TODO Use the retrived picked date
 		Log.i("FTM", "Date Picked");
 		if(datasource.isOpen()){
 			//datasource.updateEvent();
@@ -546,7 +544,6 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 
 	@Override
 	public void onTimePicked(int id, int hour, int minute) {
-		// TODO Use the retrived picked time
 		Log.i("FTM", "Time Picked");
 		if(datasource.isOpen()){
 			//datasource.updateEvent();

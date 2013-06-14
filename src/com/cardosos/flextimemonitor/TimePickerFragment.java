@@ -30,21 +30,18 @@ public class TimePickerFragment extends DialogFragment implements
 	 * 
 	 */
 	public TimePickerFragment() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	/**
 	 * 
 	 */
 	public TimePickerFragment(int hour, int minute) {
-		// TODO Create a timepicker with a specific time
 		this.hour = hour;
 		this.minute = minute;
 		Log.i("FTM", "Hour: " + this.hour + " Minute:" + this.minute);
 	}
 
 	public TimePickerFragment(int id, int hourInt, int minutesInt) {
-		// TODO Create a timepicker with a specific time and id
 		this.id = id;
 		this.hour = hourInt;
 		this.minute = minutesInt;
@@ -56,7 +53,7 @@ public class TimePickerFragment extends DialogFragment implements
 	 */
 	@Override
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-		// TODO Do something with the time chosen by the user. It returns the time in an integer.
+		// Do something with the time chosen by the user. It returns the time in an integer.
 		Toast.makeText(view.getContext(), "Hour: " + hourOfDay + " Minute: " + minute, Toast.LENGTH_LONG).show();
 		Log.i("FTM", "Hour: " + hourOfDay + " Minute: " + minute );
 		mListener.onTimePicked(this.id, hourOfDay, minute);

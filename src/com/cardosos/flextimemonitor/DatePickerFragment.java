@@ -30,21 +30,18 @@ public class DatePickerFragment extends DialogFragment implements
 	 * 
 	 */
 	public DatePickerFragment() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	/**
 	 * 
 	 */
 	public DatePickerFragment(int day, int month, int year) {
-		// TODO Create a date picker with a defined date
 		this.day = day;
 		this.month = month;
 		this.year = year;
 	}
 
 	public DatePickerFragment(int id, int dayInt, int monthInt, int yearInt) {
-		// TODO Create a date picker with a defined date and id
 		this.id = id;
 		this.day = dayInt;
 		this.month = monthInt;
@@ -58,7 +55,7 @@ public class DatePickerFragment extends DialogFragment implements
 	@Override
 	public void onDateSet(DatePicker view, int year, int monthOfYear,
 			int dayOfMonth) {
-		// TODO Do something with the date chosen by the user. It returns the day of month, the month of year (zero based)
+		// Do something with the date chosen by the user. It returns the day of month, the month of year (zero based)
 		//		and the year.
 		Toast.makeText(view.getContext(), "Date: " + dayOfMonth + "/" + monthOfYear + "/" + year, Toast.LENGTH_LONG).show();
 		Log.i("FTM", "Date: " + dayOfMonth + "/" + monthOfYear + "/" + year);
