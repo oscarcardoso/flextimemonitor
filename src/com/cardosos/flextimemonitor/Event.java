@@ -12,6 +12,15 @@ public class Event {
 	public static final String CHECK_OUT = "check_out";
 	public static final int CHECK_IN_ICON = R.drawable.ic_check_in;
 	public static final int CHECK_OUT_ICON = R.drawable.ic_check_out;
+	public static final int HOURS_FIVE = R.drawable.ic_hours_five;
+	public static final int HOURS_FOUR = R.drawable.ic_hours_four;
+	public static final int HOURS_THREE = R.drawable.ic_hours_three;
+	public static final int HOURS_TWO = R.drawable.ic_hours_two;
+	public static final int HOURS_ONE = R.drawable.ic_hours_one;
+	public static final int HOURS_ZERO = R.drawable.ic_hours_zero;
+	public static final int ABSENCE = R.drawable.ic_absence;
+	public static final int PRESENCE = R.drawable.ic_presence;
+	public static final int OVERTIME_AWAY = R.drawable.ic_overtime_away;
 	private int icon;
 	private String title;
 
