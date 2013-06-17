@@ -9,8 +9,6 @@ A small Android app for keeping track of flex time hours without having to wait 
 - Average each previous day into a single list element.
 - Count just the Flex Time Hours.
 - Proper action bar usage.
-
-## TODO in v0.0.3
 - Set fixed initial flex time.
 
 ## v0.0.3 STABLE
