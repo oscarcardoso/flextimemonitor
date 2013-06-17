@@ -6,10 +6,13 @@ import android.text.format.DateFormat;
 
 public class Event {
 	private long id;
-	private long time = 0;
-	private String type = " ";
+	protected long time = 0;
+	protected String type = " ";
 	public static final String CHECK_IN = "check_in";
 	public static final String CHECK_OUT = "check_out";
+	public static final String DAY_BRIEF = "brief";
+	protected int icon;
+	protected String title;
 	public static final int CHECK_IN_ICON = R.drawable.ic_check_in;
 	public static final int CHECK_OUT_ICON = R.drawable.ic_check_out;
 	public static final int HOURS_FIVE = R.drawable.ic_hours_five;
@@ -21,9 +24,7 @@ public class Event {
 	public static final int ABSENCE = R.drawable.ic_absence;
 	public static final int PRESENCE = R.drawable.ic_presence;
 	public static final int OVERTIME_AWAY = R.drawable.ic_overtime_away;
-	private int icon;
-	private String title;
-
+	
 	public Event() {
 		super();
 		this.time = 0;
@@ -103,7 +104,7 @@ public class Event {
 	}
 
 	public String getTitle() {
-		this.title = (String) DateFormat.format("dd/MM kk:mm:ss", time);
+		this.title = (String) DateFormat.format("dd/MMM kk:mm:ss", time);
 		return title;
 	}
 
