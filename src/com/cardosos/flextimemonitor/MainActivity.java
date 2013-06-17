@@ -84,7 +84,37 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 //		View header = (View)getLayoutInflater().inflate(R.layout.listview_header_row, null);
 //		this.getListView().addHeaderView(header);
 		
-		EventAdapter adapter= new EventAdapter(this, R.layout.listview_item_row,(List<Event>) values);
+		// Before attaching the adapter, get the previous day briefs
+		List<Event> briefedValues = new ArrayList<Event>();
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		
+		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+		
+		for(int k=values.size() - 1; k > 0; k--){
+			if(values.get(k).getDay() == dayOfMonth){
+				briefedValues.add(values.get(k));
+			}
+		}
+		
+		for(int j = dayOfMonth - 1; j > 0; j--){
+			EventGroup group = new EventGroup();
+			for(int i=values.size() - 1; i > 0; i--){
+				if(values.get(i).getDay() < dayOfMonth){
+					if(values.get(i).getDay() == j){
+						group.addEvent(values.get(i));
+						Log.i(TAG, "Add a previous event from: " + j);
+					}
+				}
+			}
+			if(!group.isEmpty()){
+				briefedValues.add(group);
+				Log.i(TAG, "Add a group: " + group.getDay());
+			}
+		}
+		
+		EventAdapter adapter= new EventAdapter(this, R.layout.listview_item_row,(List<Event>) briefedValues);
 		setListAdapter(adapter);
 		//timeManager.setLastCheckIn(0);
 		// Vogella end
