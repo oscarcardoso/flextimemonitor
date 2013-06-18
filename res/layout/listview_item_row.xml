@@ -20,6 +20,15 @@
         android:contentDescription="@string/event_list_header"
         />
     
+    <ImageView 
+        android:id="@+id/hoursIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:contentDescription="@string/event_list_header"
+        />
+    
     <TextView 
         android:id="@+id/txtTitle"
         android:layout_width="fill_parent"
@@ -32,14 +41,4 @@
         android:paddingBottom="4dp"
         android:text="23/04 00:00:00"
         />
-    
-    <ImageView 
-        android:id="@+id/hoursIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:gravity="center_vertical"
-        android:padding="8dp"
-        android:contentDescription="@string/event_list_header"
-        />
-    
 </LinearLayout>
