@@ -92,29 +92,33 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
 		
-		for(int k=values.size() - 1; k > 0; k--){
+		for(int k=0 ; k < values.size(); k++){
 			if(values.get(k).getDay() == dayOfMonth){
 				briefedValues.add(values.get(k));
+			}else{
+				break;
 			}
 		}
 		
 		for(int j = dayOfMonth - 1; j > 0; j--){
 			EventGroup group = new EventGroup();
-			for(int i=values.size() - 1; i > 0; i--){
+			for(int i=0; i < values.size(); i++){
 				if(values.get(i).getDay() < dayOfMonth){
 					if(values.get(i).getDay() == j){
 						group.addEvent(values.get(i));
-						Log.i(TAG, "Add a previous event from: " + j);
+						Log.i(TAG, "Add a " + values.get(i).getType() + " event from: " + j);
 					}
 				}
 			}
 			if(!group.isEmpty()){
+				group.setHours();
 				briefedValues.add(group);
 				Log.i(TAG, "Add a group: " + group.getDay());
 			}
 		}
 		
 		EventAdapter adapter= new EventAdapter(this, R.layout.listview_item_row,(List<Event>) briefedValues);
+		//EventAdapter adapter= new EventAdapter(this, R.layout.listview_item_row,(List<Event>) values);
 		setListAdapter(adapter);
 		//timeManager.setLastCheckIn(0);
 		// Vogella end
