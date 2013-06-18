@@ -12,6 +12,7 @@ public class Event {
 	public static final String CHECK_OUT = "check_out";
 	public static final String DAY_BRIEF = "brief";
 	protected int icon;
+	protected int briefsIcon;
 	protected String title;
 	public static final int CHECK_IN_ICON = R.drawable.ic_check_in;
 	public static final int CHECK_OUT_ICON = R.drawable.ic_check_out;
@@ -125,6 +126,14 @@ public class Event {
 
 	public void setIcon(int icon) {
 		this.icon = icon;
+	}
+	
+	public int getBriefIcon(){
+		return 0;
+	}
+	
+	public void setBriefIcon(int briefsIcon){
+		this.briefsIcon = briefsIcon;
 	}
 		
 	public int getDay(){
