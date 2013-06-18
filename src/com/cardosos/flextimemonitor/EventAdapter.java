@@ -4,10 +4,8 @@
 package com.cardosos.flextimemonitor;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import android.R.color;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
@@ -51,6 +49,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
 			holder.txtTitle = new TextView(context);
 			holder.imgIcon = (ImageView)row.findViewById(R.id.imgIcon);
 			holder.txtTitle = (TextView)row.findViewById(R.id.txtTitle);
+			holder.briefIcon = (ImageView)row.findViewById(R.id.hoursIcon);
 			holder.colorMark = (View)row.findViewById(R.id.colormark);
 			
 			row.setTag(holder);
@@ -85,6 +84,12 @@ public class EventAdapter extends ArrayAdapter<Event> {
 			holder.imgIcon.setImageResource(event.getIcon());			
 		}
 		
+		if(holder.briefIcon == null){
+			Log.i("FTM", "Null imgIcon FAIL!");
+		} else {
+			holder.briefIcon.setImageResource(event.getBriefIcon());			
+		}
+		
 		return row;
 		
 	}
@@ -117,6 +122,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
 		
 		ImageView imgIcon;
 		TextView txtTitle;
+		ImageView briefIcon;
 		View colorMark;
 	}
 
