@@ -124,4 +124,29 @@ public class EventGroup extends Event {
 	public void setIcon(int icon) {
 		this.icon = icon;
 	}
+	
+	@Override
+	public int getBriefIcon(){
+		switch(hours){
+		case 0:
+			return HOURS_ZERO;
+		case 1:
+			return HOURS_ONE;
+		case 2:
+			return HOURS_TWO;
+		case 3:
+			return HOURS_THREE;
+		case 4:
+			return HOURS_FOUR;
+		case 5:
+			return HOURS_FIVE;
+		default:
+			return HOURS_FIVE;
+		}
+	}
+	
+	@Override
+	public void setBriefIcon(int briefsIcon){
+		this.briefsIcon = briefsIcon;
+	}
 }
