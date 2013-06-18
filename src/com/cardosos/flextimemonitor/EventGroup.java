@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import android.text.format.DateFormat;
+import android.util.Log;
 
 /**
  * @author oscar.cardoso
@@ -16,6 +17,10 @@ import android.text.format.DateFormat;
 public class EventGroup extends Event {
 
 	protected List<Event> events = new ArrayList<Event>();
+	protected int hours;
+	protected int minutes;
+	public static final String TAG = "FTM";
+	
 	
 	/**
 	 * 
@@ -62,9 +67,46 @@ public class EventGroup extends Event {
 		return this.events.isEmpty();
 	}
 	
+	public int getHours(){
+		int hours = 0;
+		long tempHours = 0;
+		String previousType = CHECK_OUT;
+		long previousEvent = 0;
+		for(int i = 0; i<this.events.size(); i++){
+			Log.i(TAG, "Event " + i + " from group");
+			if(this.events.get(i).getType().equals(CHECK_IN)){
+				Log.i(TAG, "is a " + CHECK_IN + " type Event");
+				if(previousEvent != 0 && previousType.equals(CHECK_OUT)){
+					Log.i(TAG, "previous event was a " + CHECK_OUT + " and has some time in it");
+					tempHours += previousEvent - this.events.get(i).getTime();
+					Log.i(TAG, "We have " + tempHours + " ms in hand.");
+				}
+				previousEvent = this.events.get(i).getTime();
+				previousType = this.events.get(i).getType();
+			}else{
+				if(this.events.get(i).getType().equals(CHECK_OUT)){
+					Log.i(TAG, "is a " + CHECK_OUT + " type Event");
+					previousEvent = this.events.get(i).getTime();
+					previousType = this.events.get(i).getType();
+				}
+			}
+		}
+		Log.i(TAG, "Day " + getDay() + " has " + tempHours + " ms");
+		hours = TimeManager.getHourInt(tempHours);
+		minutes = TimeManager.getHourMinutesInt(tempHours);
+		Log.i(TAG, "Day " + getDay() + " has " + hours + " hrs and " + minutes + " minutes");
+		return hours;
+	}
+	
+	public void setHours(){
+		this.hours = getHours();
+	}
+	
+	
+	
 	@Override
 	public String getTitle() {
-		this.title = (String) DateFormat.format("dd/MMM", time);
+		this.title = (String) DateFormat.format("dd/MMM", time) + " " + this.hours + ":" + this.minutes;
 		return title;
 	}
 	
