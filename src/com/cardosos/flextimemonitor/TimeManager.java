@@ -52,6 +52,15 @@ public class TimeManager{
 		minutes = minutes % 60;
 		return hours;	
 	}
+	
+	public static int getHourMinutesInt(long time){
+		int seconds = (int) (time / 1000);
+		int minutes = seconds / 60;
+		seconds = seconds % 60;
+		int hours = minutes / 60;
+		minutes = minutes % 60;
+		return minutes;
+	}
 
 	public static int getMinutesInt(long time){
 		int seconds = (int) (time / 1000);
