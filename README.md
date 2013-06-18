@@ -21,7 +21,7 @@ A small Android app for keeping track of flex time hours without having to wait 
 - Forced portrait layout for now.
 - Delete previous month events. (For testing purposes)
 
-## v0.0.2
+### v0.0.2
 - New version number convention (major, minor, point).
 - SQLite implementation.
 - Save the Checked In time in a file for quick access.
@@ -30,7 +30,7 @@ A small Android app for keeping track of flex time hours without having to wait 
 - Properly handle default events (onPause, onResume, onStop, onClick)
 - General bug fixes and has now achieved functional status.
 
-## v0.1
+### v0.1
 - First version!
 - Big default buttons with holo theme.
 - Versioning ready and up in GitHub.
