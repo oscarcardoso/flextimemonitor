@@ -15,6 +15,7 @@ public class TimeManager{
 	public static long MINUTE = 60000;
 	public static long FIXED_HOURS = 5 * HOUR;
 	public static long BREAK_TIME = 1 * HOUR;
+	public static long FIXED_TIME_START = 10 * HOUR;
 
 	public TimeManager(){
 	}
