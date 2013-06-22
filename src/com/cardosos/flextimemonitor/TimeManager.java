@@ -13,6 +13,9 @@ public class TimeManager{
 	public static long DAY = 86400000;
 	public static long HOUR = 3600000;
 	public static long MINUTE = 60000;
+	public static int FIXED_TIME_START = 10;
+	public static int FIXED_TIME_BREAK = 1;
+	public static int FIXED_TIME_DURATION = 5;
 
 	public TimeManager(){
 	}
