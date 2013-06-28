@@ -268,8 +268,29 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 	    // Get the item that was clicked
-		Event event = (Event) this.getListAdapter().getItem(position);
-		String keyword = event.toString();
+		Event thisEvent = (Event) this.getListAdapter().getItem(position);
+		if(thisEvent.getType().equals(Event.DAY_BRIEF)){
+			EventGroup eventGroup = (EventGroup) this.getListAdapter().getItem(position);
+			if(eventGroup.isViewOpened()){
+				//This is when the view is OPENED. Remove the group events!
+				for(int i = 0; i < eventGroup.countEvents(); i++){
+					((EventAdapter)this.getListAdapter()).remove(eventGroup.getEventList().get(i));
+				}
+				((EventAdapter)this.getListAdapter()).notifyDataSetChanged();
+				eventGroup.setViewOpened(false);
+			}else{
+				//This is when the view is CLOSED. Insert the group events!
+				//Adapter adapter = this.getListAdapter();
+				for(int i = 0; i<eventGroup.countEvents(); i++){
+					((EventAdapter)this.getListAdapter()).insert(eventGroup.getEventList().get(i), position + i + 1);
+				}
+				((EventAdapter)this.getListAdapter()).notifyDataSetChanged();
+				eventGroup.setViewOpened(true);
+			}
+		}else{
+			//Event event = (Event) this.getListAdapter().getItem(position);
+			String keyword = thisEvent.toString();
+		}
 		//Toast.makeText(this, "You selected: " + keyword, Toast.LENGTH_SHORT).show();
 	
 	}
