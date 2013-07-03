@@ -145,6 +145,7 @@ public class TimeManager{
 		cal.set(Calendar.HOUR_OF_DAY, TimeManager.FIXED_TIME_START);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0 ); // Fix the loop second bug.
+		cal.set(Calendar.MILLISECOND, 0);
 		fixedTimeStart = cal.getTimeInMillis();
 		return fixedTimeStart;
 	}
