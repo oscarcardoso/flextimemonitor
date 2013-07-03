@@ -418,6 +418,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.HOUR_OF_DAY, TimeManager.FIXED_TIME_START);
 		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0 ); // Fix the loop second bug.
 		long fixedTimeStart = cal.getTimeInMillis();
 		
 		if( System.currentTimeMillis() < fixedTimeStart || System.currentTimeMillis() > ( fixedTimeStart + ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) ) ){
