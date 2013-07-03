@@ -223,8 +223,29 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 	    // Get the item that was clicked
-		Event event = (Event) this.getListAdapter().getItem(position);
-		String keyword = event.toString();
+		Event thisEvent = (Event) this.getListAdapter().getItem(position);
+		if(thisEvent.getType().equals(Event.DAY_BRIEF)){
+			EventGroup eventGroup = (EventGroup) this.getListAdapter().getItem(position);
+			if(eventGroup.isViewOpened()){
+				//This is when the view is OPENED. Remove the group events!
+				for(int i = 0; i < eventGroup.countEvents(); i++){
+					((EventAdapter)this.getListAdapter()).remove(eventGroup.getEventList().get(i));
+				}
+				((EventAdapter)this.getListAdapter()).notifyDataSetChanged();
+				eventGroup.setViewOpened(false);
+			}else{
+				//This is when the view is CLOSED. Insert the group events!
+				//Adapter adapter = this.getListAdapter();
+				for(int i = 0; i<eventGroup.countEvents(); i++){
+					((EventAdapter)this.getListAdapter()).insert(eventGroup.getEventList().get(i), position + i + 1);
+				}
+				((EventAdapter)this.getListAdapter()).notifyDataSetChanged();
+				eventGroup.setViewOpened(true);
+			}
+		}else{
+			//Event event = (Event) this.getListAdapter().getItem(position);
+			String keyword = thisEvent.toString();
+		}
 		//Toast.makeText(this, "You selected: " + keyword, Toast.LENGTH_SHORT).show();
 	
 	}
@@ -393,21 +414,58 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		if(previousEventType.equals(" ") || previousEventType.equals(Event.CHECK_OUT)){
 			return;
 		}
-
-		long millis = 0;
-		if(mPauseTime > 0){
-			millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + mPauseTime;	
-		}else{
-			millis = System.currentTimeMillis() - timeManager.getLastCheckIn();
-		}
-		mChrono.setText(TimeManager.longToString(millis));
 		
-
-		millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
-		mTodayChrono.setText(TimeManager.longToString(millis));
-		if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
-			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR_OF_DAY, TimeManager.FIXED_TIME_START);
+		cal.set(Calendar.MINUTE, 0);
+		long fixedTimeStart = cal.getTimeInMillis();
+		
+		if( System.currentTimeMillis() < fixedTimeStart || System.currentTimeMillis() > ( fixedTimeStart + ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) ) ){
+			Log.i(TAG, "This is FlexTime!");
+			long millis = 0;
+			if(mPauseTime > 0){
+				millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + mPauseTime;
+			}else{
+				millis = System.currentTimeMillis() - timeManager.getLastCheckIn();
+			}
+			mChrono.setText(TimeManager.longToString(millis));
+	
+			millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+			mTodayChrono.setText(TimeManager.longToString(millis));
+			if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
+				mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+			}
+		}else{
+			Log.i(TAG, "This sucks, this is FixedTime!");
+			long millis = 0;
+			if(mPauseTime > 0){
+				millis = fixedTimeStart - timeManager.getLastCheckIn() + mPauseTime;
+			}else{
+				millis = fixedTimeStart - timeManager.getLastCheckIn();
+			}
+			mChrono.setText(TimeManager.longToString(millis));
+	
+			millis = fixedTimeStart - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+			mTodayChrono.setText(TimeManager.longToString(millis));
+			if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
+				mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+			}
 		}
+
+//		long millis = 0;
+//		if(mPauseTime > 0){
+//			millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + mPauseTime;	
+//		}else{
+//			millis = System.currentTimeMillis() - timeManager.getLastCheckIn();
+//		}
+//		mChrono.setText(TimeManager.longToString(millis));
+//		
+//
+//		millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+//		mTodayChrono.setText(TimeManager.longToString(millis));
+//		if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
+//			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+//		}
 		//Log.i("FTM","Timer: (" + millis + ") " + TimeManager.longToString(millis));
 	}
 

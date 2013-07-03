@@ -19,6 +19,7 @@ public class EventGroup extends Event {
 	protected List<Event> events = new ArrayList<Event>();
 	protected int hours;
 	protected int minutes;
+	public boolean viewOpened = false;
 	public static final String TAG = "FTM";
 	
 	
@@ -46,6 +47,20 @@ public class EventGroup extends Event {
 		cal.set(Calendar.MINUTE, 0);
 		this.time = cal.getTimeInMillis();
 	}
+
+	public int countEvents(){
+		return events.size();
+	}
+
+	public List<Event> getEventList(){
+		return events;
+	}
+
+	//public Event getEvent(int index){
+		//if( !events.isEmpty() && index < events.size()){
+			//return events.get(index);
+		//}
+	//}
 	
 	public void removeEvent(Event event){
 		this.events.remove((Event) event);
@@ -102,7 +117,13 @@ public class EventGroup extends Event {
 		this.hours = getHours();
 	}
 	
-	
+	public boolean isViewOpened(){
+		return this.viewOpened;
+	}
+
+	public void setViewOpened(boolean isViewOpened){
+		this.viewOpened = isViewOpened;
+	}
 	
 	@Override
 	public String getTitle() {
