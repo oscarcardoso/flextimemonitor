@@ -139,6 +139,16 @@ public class TimeManager{
 		return startCal.getTime();
 	}
 
+	public static long getFixedTimeStart(){
+		long fixedTimeStart = 0;
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR_OF_DAY, TimeManager.FIXED_TIME_START);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0 ); // Fix the loop second bug.
+		fixedTimeStart = cal.getTimeInMillis();
+		return fixedTimeStart;
+	}
+
 	public void setLastCheckIn(long lastCheckIn){
 		this.lastCheckIn = lastCheckIn;
 	}
