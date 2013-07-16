@@ -171,3 +171,4 @@ public class EventGroup extends Event {
 		this.briefsIcon = briefsIcon;
 	}
 }
+

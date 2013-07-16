@@ -9,6 +9,7 @@ public class TimeManager{
 
 	private long lastCheckIn = 0;
 	private long todaysTime = 0;
+
 	public static long MAX_FLEX_HOURS = 9;
 	public static long DAY = 86400000;
 	public static long HOUR = 3600000;
@@ -16,6 +17,7 @@ public class TimeManager{
 	public static int FIXED_TIME_START = 10;
 	public static int FIXED_TIME_BREAK = 1;
 	public static int FIXED_TIME_DURATION = 5;
+
 
 	public TimeManager(){
 	}
@@ -166,3 +168,4 @@ public class TimeManager{
 		this.todaysTime = todaysTime;
 	}
 }
+
