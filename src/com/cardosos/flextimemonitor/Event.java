@@ -14,7 +14,6 @@ public class Event {
 	protected int icon;
 	protected int briefsIcon;
 	protected String title;
-	private int state = 0;
 
 	public static final int CHECK_IN_ICON = R.drawable.ic_check_in;
 	public static final int CHECK_OUT_ICON = R.drawable.ic_check_out;
@@ -28,22 +27,6 @@ public class Event {
 	public static final int PRESENCE = R.drawable.ic_presence;
 	public static final int OVERTIME_AWAY = R.drawable.ic_overtime_away;
 
-	/**
-	 * STATE DEFINITION
-	 *
-	 */
-
-	public static static int STATE_OUT_IN_TIME 	= 0;
-	public static static int STATE_IN_IN_TIME 	= 1;
-	public static static int STATE_OUT_ABSENT 	= 2;
-	public static static int STATE_IN_ABSENT 	= 3;
-	public static static int STATE_OUT_OVERTIME = 4;
-	public static static int STATE_IN_OVERTIME 	= 5;
-	public static static int STATE_OUT_LUNCH 	= 6;
-	public static static int STATE_IN_LUNCH 	= 7;
-	public static static int STATE_OUT_SATURDAY = 8;
-	public static static int STATE_IN_SATURDAY 	= 9;
-	
 	public Event() {
 		super();
 		this.time = 0;
@@ -205,11 +188,4 @@ public class Event {
 		this.time = cal.getTimeInMillis();
 	}
 
-	public void setState(int state) {
-		this.state = state;
-	}
-
-	public int getState(){
-		return this.state;
-	}
 }
