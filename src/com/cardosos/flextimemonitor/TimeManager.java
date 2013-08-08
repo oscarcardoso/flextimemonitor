@@ -9,6 +9,13 @@ public class TimeManager{
 
 	private long lastCheckIn = 0;
 	private long todaysTime = 0;
+	private boolean isInside 	= false;
+	private boolean isOutside 	= false;
+	private boolean isOvertime 	= false;
+	private boolean isAbsent 	= false;
+	private boolean isSaturday 	= false;
+	private boolean isLunch 	= false;
+	private Day today = new Day(Day.STATE_OUT_IN_TIME);
 
 	public static long MAX_FLEX_HOURS = 9;
 	public static long DAY = 86400000;
@@ -166,6 +173,30 @@ public class TimeManager{
 
 	public void setTodaysTime(long todaysTime) {
 		this.todaysTime = todaysTime;
+	}
+
+	public boolean isInside(){
+		return this.isInside;
+	}
+
+	public boolean isOutside(){
+		return this.isOutside;
+	}
+
+	public boolean isOvertime(){
+		return this.isOvertime;
+	}
+
+	public boolean isAbsent(){
+		return this.isAbsent;
+	}
+
+	public boolean isSaturday(){
+		return this.isSaturday;
+	}
+
+	public boolean isLunch(){
+		return this.isLunch;
 	}
 }
 
