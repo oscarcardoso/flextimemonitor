@@ -17,8 +17,8 @@ public class Day {
 	public static int STATE_IN_OVERTIME 	= 5;
 	public static int STATE_OUT_LUNCH 	= 6;
 	public static int STATE_IN_LUNCH 	= 7;
-	public static int STATE_OUT_SATURDAY = 8;
-	public static int STATE_IN_SATURDAY 	= 9;
+	public static int STATE_OUT_WEEKEND = 8;
+	public static int STATE_IN_WEEKEND 	= 9;
 
 	public Day(){
 	}

@@ -13,8 +13,9 @@ public class TimeManager{
 	private boolean isOutside 	= false;
 	private boolean isOvertime 	= false;
 	private boolean isAbsent 	= false;
-	private boolean isSaturday 	= false;
+	private boolean isWeekend 	= false;
 	private boolean isLunch 	= false;
+	private int flexMode = FLEX_MODE_NORMAL;
 	private Day today = new Day(Day.STATE_OUT_IN_TIME);
 
 	public static long MAX_FLEX_HOURS = 9;
@@ -24,6 +25,9 @@ public class TimeManager{
 	public static int FIXED_TIME_START = 10;
 	public static int FIXED_TIME_BREAK = 1;
 	public static int FIXED_TIME_DURATION = 5;
+	public static int FLEX_MODE_NORMAL 		= 0;
+	public static int FLEX_MODE_REDUX 		= 1;
+	public static int FLEX_MODE_TOTAL 		= 2;
 
 
 	public TimeManager(){
@@ -191,8 +195,8 @@ public class TimeManager{
 		return this.isAbsent;
 	}
 
-	public boolean isSaturday(){
-		return this.isSaturday;
+	public boolean isWeekend(){
+		return this.isWeekend;
 	}
 
 	public boolean isLunch(){
