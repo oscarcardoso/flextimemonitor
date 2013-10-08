@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.cardosos.flextimemonitor;
 
 import java.util.ArrayList;
@@ -11,8 +8,21 @@ import android.text.format.DateFormat;
 import android.util.Log;
 
 /**
- * @author oscar.cardoso
+ * EventGroup class
+ * This class is used to populate the previous day events
+ * And to show the appropiate state of the previous days.
+ * This class has the following properties:
+ * <ul>
+ * <li>A list that holds events of the day.</li>
+ * <li>The flex hours done in the whole day.</li>
+ * <li>The flex minutes done in the last hour.</li>
+ * <li>A flag indicating if the view of the day is opened, showing the enclosed events.</li>
+ * <li>And finally, as a utility, it has a constant for the log TAG.</li>
+ * </ul>
  *
+ * @author Oscar Cardoso
+ * @version %I%,%G%
+ * @since 0.4
  */
 public class EventGroup extends Event {
 
