@@ -33,3 +33,4 @@ patches/
 *.patch
 events.db
 events.csv
+README-MarkdownPadPreview.html
