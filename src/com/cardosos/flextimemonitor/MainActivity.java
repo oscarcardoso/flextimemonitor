@@ -460,23 +460,29 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			return;
 		}
 		
-		long fixedTimeStart = TimeManager.getFixedTimeStart();
+		long fixedTimeStart = TimeManager.getFixedTimeStart();//Fixed time start (10:00:00hrs) value in long
 		
-		if( System.currentTimeMillis() < fixedTimeStart 
+		if( System.currentTimeMillis() < fixedTimeStart //if the current time is lower than 10hrs
 			|| System.currentTimeMillis() > ( fixedTimeStart + ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) ) ){
+			//or is higher than 
 			if(System.currentTimeMillis() > ( fixedTimeStart + ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) )){
 				//Log.i(TAG, "This is FlexTime!");
 				long millis = 0;
 				if(mPauseTime > 0){
 					// mPauseTime + (fixedTimeStart - timeManager.getLastCheckIn()) + (System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) )
-					millis = mPauseTime + (fixedTimeStart - timeManager.getLastCheckIn()) + (System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
+					millis = mPauseTime + 
+							(fixedTimeStart - timeManager.getLastCheckIn()) + 
+							(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
 				}else{
-					millis = (fixedTimeStart - timeManager.getLastCheckIn()) + (System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
+					millis = (fixedTimeStart - timeManager.getLastCheckIn()) + 
+							(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
 				}
 				mChrono.setText(TimeManager.longToString(millis));
 		
 				//TODO: Possible bug due to getTodaysTime being innacurate.
-				millis = timeManager.getTodaysTime() + (fixedTimeStart - timeManager.getLastCheckIn()) + (System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
+				millis = timeManager.getTodaysTime() + 
+						(fixedTimeStart - timeManager.getLastCheckIn()) + 
+						(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
 
 				mTodayChrono.setText(TimeManager.longToString(millis));
 				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
