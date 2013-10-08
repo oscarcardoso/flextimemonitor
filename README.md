@@ -9,6 +9,8 @@ A small Android app for keeping track of flex time hours without having to wait 
 - Count just the Flex Time Hours.
 - Proper action bar usage.
 - Set fixed initial flex time.
+- Use day class to stablish the state of the chronometer.
+- Deal with absent state when the first check in is after 10am.
 
 ## v0.0.4
 - Average each previous day into a single list element.
@@ -39,3 +41,4 @@ A small Android app for keeping track of flex time hours without having to wait 
 - Use a timer with a separate thread.
 - Start and stop timer when entering and exiting the app
 - Show an about Toast when selecting "About" on the overflow menu
+
