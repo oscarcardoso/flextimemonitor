@@ -183,24 +183,56 @@ public class TimeManager{
 		return this.isInside;
 	}
 
+	public void setInside(boolean isInside){
+		this.isInside = isInside;
+	}
+
 	public boolean isOutside(){
 		return this.isOutside;
+	}
+
+	public void setOutside(boolean isOutside){
+		this.isOutside = isOutside;
 	}
 
 	public boolean isOvertime(){
 		return this.isOvertime;
 	}
 
+	public void setOvertime(boolean isOvertime){
+		this.isOvertime = isOvertime;
+	}
+
 	public boolean isAbsent(){
 		return this.isAbsent;
+	}
+
+	public void setAbsent(boolean isAbsent){
+		this.isAbsent = isAbsent;
 	}
 
 	public boolean isWeekend(){
 		return this.isWeekend;
 	}
 
+	public void setWeekend(boolean isWeekend){
+		this.isWeekend = isWeekend;
+	}
+
 	public boolean isLunch(){
 		return this.isLunch;
+	}
+
+	public void setLunch(boolean isLunch){
+		this.isLunch = isLunch;
+	}
+
+	public void setDayState(int state){
+		this.today.setState(state);
+	}
+
+	public int getDayState(){
+		return this.today.getState();
 	}
 }
 
