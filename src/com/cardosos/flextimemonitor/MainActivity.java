@@ -194,17 +194,27 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					// You are doing a CHECK_IN
 					// So, set the button text to CHECK_OUT.
 					b.setText("CHECK OUT");
+					// Then you create a new event with the current time
 					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-					previousEventType = Event.CHECK_IN;
+					// Then you set the previousEventType to CHECK_IN
+					// this is probably unnecesary
+					//previousEventType = Event.CHECK_IN;
+					// Then you update the previous event type 
+					// thru the datasource
 					updatePreviousEventType();
+					// Then you set the today's time in the timeManager
+					// thru the datasource.
 					timeManager.setTodaysTime(getTodaysHours());
+					// and finally, if the chrono is not started, start the
+					// timer.
 					if(!mStartedChrono)
 						startTimer();
 					Log.i("FTM", "Add Event.CHECK_IN");
 				} else {
 					b.setText("CHECK IN");
 					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
-					previousEventType = Event.CHECK_OUT;
+					// this is probably unnecesary
+					//previousEventType = Event.CHECK_OUT;
 					updatePreviousEventType();
 					timeManager.setTodaysTime(getTodaysHours());
 					Log.i("FTM", "Add Event.CHECK_OUT");
