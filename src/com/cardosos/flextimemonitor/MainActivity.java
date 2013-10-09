@@ -225,51 +225,6 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					e.printStackTrace();
 				}
 				break;
-			//enable for debug
-//			case R.id.add:
-//				// Save the new comment to the database
-//				if(previousEventType.equals(" ")){
-//					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-//					previousEventType = Event.CHECK_IN;
-//					updatePreviousEventType();
-//					if(!mStartedChrono)
-//						startTimer();
-//					Log.i("FTM", "previousEventType == \" \". Add Event.CHECK_IN");
-//				} else {
-//					if(previousEventType.equals(Event.CHECK_IN)){
-//						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
-//						previousEventType = Event.CHECK_OUT;
-//						updatePreviousEventType();
-//						if(mStartedChrono)
-//							stopTimer();
-//						Log.i("FTM", "previousEventType == Event.CHECK_IN. Add Event.CHECK_OUT");
-//					} else {
-//						if(previousEventType.equals(Event.CHECK_OUT)){
-//							event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-//							previousEventType = Event.CHECK_IN;
-//							updatePreviousEventType();
-//							if(!mStartedChrono)
-//								startTimer();
-//							Log.i("FTM", "previousEventType == Event.CHECK_OUT. Add Event.CHECK_IN");
-//						}
-//					}
-//				}
-//				try{
-//					adapter.insert(event, 0);
-//				}catch(Exception e){
-//					e.printStackTrace();
-//				}
-//				break;
-
-			//enable for debug
-//			case R.id.delete:
-//				if(getListAdapter().getCount() > 0){
-//					event = (Event) getListAdapter().getItem(0);
-//					Log.i("FTM", "Remove " + event.getType());
-//					datasource.deleteEvent(event);
-//					adapter.remove(event);
-//				}
-//				break;
 		}
 		adapter.notifyDataSetChanged();
 	}
