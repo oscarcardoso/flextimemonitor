@@ -150,7 +150,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		mChrono.setText(R.string.empty_time);
 
 		if(mPauseTime != 0){
-			Log.i("FTM", "We've got some saved time, update the timer text");
+			Log.i("FTM", "We've got some saved time, update the timer text: (" + mPauseTime + ") " + TimeManager.longToString(mPauseTime));
 			mChrono.setText(TimeManager.longToString(mPauseTime));
 		}
 
@@ -428,26 +428,45 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		long fixedTimeStart = TimeManager.getFixedTimeStart();//Fixed time start (10:00:00hrs) value in long
 		
 		if( System.currentTimeMillis() < fixedTimeStart //if the current time is lower than 10hrs
-			|| System.currentTimeMillis() > ( fixedTimeStart + ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) ) ){
+				|| System.currentTimeMillis() > 
+					( 	fixedTimeStart + 
+						( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) 
+					) 
+			){
 			//or is higher than 
-			if(System.currentTimeMillis() > ( fixedTimeStart + ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) )){
+			if( System.currentTimeMillis() > 
+					( fixedTimeStart + 
+					  ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) 
+					)
+			  ){
+				//This is flextime after 3pm
 				//Log.i(TAG, "This is FlexTime!");
 				long millis = 0;
 				if(mPauseTime > 0){
-					// mPauseTime + (fixedTimeStart - timeManager.getLastCheckIn()) + (System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) )
+					// mPauseTime + 
+					// (fixedTimeStart - timeManager.getLastCheckIn()) + 
+					// (System.currentTimeMillis() - 
+					// 		(fixedTimeStart + 
+					// 			(TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) 
+					// 		) 
+					// )
 					millis = mPauseTime + 
 							(fixedTimeStart - timeManager.getLastCheckIn()) + 
-							(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
+								(System.currentTimeMillis() - 
+									(fixedTimeStart + 
+										(TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) 
+									)
+								);
 				}else{
 					millis = (fixedTimeStart - timeManager.getLastCheckIn()) + 
 							(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
 				}
 				mChrono.setText(TimeManager.longToString(millis));
 		
-				//TODO: Possible bug due to getTodaysTime being innacurate.
-				millis = timeManager.getTodaysTime() + 
-						(fixedTimeStart - timeManager.getLastCheckIn()) + 
-						(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
+				//TODO: Fix the calculation of today's hours.
+				millis = timeManager.getTodaysTime() + //this is wrong since getTodaysTime is miscalculated
+						(fixedTimeStart - timeManager.getLastCheckIn()) + //this could fail when the last checkin is after the fixedTimeStart
+						(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );//this is wrong because it counts from 3pm to currentTimeMillis
 
 				mTodayChrono.setText(TimeManager.longToString(millis));
 				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
@@ -537,6 +556,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		}
 	}
 	
+	//TODO: Get just the flex hours! 
 	public long getTodaysHours(){
 		long todaysTime = 0;
 		long lastCheckIn = 0;
@@ -623,6 +643,14 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		}
 	}
 	
+	/**
+	 * saveEventsInTempFile
+	 * This method should save the amount of flex time
+	 * in the temp file for quick access.
+	 * Right now it just saves all the time, not just flex time.
+	 *
+	 */
+	//TODO: SAVE JUST FLEXTIME
 	public void saveEventsInTempFile(){
 		
 		List<Event> values = datasource.getAllEvents();
