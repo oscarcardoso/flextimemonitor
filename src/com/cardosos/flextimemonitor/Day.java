@@ -1,5 +1,10 @@
 package com.cardosos.flextimemonitor;
-
+/**
+ * Day Class.
+ * This class defines the state of the current day.
+ * It's used by the TimeManager class to act upon the change of the status of
+ * the current day and behave appropiately.
+ */
 public class Day {
 
 	private int state;
@@ -17,8 +22,8 @@ public class Day {
 	public static int STATE_IN_OVERTIME 	= 5;
 	public static int STATE_OUT_LUNCH 	= 6;
 	public static int STATE_IN_LUNCH 	= 7;
-	public static int STATE_OUT_SATURDAY = 8;
-	public static int STATE_IN_SATURDAY 	= 9;
+	public static int STATE_OUT_WEEKEND = 8;
+	public static int STATE_IN_WEEKEND 	= 9;
 
 	public Day(){
 	}

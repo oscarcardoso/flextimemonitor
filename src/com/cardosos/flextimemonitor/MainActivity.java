@@ -150,7 +150,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		mChrono.setText(R.string.empty_time);
 
 		if(mPauseTime != 0){
-			Log.i("FTM", "We've got some saved time, update the timer text");
+			Log.i("FTM", "We've got some saved time, update the timer text: (" + mPauseTime + ") " + TimeManager.longToString(mPauseTime));
 			mChrono.setText(TimeManager.longToString(mPauseTime));
 		}
 
@@ -194,17 +194,27 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					// You are doing a CHECK_IN
 					// So, set the button text to CHECK_OUT.
 					b.setText("CHECK OUT");
+					// Then you create a new event with the current time
 					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-					previousEventType = Event.CHECK_IN;
+					// Then you set the previousEventType to CHECK_IN
+					// this is probably unnecesary
+					//previousEventType = Event.CHECK_IN;
+					// Then you update the previous event type 
+					// thru the datasource
 					updatePreviousEventType();
+					// Then you set the today's time in the timeManager
+					// thru the datasource.
 					timeManager.setTodaysTime(getTodaysHours());
+					// and finally, if the chrono is not started, start the
+					// timer.
 					if(!mStartedChrono)
 						startTimer();
 					Log.i("FTM", "Add Event.CHECK_IN");
 				} else {
 					b.setText("CHECK IN");
 					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
-					previousEventType = Event.CHECK_OUT;
+					// this is probably unnecesary
+					//previousEventType = Event.CHECK_OUT;
 					updatePreviousEventType();
 					timeManager.setTodaysTime(getTodaysHours());
 					Log.i("FTM", "Add Event.CHECK_OUT");
@@ -215,51 +225,6 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					e.printStackTrace();
 				}
 				break;
-			//enable for debug
-//			case R.id.add:
-//				// Save the new comment to the database
-//				if(previousEventType.equals(" ")){
-//					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-//					previousEventType = Event.CHECK_IN;
-//					updatePreviousEventType();
-//					if(!mStartedChrono)
-//						startTimer();
-//					Log.i("FTM", "previousEventType == \" \". Add Event.CHECK_IN");
-//				} else {
-//					if(previousEventType.equals(Event.CHECK_IN)){
-//						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
-//						previousEventType = Event.CHECK_OUT;
-//						updatePreviousEventType();
-//						if(mStartedChrono)
-//							stopTimer();
-//						Log.i("FTM", "previousEventType == Event.CHECK_IN. Add Event.CHECK_OUT");
-//					} else {
-//						if(previousEventType.equals(Event.CHECK_OUT)){
-//							event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-//							previousEventType = Event.CHECK_IN;
-//							updatePreviousEventType();
-//							if(!mStartedChrono)
-//								startTimer();
-//							Log.i("FTM", "previousEventType == Event.CHECK_OUT. Add Event.CHECK_IN");
-//						}
-//					}
-//				}
-//				try{
-//					adapter.insert(event, 0);
-//				}catch(Exception e){
-//					e.printStackTrace();
-//				}
-//				break;
-
-			//enable for debug
-//			case R.id.delete:
-//				if(getListAdapter().getCount() > 0){
-//					event = (Event) getListAdapter().getItem(0);
-//					Log.i("FTM", "Remove " + event.getType());
-//					datasource.deleteEvent(event);
-//					adapter.remove(event);
-//				}
-//				break;
 		}
 		adapter.notifyDataSetChanged();
 	}
@@ -460,23 +425,48 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			return;
 		}
 		
-		long fixedTimeStart = TimeManager.getFixedTimeStart();
+		long fixedTimeStart = TimeManager.getFixedTimeStart();//Fixed time start (10:00:00hrs) value in long
 		
-		if( System.currentTimeMillis() < fixedTimeStart 
-			|| System.currentTimeMillis() > ( fixedTimeStart + ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) ) ){
-			if(System.currentTimeMillis() > ( fixedTimeStart + ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) )){
+		if( System.currentTimeMillis() < fixedTimeStart //if the current time is lower than 10hrs
+				|| System.currentTimeMillis() > 
+					( 	fixedTimeStart + 
+						( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) 
+					) 
+			){
+			//or is higher than 
+			if( System.currentTimeMillis() > 
+					( fixedTimeStart + 
+					  ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) 
+					)
+			  ){
+				//This is flextime after 3pm
 				//Log.i(TAG, "This is FlexTime!");
 				long millis = 0;
 				if(mPauseTime > 0){
-					// mPauseTime + (fixedTimeStart - timeManager.getLastCheckIn()) + (System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) )
-					millis = mPauseTime + (fixedTimeStart - timeManager.getLastCheckIn()) + (System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
+					// mPauseTime + 
+					// (fixedTimeStart - timeManager.getLastCheckIn()) + 
+					// (System.currentTimeMillis() - 
+					// 		(fixedTimeStart + 
+					// 			(TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) 
+					// 		) 
+					// )
+					millis = mPauseTime + 
+							(fixedTimeStart - timeManager.getLastCheckIn()) + 
+								(System.currentTimeMillis() - 
+									(fixedTimeStart + 
+										(TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) 
+									)
+								);
 				}else{
-					millis = (fixedTimeStart - timeManager.getLastCheckIn()) + (System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
+					millis = (fixedTimeStart - timeManager.getLastCheckIn()) + 
+							(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
 				}
 				mChrono.setText(TimeManager.longToString(millis));
 		
-				//TODO: Possible bug due to getTodaysTime being innacurate.
-				millis = timeManager.getTodaysTime() + (fixedTimeStart - timeManager.getLastCheckIn()) + (System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
+				//TODO: Fix the calculation of today's hours.
+				millis = timeManager.getTodaysTime() + //this is wrong since getTodaysTime is miscalculated
+						(fixedTimeStart - timeManager.getLastCheckIn()) + //this could fail when the last checkin is after the fixedTimeStart
+						(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );//this is wrong because it counts from 3pm to currentTimeMillis
 
 				mTodayChrono.setText(TimeManager.longToString(millis));
 				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
@@ -566,6 +556,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		}
 	}
 	
+	//TODO: Get just the flex hours! 
 	public long getTodaysHours(){
 		long todaysTime = 0;
 		long lastCheckIn = 0;
@@ -652,6 +643,14 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		}
 	}
 	
+	/**
+	 * saveEventsInTempFile
+	 * This method should save the amount of flex time
+	 * in the temp file for quick access.
+	 * Right now it just saves all the time, not just flex time.
+	 *
+	 */
+	//TODO: SAVE JUST FLEXTIME
 	public void saveEventsInTempFile(){
 		
 		List<Event> values = datasource.getAllEvents();
