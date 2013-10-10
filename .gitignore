@@ -2,6 +2,8 @@
 .hg
 .svn
 *~ 
+*.orig
+*.rej
 
 # built application files
 *.apk
