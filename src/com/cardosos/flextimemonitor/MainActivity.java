@@ -558,18 +558,27 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	
 	//TODO: Get just the flex hours! 
 	public long getTodaysHours(){
+		long fixedTimeStart = TimeManager.getFixedTimeStart();
 		long todaysTime = 0;
 		long lastCheckIn = 0;
+		long lastCheckOut = 0;
 		if(datasource.isOpen()){
 			List<Event> todaysEvents = datasource.getAllEvents();
 			for(Event e:todaysEvents){
 				if(DateUtils.isToday(e.getTime())){
 					if(e.getType().equals(Event.CHECK_IN)){
+
 						lastCheckIn = e.getTime();
 					} else {
 						if(e.getType().equals(Event.CHECK_OUT)){
 							if(lastCheckIn > 0){
-								todaysTime += e.getTime() - lastCheckIn;
+								// Define case 1: Enter before fixedTimeStart and exit after fixedTimeStart but before fts+(FTD*HOURS)
+								if( lastCheckIn < fixedTimeStart && 
+									e.getTime() > fixedTimeStart && 
+									e.getTime() < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR))){
+									todaysTime += fixedTimeStart - lastCheckIn;
+									lastCheckOut = e.getTime();
+								}
 							}
 						} 
 					}
@@ -577,6 +586,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			}
 		} else {
 			Log.w(TAG, "Datasource is not Open");
+			return 0;
 		}		
 		Log.w(TAG, "Todays Time is (" + todaysTime + ") " + TimeManager.longToString(todaysTime));
 		return todaysTime;
