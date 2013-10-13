@@ -465,14 +465,14 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		
 				//TODO: Fix the calculation of today's hours.
 				millis = timeManager.getTodaysTime() + //this is wrong since getTodaysTime is miscalculated
-						(fixedTimeStart - timeManager.getLastCheckIn()) + //this could fail when the last checkin is after the fixedTimeStart
-						(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );//this is wrong because it counts from 3pm to currentTimeMillis
+						( System.currentTimeMillis() - timeManager.getLastCheckIn());
 
 				mTodayChrono.setText(TimeManager.longToString(millis));
 				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
 					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
 				}
 			}else{
+				// This is flex time before FTS
 				//Log.i(TAG, "This is FlexTime!");
 				long millis = 0;
 				if(mPauseTime > 0){
@@ -578,6 +578,11 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 									e.getTime() < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR))){
 									todaysTime += fixedTimeStart - lastCheckIn;
 									lastCheckOut = e.getTime();
+								}
+								// Define case 5: Enter after fts+(FTD*HOURS) and exit after
+								if( lastCheckIn > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) && 
+									e.getTime() > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ){
+									todaysTime += e.getTime() - lastCheckIn;
 								}
 							}
 						} 
