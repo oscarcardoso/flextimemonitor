@@ -9,6 +9,7 @@ public class TimeManager{
 
 	private long lastCheckIn = 0;
 	private long todaysTime = 0;
+	private long lunchTime = 0;
 	private boolean isInside 	= false;
 	private boolean isOutside 	= false;
 	private boolean isOvertime 	= false;
@@ -225,6 +226,14 @@ public class TimeManager{
 
 	public void setLunch(boolean isLunch){
 		this.isLunch = isLunch;
+	}
+
+	public void setLunchTime(long lunchTime){
+		this.lunchTime = lunchTime;
+	}
+
+	public long getLunchTime(){
+		return this.lunchTime;
 	}
 
 	public void setDayState(int state){
