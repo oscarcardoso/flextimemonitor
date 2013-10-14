@@ -586,8 +586,8 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 							e.getTime() < ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ){
 							timeManager.addLunchTime( e.getTime() - lastCheckOut );
 							//TODO: Substract lunchtime when STATE_IN_OVERTIME
-							if(timeManager.getLunchTime() > (FIXED_TIME_BREAK * HOUR))
-								todaysTime -= timeManager.getLunchTime();
+							//if(timeManager.getLunchTime() > (FIXED_TIME_BREAK * HOUR))
+								//todaysTime -= timeManager.getLunchTime();
 						}
 						lastCheckIn = e.getTime();
 					} else {
@@ -620,6 +620,9 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			Log.w(TAG, "Datasource is not Open");
 			return 0;
 		}		
+		//TODO: Substract lunchtime when STATE_IN_OVERTIME
+		if(timeManager.getLunchTime() > (FIXED_TIME_BREAK * HOUR))
+			todaysTime -= timeManager.getLunchTime();
 		Log.w(TAG, "Todays Time is (" + todaysTime + ") " + TimeManager.longToString(todaysTime));
 		return todaysTime;
 	}
