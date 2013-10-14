@@ -615,6 +615,12 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 									Log.w(TAG, "CASE 5");
 									todaysTime += e.getTime() - lastCheckIn;
 								}
+								// Define case 6: Enter before fts and exit before fts
+								if( lastCheckIn < fixedTimeStart &&
+									e.getTime() < fixedTimeStart){
+									Log.w(TAG, "CASE 6");
+									todaysTime += e.getTime - lastCheckIn;
+								}
 							}
 							lastCheckOut = e.getTime();
 						} 
