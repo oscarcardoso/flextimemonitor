@@ -236,6 +236,14 @@ public class TimeManager{
 		return this.lunchTime;
 	}
 
+	public void addLunchTime(long addedLunchTime){
+		this.lunchTime += addedLunchTime;
+	}
+
+	public void clearLunchTime(){
+		this.lunchTime = 0;
+	}
+
 	public void setDayState(int state){
 		this.today.setState(state);
 	}
