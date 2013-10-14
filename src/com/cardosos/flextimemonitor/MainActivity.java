@@ -598,7 +598,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 									e.getTime() > fixedTimeStart && 
 									e.getTime() < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR))){
 									todaysTime += fixedTimeStart - lastCheckIn;
-									lastCheckOut = e.getTime();
+									//lastCheckOut = e.getTime();
 								}
 								// Define case 3: Enter before fixedTimeStart and exit after fts+(FTD*HOURS)
 								if( lastCheckIn < fixedTimeStart && 
@@ -612,6 +612,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 									todaysTime += e.getTime() - lastCheckIn;
 								}
 							}
+							lastCheckOut = e.getTime();
 						} 
 					}
 				}
