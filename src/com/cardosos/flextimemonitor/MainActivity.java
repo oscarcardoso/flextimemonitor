@@ -584,6 +584,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 							lastCheckOut < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ) && 
 							e.getTime() > lastCheckOut &&
 							e.getTime() < ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ){
+							Log.w(TAG, "CASE 4");
 							timeManager.addLunchTime( e.getTime() - lastCheckOut );
 							//TODO: Substract lunchtime when STATE_IN_OVERTIME
 							//if(timeManager.getLunchTime() > (FIXED_TIME_BREAK * HOUR))
@@ -597,18 +598,21 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 								if( lastCheckIn < fixedTimeStart && 
 									e.getTime() > fixedTimeStart && 
 									e.getTime() < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR))){
+									Log.w(TAG, "CASE 1");
 									todaysTime += fixedTimeStart - lastCheckIn;
 									//lastCheckOut = e.getTime();
 								}
 								// Define case 3: Enter before fixedTimeStart and exit after fts+(FTD*HOURS)
 								if( lastCheckIn < fixedTimeStart && 
 									e.getTime() > ( fixedTimeStart + FIXED_TIME_DURATION * HOUR ) ){
+									Log.w(TAG, "CASE 3");
 									todaysTime += fixedTimeStart - lastCheckIn;
 									todaysTime += e.getTime() - fixedTimeStart + (FIXED_TIME_DURATION * HOUR);
 								}
 								// Define case 5: Enter after fts+(FTD*HOURS) and exit after
 								if( lastCheckIn > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) && 
 									e.getTime() > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ){
+									Log.w(TAG, "CASE 5");
 									todaysTime += e.getTime() - lastCheckIn;
 								}
 							}
