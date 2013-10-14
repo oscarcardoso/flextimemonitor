@@ -569,6 +569,16 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			for(Event e:todaysEvents){
 				if(DateUtils.isToday(e.getTime())){
 					if(e.getType().equals(Event.CHECK_IN)){
+						// Define case 2: Exit before fts and enter after fixedTimeStart 
+						if( e.getTime() > fixedTimeStart &&
+							e.getTime() < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
+							lastCheckOut < fixedTimeStart){
+							//TODO: Substract lunchtime when STATE_IN_OVERTIME
+							//if(timeManager.getLunchTime() > (FIXED_TIME_BREAK * HOUR))
+								//todaysTime -= timeManager.getLunchTime();
+							Log.w(TAG, "CASE 2");
+							timeManager.addLunchTime( e.getTime() - fixedTimeStart );
+						}
 						// Define case 4: Enter after fixedTimeStart and exit before fts+(FTD*HOURS)
 						if( lastCheckOut > fixedTimeStart && 
 							lastCheckOut < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ) && 
