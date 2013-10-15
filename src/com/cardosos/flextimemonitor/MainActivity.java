@@ -427,107 +427,16 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		
 		long thisTime = System.currentTimeMillis();
 		long fixedTimeStart = TimeManager.getFixedTimeStart();//Fixed time start (10:00:00hrs) value in long
-		
-		if( thisTime < fixedTimeStart //if the current time is lower than 10hrs
-				|| thisTime > 
-					( 	fixedTimeStart + 
-						( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) 
-					) 
-			){
-			//or is higher than 
-			if( thisTime > 
-					( fixedTimeStart + 
-					  ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) 
-					)
-			  ){
-				//This is flextime after 3pm
-				//Log.i(TAG, "This is FlexTime!");
-				long millis = 0;
-				if(mPauseTime > 0){
-					// mPauseTime + 
-					// (fixedTimeStart - timeManager.getLastCheckIn()) + 
-					// (thisTime - 
-					// 		(fixedTimeStart + 
-					// 			(TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) 
-					// 		) 
-					// )
-					millis = mPauseTime + 
-							(fixedTimeStart - timeManager.getLastCheckIn()) + 
-								(thisTime - 
-									(fixedTimeStart + 
-										(TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) 
-									)
-								);
-				}else{
-					millis = (fixedTimeStart - timeManager.getLastCheckIn()) + 
-							(thisTime - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
-				}
-				mChrono.setText(TimeManager.longToString(millis));
-		
-				//TODO: Fix the calculation of today's hours.
-				millis = timeManager.getTodaysTime() + ( thisTime - timeManager.getLastCheckIn());
+		long millis = 0;
+		//TODO: Use the remaining hours to calculate the chrono for that.
+		millis = mPauseTime + timeManager.getTodaysTime();	
+		mChrono.setText(TimeManager.longToString(millis));
 
-				mTodayChrono.setText(TimeManager.longToString(millis));
-				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
-					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-				}
-			}else{
-				// This is flex time before FTS
-				//Log.i(TAG, "This is FlexTime!");
-				long millis = 0;
-				if(mPauseTime > 0){
-					millis = thisTime - timeManager.getLastCheckIn() + mPauseTime;
-				}else{
-					millis = thisTime - timeManager.getLastCheckIn();
-				}
-				mChrono.setText(TimeManager.longToString(millis));
-		
-				millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
-				mTodayChrono.setText(TimeManager.longToString(millis));
-				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
-					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-				}
-			}
-		}else{
-			long millis = 0;
-			long todaysTime = timeManager.getTodaysTime();
-
-			//Log.i(TAG, "This sucks, this is FixedTime!");
-			//Log.i(TAG, "fixedTimeStart: " + fixedTimeStart);
-			//Log.i(TAG, "lastCheckIn: " + timeManager.getLastCheckIn());
-			//Log.i(TAG, "mPauseTime: " + mPauseTime);
-			//Log.i(TAG, "todaysTime: " + todaysTime);
-
-			if(mPauseTime > 0){
-				if(timeManager.getLastCheckIn() < fixedTimeStart)
-					millis = mPauseTime + fixedTimeStart - timeManager.getLastCheckIn();
-			}else{
-				if(timeManager.getLastCheckIn() < fixedTimeStart)
-					millis = fixedTimeStart - timeManager.getLastCheckIn();
-			}
-			mChrono.setText(TimeManager.longToString(millis));
-	
-			millis = fixedTimeStart - timeManager.getLastCheckIn() + todaysTime;
-			mTodayChrono.setText(TimeManager.longToString(millis));
-			if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
-				mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-			}
+		millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+		mTodayChrono.setText(TimeManager.longToString(millis));
+		if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
+			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
 		}
-
-//		long millis = 0;
-//		if(mPauseTime > 0){
-//			millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + mPauseTime;	
-//		}else{
-//			millis = System.currentTimeMillis() - timeManager.getLastCheckIn();
-//		}
-//		mChrono.setText(TimeManager.longToString(millis));
-//		
-//
-//		millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
-//		mTodayChrono.setText(TimeManager.longToString(millis));
-//		if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
-//			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-//		}
 		//Log.i("FTM","Timer: (" + millis + ") " + TimeManager.longToString(millis));
 	}
 
