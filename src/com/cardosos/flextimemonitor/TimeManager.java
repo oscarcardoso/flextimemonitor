@@ -168,13 +168,27 @@ public class TimeManager{
 		return fixedTimeStart;
 	}
 
+	public static long getFixedTimeStart(Event event){
+		long fixedTimeStart = 0;
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR_OF_DAY, TimeManager.FIXED_TIME_START);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0 ); // Fix the loop second bug.
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.set(Calendar.DAY_OF_MONTH, event.getDay());
+		cal.set(Calendar.MONTH, event.getMonth());
+		cal.set(Calendar.YEAR, event.getYear());
+		fixedTimeStart = cal.getTimeInMillis();
+		return fixedTimeStart;
+	}
+
 	public static long getTodaysHours(List<Event> todaysEvents){
-		long fixedTimeStart = getFixedTimeStart();
 		long todaysTime = 0;
 		long lastCheckIn = 0;
 		long lastCheckOut = 0;
 		long lunchTime = 0;
 		if(!todaysEvents.isEmpty()){
+			long fixedTimeStart = getFixedTimeStart(todaysEvents.get(0));
 			for(Event e:todaysEvents){
 				if(DateUtils.isToday(e.getTime())){
 					if(e.getType().equals(Event.CHECK_IN)){
