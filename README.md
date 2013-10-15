@@ -6,7 +6,6 @@ A small Android app for keeping track of flex time hours without having to wait 
 - Get the working days in a month.
 - Show the due hours in this month, at the start of the month.
 - Save previous month events in a monthly database.
-- Count just the Flex Time Hours.
 - Proper action bar usage.
 - Set fixed initial flex time.
 - Use day class to stablish the state of the chronometer.
@@ -14,6 +13,7 @@ A small Android app for keeping track of flex time hours without having to wait 
 
 ## v0.0.4
 - Average each previous day into a single list element.
+- Count just the Flex Time Hours.
 
 ## v0.0.3 STABLE
 - Update each check event individually.
