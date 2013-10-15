@@ -425,16 +425,17 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			return;
 		}
 		
+		long thisTime = System.currentTimeMillis();
 		long fixedTimeStart = TimeManager.getFixedTimeStart();//Fixed time start (10:00:00hrs) value in long
 		
-		if( System.currentTimeMillis() < fixedTimeStart //if the current time is lower than 10hrs
-				|| System.currentTimeMillis() > 
+		if( thisTime < fixedTimeStart //if the current time is lower than 10hrs
+				|| thisTime > 
 					( 	fixedTimeStart + 
 						( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) 
 					) 
 			){
 			//or is higher than 
-			if( System.currentTimeMillis() > 
+			if( thisTime > 
 					( fixedTimeStart + 
 					  ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) 
 					)
@@ -445,27 +446,26 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 				if(mPauseTime > 0){
 					// mPauseTime + 
 					// (fixedTimeStart - timeManager.getLastCheckIn()) + 
-					// (System.currentTimeMillis() - 
+					// (thisTime - 
 					// 		(fixedTimeStart + 
 					// 			(TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) 
 					// 		) 
 					// )
 					millis = mPauseTime + 
 							(fixedTimeStart - timeManager.getLastCheckIn()) + 
-								(System.currentTimeMillis() - 
+								(thisTime - 
 									(fixedTimeStart + 
 										(TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) 
 									)
 								);
 				}else{
 					millis = (fixedTimeStart - timeManager.getLastCheckIn()) + 
-							(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
+							(thisTime - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
 				}
 				mChrono.setText(TimeManager.longToString(millis));
 		
 				//TODO: Fix the calculation of today's hours.
-				millis = timeManager.getTodaysTime() + //this is wrong since getTodaysTime is miscalculated
-						( System.currentTimeMillis() - timeManager.getLastCheckIn());
+				millis = timeManager.getTodaysTime() + ( thisTime - timeManager.getLastCheckIn());
 
 				mTodayChrono.setText(TimeManager.longToString(millis));
 				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
@@ -476,13 +476,13 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 				//Log.i(TAG, "This is FlexTime!");
 				long millis = 0;
 				if(mPauseTime > 0){
-					millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + mPauseTime;
+					millis = thisTime - timeManager.getLastCheckIn() + mPauseTime;
 				}else{
-					millis = System.currentTimeMillis() - timeManager.getLastCheckIn();
+					millis = thisTime - timeManager.getLastCheckIn();
 				}
 				mChrono.setText(TimeManager.longToString(millis));
 		
-				millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+				millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
 				mTodayChrono.setText(TimeManager.longToString(millis));
 				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
 					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
