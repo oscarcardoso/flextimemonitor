@@ -572,23 +572,23 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 						if(lastCheckOut > 0){
 							// Define case 2: Exit before fts and enter after fixedTimeStart 
 							if( e.getTime() > fixedTimeStart &&
-								e.getTime() < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
+								e.getTime() < fixedTimeStart + ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) &&
 								lastCheckOut < fixedTimeStart){
 								//TODO: Substract lunchtime when STATE_IN_OVERTIME
-								//if(timeManager.getLunchTime() > (FIXED_TIME_BREAK * HOUR))
+								//if(timeManager.getLunchTime() > (FIXED_TIME_BREAK * TimeManager.HOUR))
 									//todaysTime -= timeManager.getLunchTime();
 								Log.w(TAG, "CASE 2");
 								timeManager.addLunchTime( e.getTime() - fixedTimeStart );
 							}
-							// Define case 4: Enter after fixedTimeStart and exit before fts+(FTD*HOURS)
+							// Define case 4: Enter after fixedTimeStart and exit before fts+(FTD*TimeManager.HOURS)
 							if( lastCheckOut > fixedTimeStart && 
-								lastCheckOut < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ) && 
+								lastCheckOut < ( fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) && 
 								e.getTime() > lastCheckOut &&
-								e.getTime() < ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) ){
+								e.getTime() < ( fixedTimeStart + ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) ) ){
 								Log.w(TAG, "CASE 4");
 								timeManager.addLunchTime( e.getTime() - lastCheckOut );
 								//TODO: Substract lunchtime when STATE_IN_OVERTIME
-								//if(timeManager.getLunchTime() > (FIXED_TIME_BREAK * HOUR))
+								//if(timeManager.getLunchTime() > (FIXED_TIME_BREAK * TimeManager.HOUR))
 									//todaysTime -= timeManager.getLunchTime();
 							}
 						}
@@ -597,24 +597,24 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					} else {
 						if(e.getType().equals(Event.CHECK_OUT)){
 							if(lastCheckIn > 0){
-								// Define case 1: Enter before fixedTimeStart and exit after fixedTimeStart but before fts+(FTD*HOURS)
+								// Define case 1: Enter before fixedTimeStart and exit after fixedTimeStart but before fts+(FTD*TimeManager.HOURS)
 								if( lastCheckIn < fixedTimeStart && 
 									e.getTime() > fixedTimeStart && 
-									e.getTime() < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR))){
+									e.getTime() < ( fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR))){
 									Log.w(TAG, "CASE 1");
 									todaysTime += fixedTimeStart - lastCheckIn;
 									//lastCheckOut = e.getTime();
 								}
-								// Define case 3: Enter before fixedTimeStart and exit after fts+(FTD*HOURS)
+								// Define case 3: Enter before fixedTimeStart and exit after fts+(FTD*TimeManager.HOURS)
 								if( lastCheckIn < fixedTimeStart && 
-									e.getTime() > ( fixedTimeStart + FIXED_TIME_DURATION * HOUR ) ){
+									e.getTime() > ( fixedTimeStart + TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) ){
 									Log.w(TAG, "CASE 3");
 									todaysTime += fixedTimeStart - lastCheckIn;
-									todaysTime += e.getTime() - fixedTimeStart + (FIXED_TIME_DURATION * HOUR);
+									todaysTime += e.getTime() - fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR);
 								}
-								// Define case 5: Enter after fts+(FTD*HOURS) and exit after
-								if( lastCheckIn > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) && 
-									e.getTime() > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ){
+								// Define case 5: Enter after fts+(FTD*TimeManager.HOURS) and exit after
+								if( lastCheckIn > fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) && 
+									e.getTime() > fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ){
 									Log.w(TAG, "CASE 5");
 									todaysTime += e.getTime() - lastCheckIn;
 								}
@@ -622,7 +622,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 								if( lastCheckIn < fixedTimeStart &&
 									e.getTime() < fixedTimeStart){
 									Log.w(TAG, "CASE 6");
-									todaysTime += e.getTime - lastCheckIn;
+									todaysTime += e.getTime() - lastCheckIn;
 								}
 							}
 							lastCheckIn = 0;
@@ -636,7 +636,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			return 0;
 		}		
 		//TODO: Substract lunchtime when STATE_IN_OVERTIME
-		if(timeManager.getLunchTime() > (FIXED_TIME_BREAK * HOUR))
+		if(timeManager.getLunchTime() > (TimeManager.FIXED_TIME_BREAK * TimeManager.HOUR))
 			todaysTime -= timeManager.getLunchTime();
 		Log.w(TAG, "Todays Time is (" + todaysTime + ") " + TimeManager.longToString(todaysTime));
 		return todaysTime;
