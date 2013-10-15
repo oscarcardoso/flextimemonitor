@@ -2,8 +2,11 @@ package com.cardosos.flextimemonitor;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import android.text.format.DateFormat;
+import android.text.format.DateUtils;
+import android.util.Log;
 
 public class TimeManager{
 
@@ -29,6 +32,7 @@ public class TimeManager{
 	public static int FLEX_MODE_NORMAL 		= 0;
 	public static int FLEX_MODE_REDUX 		= 1;
 	public static int FLEX_MODE_TOTAL 		= 2;
+	public static final String TAG = "FTM";
 
 
 	public TimeManager(){
@@ -162,6 +166,86 @@ public class TimeManager{
 		cal.set(Calendar.MILLISECOND, 0);
 		fixedTimeStart = cal.getTimeInMillis();
 		return fixedTimeStart;
+	}
+
+	public static long getTodaysHours(List<Event> todaysEvents){
+		long fixedTimeStart = getFixedTimeStart();
+		long todaysTime = 0;
+		long lastCheckIn = 0;
+		long lastCheckOut = 0;
+		long lunchTime = 0;
+		if(!todaysEvents.isEmpty()){
+			for(Event e:todaysEvents){
+				if(DateUtils.isToday(e.getTime())){
+					if(e.getType().equals(Event.CHECK_IN)){
+						if(lastCheckOut > 0){
+							// Define case 2: Exit before fts and enter after fixedTimeStart 
+							if( e.getTime() > fixedTimeStart &&
+								e.getTime() < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
+								lastCheckOut < fixedTimeStart){
+								Log.w(TAG, "CASE 2");
+								lunchTime += e.getTime() - fixedTimeStart;
+							}
+							// Define case 4: Enter after fixedTimeStart and exit before fts+(FTD*HOURS)
+							if( lastCheckOut > fixedTimeStart && 
+								lastCheckOut < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ) && 
+								e.getTime() > lastCheckOut &&
+								e.getTime() < ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) ){
+								Log.w(TAG, "CASE 4");
+								lunchTime += e.getTime() - lastCheckOut;
+							}
+						}
+						lastCheckOut = 0;
+						lastCheckIn = e.getTime();
+					} else {
+						if(e.getType().equals(Event.CHECK_OUT)){
+							if(lastCheckIn > 0){
+								// Define case 1: Enter before fixedTimeStart and exit after fixedTimeStart but before fts+(FTD*HOURS)
+								if( lastCheckIn < fixedTimeStart && 
+									e.getTime() > fixedTimeStart && 
+									e.getTime() < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR))){
+									Log.w(TAG, "CASE 1");
+									todaysTime += fixedTimeStart - lastCheckIn;
+									//lastCheckOut = e.getTime();
+								}
+								// Define case 3: Enter before fixedTimeStart and exit after fts+(FTD*HOURS)
+								if( lastCheckIn < fixedTimeStart && 
+									e.getTime() > ( fixedTimeStart + FIXED_TIME_DURATION * HOUR ) ){
+									Log.w(TAG, "CASE 3");
+									todaysTime += fixedTimeStart - lastCheckIn;
+									todaysTime += e.getTime() - fixedTimeStart + (FIXED_TIME_DURATION * HOUR);
+								}
+								// Define case 5: Enter after fts+(FTD*HOURS) and exit after
+								if( lastCheckIn > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) && 
+									e.getTime() > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ){
+									Log.w(TAG, "CASE 5");
+									todaysTime += e.getTime() - lastCheckIn;
+								}
+								// Define case 6: Enter before fts and exit before fts
+								if( lastCheckIn < fixedTimeStart &&
+									e.getTime() < fixedTimeStart){
+									Log.w(TAG, "CASE 6");
+									todaysTime += e.getTime() - lastCheckIn;
+								}
+							}
+							lastCheckIn = 0;
+							lastCheckOut = e.getTime();
+						} 
+					}
+				}
+			}
+		} else {
+			Log.w(TAG, "List<Events> is empty.");
+			return 0;
+		}		
+
+		//TODO: Substract lunchtime when STATE_IN_OVERTIME
+		if(lunchTime > (FIXED_TIME_BREAK * HOUR)){
+			Log.w(TAG, "LunchTime Exceeded.");
+			todaysTime -= lunchTime;
+		}
+		Log.w(TAG, "Todays Time is (" + todaysTime + ") " + longToString(todaysTime));
+		return todaysTime;
 	}
 
 	public void setLastCheckIn(long lastCheckIn){
