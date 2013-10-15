@@ -584,7 +584,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 							if( lastCheckOut > fixedTimeStart && 
 								lastCheckOut < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ) && 
 								e.getTime() > lastCheckOut &&
-								e.getTime() < ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ){
+								e.getTime() < ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) ){
 								Log.w(TAG, "CASE 4");
 								timeManager.addLunchTime( e.getTime() - lastCheckOut );
 								//TODO: Substract lunchtime when STATE_IN_OVERTIME
