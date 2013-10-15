@@ -9,6 +9,7 @@ public class TimeManager{
 
 	private long lastCheckIn = 0;
 	private long todaysTime = 0;
+	private long lunchTime = 0;
 	private boolean isInside 	= false;
 	private boolean isOutside 	= false;
 	private boolean isOvertime 	= false;
@@ -18,7 +19,7 @@ public class TimeManager{
 	private int flexMode = FLEX_MODE_NORMAL;
 	private Day today = new Day(Day.STATE_OUT_IN_TIME);
 
-	public static long MAX_FLEX_HOURS = 9;
+	public static long MAX_FLEX_HOURS = 5;
 	public static long DAY = 86400000;
 	public static long HOUR = 3600000;
 	public static long MINUTE = 60000;
@@ -225,6 +226,22 @@ public class TimeManager{
 
 	public void setLunch(boolean isLunch){
 		this.isLunch = isLunch;
+	}
+
+	public void setLunchTime(long lunchTime){
+		this.lunchTime = lunchTime;
+	}
+
+	public long getLunchTime(){
+		return this.lunchTime;
+	}
+
+	public void addLunchTime(long addedLunchTime){
+		this.lunchTime += addedLunchTime;
+	}
+
+	public void clearLunchTime(){
+		this.lunchTime = 0;
 	}
 
 	public void setDayState(int state){

@@ -425,109 +425,18 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			return;
 		}
 		
+		long thisTime = System.currentTimeMillis();
 		long fixedTimeStart = TimeManager.getFixedTimeStart();//Fixed time start (10:00:00hrs) value in long
-		
-		if( System.currentTimeMillis() < fixedTimeStart //if the current time is lower than 10hrs
-				|| System.currentTimeMillis() > 
-					( 	fixedTimeStart + 
-						( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) 
-					) 
-			){
-			//or is higher than 
-			if( System.currentTimeMillis() > 
-					( fixedTimeStart + 
-					  ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) 
-					)
-			  ){
-				//This is flextime after 3pm
-				//Log.i(TAG, "This is FlexTime!");
-				long millis = 0;
-				if(mPauseTime > 0){
-					// mPauseTime + 
-					// (fixedTimeStart - timeManager.getLastCheckIn()) + 
-					// (System.currentTimeMillis() - 
-					// 		(fixedTimeStart + 
-					// 			(TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) 
-					// 		) 
-					// )
-					millis = mPauseTime + 
-							(fixedTimeStart - timeManager.getLastCheckIn()) + 
-								(System.currentTimeMillis() - 
-									(fixedTimeStart + 
-										(TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) 
-									)
-								);
-				}else{
-					millis = (fixedTimeStart - timeManager.getLastCheckIn()) + 
-							(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );
-				}
-				mChrono.setText(TimeManager.longToString(millis));
-		
-				//TODO: Fix the calculation of today's hours.
-				millis = timeManager.getTodaysTime() + //this is wrong since getTodaysTime is miscalculated
-						(fixedTimeStart - timeManager.getLastCheckIn()) + //this could fail when the last checkin is after the fixedTimeStart
-						(System.currentTimeMillis() - (fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) );//this is wrong because it counts from 3pm to currentTimeMillis
+		long millis = 0;
+		//TODO: Use the remaining hours to calculate the chrono for that.
+		millis = mPauseTime + timeManager.getTodaysTime();	
+		mChrono.setText(TimeManager.longToString(millis));
 
-				mTodayChrono.setText(TimeManager.longToString(millis));
-				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
-					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-				}
-			}else{
-				//Log.i(TAG, "This is FlexTime!");
-				long millis = 0;
-				if(mPauseTime > 0){
-					millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + mPauseTime;
-				}else{
-					millis = System.currentTimeMillis() - timeManager.getLastCheckIn();
-				}
-				mChrono.setText(TimeManager.longToString(millis));
-		
-				millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
-				mTodayChrono.setText(TimeManager.longToString(millis));
-				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
-					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-				}
-			}
-		}else{
-			long millis = 0;
-			long todaysTime = timeManager.getTodaysTime();
-
-			//Log.i(TAG, "This sucks, this is FixedTime!");
-			//Log.i(TAG, "fixedTimeStart: " + fixedTimeStart);
-			//Log.i(TAG, "lastCheckIn: " + timeManager.getLastCheckIn());
-			//Log.i(TAG, "mPauseTime: " + mPauseTime);
-			//Log.i(TAG, "todaysTime: " + todaysTime);
-
-			if(mPauseTime > 0){
-				if(timeManager.getLastCheckIn() < fixedTimeStart)
-					millis = mPauseTime + fixedTimeStart - timeManager.getLastCheckIn();
-			}else{
-				if(timeManager.getLastCheckIn() < fixedTimeStart)
-					millis = fixedTimeStart - timeManager.getLastCheckIn();
-			}
-			mChrono.setText(TimeManager.longToString(millis));
-	
-			millis = fixedTimeStart - timeManager.getLastCheckIn() + todaysTime;
-			mTodayChrono.setText(TimeManager.longToString(millis));
-			if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
-				mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-			}
+		millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+		mTodayChrono.setText(TimeManager.longToString(millis));
+		if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
+			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
 		}
-
-//		long millis = 0;
-//		if(mPauseTime > 0){
-//			millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + mPauseTime;	
-//		}else{
-//			millis = System.currentTimeMillis() - timeManager.getLastCheckIn();
-//		}
-//		mChrono.setText(TimeManager.longToString(millis));
-//		
-//
-//		millis = System.currentTimeMillis() - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
-//		mTodayChrono.setText(TimeManager.longToString(millis));
-//		if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
-//			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-//		}
 		//Log.i("FTM","Timer: (" + millis + ") " + TimeManager.longToString(millis));
 	}
 
@@ -558,26 +467,88 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	
 	//TODO: Get just the flex hours! 
 	public long getTodaysHours(){
+		// Setting up
+		timeManager.clearLunchTime();
+		long fixedTimeStart = TimeManager.getFixedTimeStart();
 		long todaysTime = 0;
 		long lastCheckIn = 0;
+		long lastCheckOut = 0;
 		if(datasource.isOpen()){
 			List<Event> todaysEvents = datasource.getAllEvents();
 			for(Event e:todaysEvents){
 				if(DateUtils.isToday(e.getTime())){
 					if(e.getType().equals(Event.CHECK_IN)){
+						if(lastCheckOut > 0){
+							// Define case 2: Exit before fts and enter after fixedTimeStart 
+							if( e.getTime() > fixedTimeStart &&
+								e.getTime() < fixedTimeStart + ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) &&
+								lastCheckOut < fixedTimeStart){
+								//TODO: Substract lunchtime when STATE_IN_OVERTIME
+								//if(timeManager.getLunchTime() > (FIXED_TIME_BREAK * TimeManager.HOUR))
+									//todaysTime -= timeManager.getLunchTime();
+								Log.w(TAG, "CASE 2");
+								timeManager.addLunchTime( e.getTime() - fixedTimeStart );
+							}
+							// Define case 4: Enter after fixedTimeStart and exit before fts+(FTD*TimeManager.HOURS)
+							if( lastCheckOut > fixedTimeStart && 
+								lastCheckOut < ( fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ) && 
+								e.getTime() > lastCheckOut &&
+								e.getTime() < ( fixedTimeStart + ( TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) ) ){
+								Log.w(TAG, "CASE 4");
+								timeManager.addLunchTime( e.getTime() - lastCheckOut );
+								//TODO: Substract lunchtime when STATE_IN_OVERTIME
+								//if(timeManager.getLunchTime() > (FIXED_TIME_BREAK * TimeManager.HOUR))
+									//todaysTime -= timeManager.getLunchTime();
+							}
+						}
+						lastCheckOut = 0;
 						lastCheckIn = e.getTime();
 					} else {
 						if(e.getType().equals(Event.CHECK_OUT)){
 							if(lastCheckIn > 0){
-								todaysTime += e.getTime() - lastCheckIn;
+								// Define case 1: Enter before fixedTimeStart and exit after fixedTimeStart but before fts+(FTD*TimeManager.HOURS)
+								if( lastCheckIn < fixedTimeStart && 
+									e.getTime() > fixedTimeStart && 
+									e.getTime() < ( fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR))){
+									Log.w(TAG, "CASE 1");
+									todaysTime += fixedTimeStart - lastCheckIn;
+									//lastCheckOut = e.getTime();
+								}
+								// Define case 3: Enter before fixedTimeStart and exit after fts+(FTD*TimeManager.HOURS)
+								if( lastCheckIn < fixedTimeStart && 
+									e.getTime() > ( fixedTimeStart + TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR ) ){
+									Log.w(TAG, "CASE 3");
+									todaysTime += fixedTimeStart - lastCheckIn;
+									todaysTime += e.getTime() - fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR);
+								}
+								// Define case 5: Enter after fts+(FTD*TimeManager.HOURS) and exit after
+								if( lastCheckIn > fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) && 
+									e.getTime() > fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR) ){
+									Log.w(TAG, "CASE 5");
+									todaysTime += e.getTime() - lastCheckIn;
+								}
+								// Define case 6: Enter before fts and exit before fts
+								if( lastCheckIn < fixedTimeStart &&
+									e.getTime() < fixedTimeStart){
+									Log.w(TAG, "CASE 6");
+									todaysTime += e.getTime() - lastCheckIn;
+								}
 							}
+							lastCheckIn = 0;
+							lastCheckOut = e.getTime();
 						} 
 					}
 				}
 			}
 		} else {
 			Log.w(TAG, "Datasource is not Open");
+			return 0;
 		}		
+		//TODO: Substract lunchtime when STATE_IN_OVERTIME
+		if(timeManager.getLunchTime() > (TimeManager.FIXED_TIME_BREAK * TimeManager.HOUR)){
+			Log.w(TAG, "LunchTime Exceeded.");
+			todaysTime -= timeManager.getLunchTime();
+		}
 		Log.w(TAG, "Todays Time is (" + todaysTime + ") " + TimeManager.longToString(todaysTime));
 		return todaysTime;
 	}
