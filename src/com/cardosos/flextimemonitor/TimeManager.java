@@ -19,7 +19,7 @@ public class TimeManager{
 	private int flexMode = FLEX_MODE_NORMAL;
 	private Day today = new Day(Day.STATE_OUT_IN_TIME);
 
-	public static long MAX_FLEX_HOURS = 9;
+	public static long MAX_FLEX_HOURS = 5;
 	public static long DAY = 86400000;
 	public static long HOUR = 3600000;
 	public static long MINUTE = 60000;
