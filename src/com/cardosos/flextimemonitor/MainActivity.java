@@ -545,8 +545,10 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			return 0;
 		}		
 		//TODO: Substract lunchtime when STATE_IN_OVERTIME
-		if(timeManager.getLunchTime() > (TimeManager.FIXED_TIME_BREAK * TimeManager.HOUR))
+		if(timeManager.getLunchTime() > (TimeManager.FIXED_TIME_BREAK * TimeManager.HOUR)){
+			Log.w(TAG, "LunchTime Exceeded.");
 			todaysTime -= timeManager.getLunchTime();
+		}
 		Log.w(TAG, "Todays Time is (" + todaysTime + ") " + TimeManager.longToString(todaysTime));
 		return todaysTime;
 	}
