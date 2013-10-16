@@ -136,6 +136,15 @@ public class Event {
 	public void setBriefIcon(int briefsIcon){
 		this.briefsIcon = briefsIcon;
 	}
+
+	public boolean isWeekend(){
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(this.time);
+		if( cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY )
+			return true;
+		else
+			return false;
+	}
 		
 	public int getDay(){
 		Calendar cal = Calendar.getInstance();
