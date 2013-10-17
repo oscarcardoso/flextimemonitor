@@ -3,6 +3,7 @@ package com.cardosos.flextimemonitor;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Collections;
 
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
@@ -180,6 +181,16 @@ public class TimeManager{
 		cal.set(Calendar.YEAR, event.getYear());
 		fixedTimeStart = cal.getTimeInMillis();
 		return fixedTimeStart;
+	}
+
+	public static long getTodaysHours(List<Event> todaysEvents, boolean isReversed){
+		if(!todaysEvents.isEmpty() && isReversed){
+			Collections.reverse(todaysEvents);
+			return getTodaysHours(todaysEvents);
+		}else{
+			Log.e(TAG, "getTodaysHours is either empty or not reversed");
+			return getTodaysHours(todaysEvents);
+		}
 	}
 
 	public static long getTodaysHours(List<Event> todaysEvents){
