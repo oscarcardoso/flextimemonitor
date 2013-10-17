@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Iterator;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -470,6 +471,13 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		long todaysTime = 0;
 		if(datasource.isOpen()){
 			List<Event> todaysEvents = datasource.getAllEvents();
+
+			Iterator<Event> iterator = todaysEvents.iterator();
+			while (iterator.hasNext()){
+				if( !DateUtils.isToday(iterator.next().getTime()))
+					iterator.remove();
+			}
+
 			todaysTime = TimeManager.getTodaysHours(todaysEvents);
 		} else {
 			Log.w(TAG, "Datasource is not Open");
