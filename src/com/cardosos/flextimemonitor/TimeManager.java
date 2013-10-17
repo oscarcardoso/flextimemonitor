@@ -206,8 +206,9 @@ public class TimeManager{
 				isWeekend = true;
 
 			for(Event e:todaysEvents){
-				if(DateUtils.isToday(e.getTime())){
+				//if(DateUtils.isToday(e.getTime())){
 					if(e.getType().equals(Event.CHECK_IN)){
+						Log.w(TAG, "HOURS: CHECK_IN");
 						if(lastCheckOut > 0){
 							// Define case 2: Exit before fts and enter after fixedTimeStart 
 							if( e.getTime() > fixedTimeStart &&
@@ -229,6 +230,7 @@ public class TimeManager{
 						lastCheckIn = e.getTime();
 					} else {
 						if(e.getType().equals(Event.CHECK_OUT)){
+							Log.w(TAG, "HOURS: CHECK_OUT");
 							if(lastCheckIn > 0){
 								// Define case 7: Enter in weekend
 								if( isWeekend ){
@@ -267,7 +269,7 @@ public class TimeManager{
 							lastCheckOut = e.getTime();
 						} 
 					}
-				}
+				//}
 			}
 		} else {
 			Log.w(TAG, "List<Events> is empty.");
