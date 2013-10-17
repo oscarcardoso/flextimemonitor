@@ -560,26 +560,27 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		List<Event> values = datasource.getAllEvents();
 
 		long timeToSave = 0;
-		long previousCheckIn = 0;
-		for(int i=0; i<values.size(); i++){
-			long thisTime = values.get(i).getTime();
-			String thisType = values.get(i).getType();
-			if(thisType.equals(Event.CHECK_IN)){
-				// This is a CHECK_IN, save the time to compare it to the
-				// next event, a CHECK_OUT
-				//timeToSave =+ values.get(i).getTime();
-				previousCheckIn = thisTime;
-				Log.i(TAG, "previousCheckIn: (" + previousCheckIn + ") " + DateFormat.format("dd/mm kk:mm:ss", previousCheckIn));
-			} else {
-				// This is a CHECK_OUT
-				// Add the difference between the last check in and this
-				// check out. Only if this is NOT the first event in the list
-				if(previousCheckIn != 0){
-					timeToSave += thisTime - previousCheckIn;
-					Log.i(TAG, "timeToSave: (" + timeToSave + ") " + TimeManager.longToString(timeToSave));
-				}
-			}
-		}
+		timeToSave = TimeManager.getTodaysHours(values);
+	//	long previousCheckIn = 0;
+	//	for(int i=0; i<values.size(); i++){
+	//		long thisTime = values.get(i).getTime();
+	//		String thisType = values.get(i).getType();
+	//		if(thisType.equals(Event.CHECK_IN)){
+	//			// This is a CHECK_IN, save the time to compare it to the
+	//			// next event, a CHECK_OUT
+	//			//timeToSave =+ values.get(i).getTime();
+	//			previousCheckIn = thisTime;
+	//			Log.i(TAG, "previousCheckIn: (" + previousCheckIn + ") " + DateFormat.format("dd/mm kk:mm:ss", previousCheckIn));
+	//		} else {
+	//			// This is a CHECK_OUT
+	//			// Add the difference between the last check in and this
+	//			// check out. Only if this is NOT the first event in the list
+	//			if(previousCheckIn != 0){
+	//				timeToSave += thisTime - previousCheckIn;
+	//				Log.i(TAG, "timeToSave: (" + timeToSave + ") " + TimeManager.longToString(timeToSave));
+	//			}
+	//		}
+	//	}
 		Log.i(TAG, "So far you have " +  TimeManager.longToString(timeToSave) + " flex time covered");
 
 		try {
