@@ -206,6 +206,12 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					// Then you set the today's time in the timeManager
 					// thru the datasource.
 					timeManager.setTodaysTime(getTodaysHours());
+					timeManager.setInside(true);
+					timeManager.setOutside(false);
+					if(event.isWeekend())
+						timeManager.setWeekend(true);
+					else
+						timeManager.setWeekend(false);
 					// and finally, if the chrono is not started, start the
 					// timer.
 					if(!mStartedChrono)
@@ -218,6 +224,13 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					//previousEventType = Event.CHECK_OUT;
 					updatePreviousEventType();
 					timeManager.setTodaysTime(getTodaysHours());
+					timeManager.setInside(false);
+					timeManager.setOutside(true);
+					if(event.isWeekend())
+						timeManager.setWeekend(true);
+					else
+						timeManager.setWeekend(false);
+
 					Log.i("FTM", "Add Event.CHECK_OUT");
 				}
 				try{
