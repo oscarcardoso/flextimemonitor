@@ -169,6 +169,10 @@ public class TimeManager{
 		return fixedTimeStart;
 	}
 
+	public static long getFixedTimeEnd(){
+		return getFixedTimeStart() + (FIXED_TIME_DURATION * HOUR);
+	}
+
 	public static long getFixedTimeStart(Event event){
 		long fixedTimeStart = 0;
 		Calendar cal = Calendar.getInstance();
@@ -181,6 +185,10 @@ public class TimeManager{
 		cal.set(Calendar.YEAR, event.getYear());
 		fixedTimeStart = cal.getTimeInMillis();
 		return fixedTimeStart;
+	}
+
+	public static long getFixedTimeEnd(Event event){
+		return getFixedTimeStart(event) + (FIXED_TIME_DURATION * HOUR);
 	}
 
 	public static long getTodaysHours(List<Event> todaysEvents, boolean isReversed){
