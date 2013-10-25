@@ -208,10 +208,17 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					timeManager.setTodaysTime(getTodaysHours());
 					timeManager.setInside(true);
 					timeManager.setOutside(false);
-					if(event.isWeekend())
+					if(event.isWeekend()){
 						timeManager.setWeekend(true);
-					else
+					}else{
 						timeManager.setWeekend(false);
+						if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
+							event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
+							timeManager.setLunch(true);
+						}else{
+							timeManager.setLunch(false);
+						}
+					}
 					// and finally, if the chrono is not started, start the
 					// timer.
 					if(!mStartedChrono)
@@ -226,10 +233,17 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					timeManager.setTodaysTime(getTodaysHours());
 					timeManager.setInside(false);
 					timeManager.setOutside(true);
-					if(event.isWeekend())
+					if(event.isWeekend()){
 						timeManager.setWeekend(true);
-					else
+					}else{
 						timeManager.setWeekend(false);
+						if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
+							event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
+							timeManager.setLunch(true);
+						}else{
+							timeManager.setLunch(false);
+						}
+					}
 
 					Log.i("FTM", "Add Event.CHECK_OUT");
 				}
@@ -479,7 +493,26 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		}
 	}
 	
-	//TODO: Get just the flex hours! 
+	public long getTodaysLunchTime(){
+		long todaysLunchTime = 0;
+		if(datasource.isOpen()){
+			List<Event> todaysEvents = datasource.getAllEvents();
+
+			Iterator<Event> iterator = todaysEvents.iterator();
+			while (iterator.hasNext()){
+				if( !DateUtils.isToday(iterator.next().getTime()))
+					iterator.remove();
+			}
+
+			todaysLunchTime = timeManager.updateLunchTime(todaysEvents);
+		} else {
+			Log.w(TAG, "Datasource is not Open");
+			return 0;
+		}		
+		return todaysLunchTime;
+
+	}
+
 	public long getTodaysHours(){
 		long todaysTime = 0;
 		if(datasource.isOpen()){
