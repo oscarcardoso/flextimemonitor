@@ -372,6 +372,114 @@ public class TimeManager{
 		return this.lunchTime;
 	}
 
+	public void updateLunchTime(List<Event> events){
+		long todaysTime = 0;
+		long lastCheckIn = 0;
+		long lastCheckOut = 0;
+		long lunchTime = 0;
+		boolean isWeekend = false;
+		if(!todaysEvents.isEmpty()){
+			long fixedTimeStart = getFixedTimeStart(todaysEvents.get(0));
+
+			if(todaysEvents.get(0).isWeekend()){
+				isWeekend = true;
+				this.isOvertime = false;
+				this.isLunch = false;
+				this.isAbsent = false;
+			}
+
+			for(Event e:todaysEvents){
+				//if(DateUtils.isToday(e.getTime())){
+					if(e.getType().equals(Event.CHECK_IN)){
+						Log.w(TAG, "HOURS: CHECK_IN");
+						if(lastCheckOut > 0){
+							// Define case 2: Exit before fts and enter after fixedTimeStart 
+							if( e.getTime() > fixedTimeStart &&
+								e.getTime() < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
+								lastCheckOut < fixedTimeStart){
+								Log.w(TAG, "CASE 2");
+								lunchTime += e.getTime() - fixedTimeStart;
+							}
+							// Define case 4: Enter after fixedTimeStart and exit before fts+(FTD*HOURS)
+							if( lastCheckOut > fixedTimeStart && 
+								lastCheckOut < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ) && 
+								e.getTime() > lastCheckOut &&
+								e.getTime() < ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) ){
+								Log.w(TAG, "CASE 4");
+								lunchTime += e.getTime() - lastCheckOut;
+							}
+						}
+						lastCheckOut = 0;
+						lastCheckIn = e.getTime();
+					} else {
+						if(e.getType().equals(Event.CHECK_OUT)){
+							Log.w(TAG, "HOURS: CHECK_OUT");
+							if(lastCheckIn > 0){
+								// Define case 7: Enter in weekend
+								if( isWeekend ){
+									todaysTime += e.getTime() - lastCheckIn;
+								}else{
+									// Define case 1: Enter before fixedTimeStart and exit after fixedTimeStart but before fts+(FTD*HOURS)
+									if( lastCheckIn < fixedTimeStart && 
+										e.getTime() > fixedTimeStart && 
+										e.getTime() < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR))){
+										Log.w(TAG, "CASE 1");
+										todaysTime += fixedTimeStart - lastCheckIn;
+										this.isLunch = true;
+										//lastCheckOut = e.getTime();
+									}
+									// Define case 3: Enter before fixedTimeStart and exit after fts+(FTD*HOURS)
+									if( lastCheckIn < fixedTimeStart && 
+										e.getTime() > ( fixedTimeStart + FIXED_TIME_DURATION * HOUR ) ){
+										Log.w(TAG, "CASE 3");
+										todaysTime += fixedTimeStart - lastCheckIn;
+										todaysTime += e.getTime() - fixedTimeStart + (FIXED_TIME_DURATION * HOUR);
+										this.isLunch = false;
+									}
+									// Define case 5: Enter after fts+(FTD*HOURS) and exit after
+									if( lastCheckIn > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) && 
+										e.getTime() > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ){
+										Log.w(TAG, "CASE 5");
+										todaysTime += e.getTime() - lastCheckIn;
+										this.isLunch = false;
+									}
+									// Define case 6: Enter before fts and exit before fts
+									if( lastCheckIn < fixedTimeStart &&
+										e.getTime() < fixedTimeStart){
+										Log.w(TAG, "CASE 6");
+										todaysTime += e.getTime() - lastCheckIn;
+										this.isLunch = false;
+									}
+									// Define case 7: Enter after fts and before fts+(FTD*HOURS) and exit after
+									if( lastCheckIn > fixedTimeStart &&
+										lastCheckIn < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
+										e.getTime() > fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ){
+											Log.w(TAG, "CASE 7");
+											todaysTime += e.getTime() - (fixedTimeStart + ( FIXED_TIME_DURATION * HOUR )) ;
+											this.isLunch = false;
+										}
+								}
+							}
+							lastCheckIn = 0;
+							lastCheckOut = e.getTime();
+						} 
+					}
+				//}
+			}
+		} else {
+			Log.w(TAG, "List<Events> is empty.");
+			return 0;
+		}		
+
+		//TODO: Substract lunchtime when STATE_IN_OVERTIME
+		if(lunchTime > (FIXED_TIME_BREAK * HOUR)){
+			Log.w(TAG, "LunchTime Exceeded.");
+			todaysTime -= lunchTime;
+			this.isOvertime = true;
+		}
+		this.lunchTime = lunchTime;
+	}
+
 	public void addLunchTime(long addedLunchTime){
 		this.lunchTime += addedLunchTime;
 	}
