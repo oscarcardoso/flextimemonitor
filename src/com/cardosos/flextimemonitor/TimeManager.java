@@ -271,6 +271,13 @@ public class TimeManager{
 										Log.w(TAG, "CASE 6");
 										todaysTime += e.getTime() - lastCheckIn;
 									}
+									// Define case 7: Enter after fts and before fts+(FTD*HOURS) and exit after
+									if( lastCheckIn > fixedTimeStart &&
+										lastCheckIn < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
+										e.getTime() > fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ){
+										Log.w(TAG, "CASE 7");
+										todaysTime += e.getTime() - (fixedTimeStart + ( FIXED_TIME_DURATION * HOUR )) ;
+										}
 								}
 							}
 							lastCheckIn = 0;
