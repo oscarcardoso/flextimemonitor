@@ -462,8 +462,16 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 
 		millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
 		mTodayChrono.setText(TimeManager.longToString(millis));
-		if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
-			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+		if(timeManager.isAbsent()){
+			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+		}else{
+			if(timeManager.isWeekend()){
+				mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+			}else{
+				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS){
+					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+				}
+			}
 		}
 		//Log.i("FTM","Timer: (" + millis + ") " + TimeManager.longToString(millis));
 	}
