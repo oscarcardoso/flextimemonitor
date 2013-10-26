@@ -128,6 +128,21 @@ public class EventGroup extends Event {
 	public void setHours(){
 		this.hours = getHours();
 	}
+
+	public int getHours(TimeManager tm){
+		int hours = 0;
+		long tempHours = 0;
+		tempHours = tm.getGroupHours(this.events, true);
+		Log.i(TAG, "Day " + getDay() + " has " + tempHours + " ms");
+		hours = tm.getHourInt(tempHours);
+		minutes = tm.getHourMinutesInt(tempHours);
+		Log.i(TAG, "Day " + getDay() + " has " + hours + " hrs and " + minutes + " minutes");
+		return hours;
+	}
+
+	public void setHours(TimeManager tm){
+		this.hours = getHours(tm);
+	}
 	
 	public boolean isViewOpened(){
 		return this.viewOpened;
@@ -145,11 +160,6 @@ public class EventGroup extends Event {
 	
 	@Override
 	public int getIcon() {
-		if(this.type.equals(DAY_BRIEF)){
-			this.icon = PRESENCE;
-		} else {
-			this.icon = ABSENCE;
-		}
 		return icon;
 	}
 
