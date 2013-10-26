@@ -103,6 +103,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		
 		for(int j = dayOfMonth - 1; j > 0; j--){
 			EventGroup group = new EventGroup();
+			TimeManager tm = new TimeManager();
 			for(int i=0; i < values.size(); i++){
 				if(values.get(i).getDay() < dayOfMonth){
 					if(values.get(i).getDay() == j){
@@ -112,7 +113,40 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 				}
 			}
 			if(!group.isEmpty()){
-				group.setHours();
+				group.setHours(tm);
+				tm.updateState();
+				switch(tm.getDayState()){
+					case Day.STATE_OUT_WEEKEND:
+						group.setIcon(Event.PRESENCE);
+						break;
+					case Day.STATE_IN_WEEKEND:
+						group.setIcon(Event.PRESENCE);
+						break;
+					case Day.STATE_OUT_ABSENT:
+						group.setIcon(Event.ABSENCE);
+						break;
+					case Day.STATE_IN_ABSENT:
+						group.setIcon(Event.ABSENCE);
+						break;
+					case Day.STATE_OUT_LUNCH:
+						group.setIcon(Event.PRESENCE);
+						break;
+					case Day.STATE_IN_LUNCH:
+						group.setIcon(Event.PRESENCE);
+						break;
+					case Day.STATE_OUT_OVERTIME:
+						group.setIcon(Event.OVERTIME_AWAY);
+						break;
+					case Day.STATE_IN_OVERTIME:
+						group.setIcon(Event.OVERTIME_AWAY);
+						break;
+					case Day.STATE_OUT_IN_TIME:
+						group.setIcon(Event.PRESENCE);
+						break;
+					case Day.STATE_IN_IN_TIME:
+						group.setIcon(Event.PRESENCE);
+						break;
+				}
 				briefedValues.add(group);
 				Log.i(TAG, "Add a group: " + group.getDay());
 			}
@@ -219,6 +253,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 							timeManager.setLunch(false);
 						}
 					}
+					timeManager.setLunchTime(getTodaysLunchTime());
 					// and finally, if the chrono is not started, start the
 					// timer.
 					if(!mStartedChrono)
@@ -244,6 +279,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 							timeManager.setLunch(false);
 						}
 					}
+					timeManager.setLunchTime(getTodaysLunchTime());
 
 					Log.i("FTM", "Add Event.CHECK_OUT");
 				}
@@ -430,7 +466,20 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		}
 		
 		timeManager.setTodaysTime(getTodaysHours());
+		timeManager.setLunchTime(getTodaysLunchTime());
+
 		mTodayChrono.setText(TimeManager.longToString(timeManager.getTodaysTime()));
+		if(timeManager.isAbsent()){
+			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+		}else{
+			if(timeManager.isWeekend()){
+				mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+			}else{
+				if( timeManager.getTodaysTime() > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS){
+					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+				}
+			}
+		}
 
 		if(previousEventType.equals(Event.CHECK_IN)){
 			Log.i(TAG, "Last check: (" + timeManager.getLastCheckIn() + ") " + DateFormat.format("dd/mm kk:mm:ss", timeManager.getLastCheckIn() ) );
@@ -455,12 +504,34 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		
 		long thisTime = System.currentTimeMillis();
 		long fixedTimeStart = TimeManager.getFixedTimeStart();//Fixed time start (10:00:00hrs) value in long
+		long fixedTimeEnd = fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR);
 		long millis = 0;
 		//TODO: Use the remaining hours to calculate the chrono for that.
 		millis = mPauseTime + timeManager.getTodaysTime();	
 		mChrono.setText(TimeManager.longToString(millis));
 
-		millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+		if(timeManager.getLastCheckIn() > fixedTimeStart &&
+			timeManager.getLastCheckIn() < fixedTimeEnd ){
+				if(thisTime > fixedTimeEnd ){
+					millis = thisTime - fixedTimeEnd + timeManager.getTodaysTime();	
+				}
+			}else{
+				if(timeManager.getLastCheckIn() < fixedTimeStart){
+					if(thisTime > fixedTimeEnd)
+						millis = fixedTimeStart - timeManager.getLastCheckIn() + (thisTime - fixedTimeEnd) + timeManager.getTodaysTime();
+					else{
+						if(thisTime < fixedTimeStart)
+							millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+						else
+							millis = fixedTimeStart - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+					}
+				}else{
+					millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+				}
+			}
+			
+
+		//millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
 		mTodayChrono.setText(TimeManager.longToString(millis));
 		if(timeManager.isAbsent()){
 			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
@@ -512,7 +583,8 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					iterator.remove();
 			}
 
-			todaysLunchTime = timeManager.updateLunchTime(todaysEvents);
+			timeManager.updateLunchTime(todaysEvents);
+			todaysLunchTime = timeManager.getLunchTime();
 		} else {
 			Log.w(TAG, "Datasource is not Open");
 			return 0;
