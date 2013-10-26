@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Iterator;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -102,6 +103,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		
 		for(int j = dayOfMonth - 1; j > 0; j--){
 			EventGroup group = new EventGroup();
+			TimeManager tm = new TimeManager();
 			for(int i=0; i < values.size(); i++){
 				if(values.get(i).getDay() < dayOfMonth){
 					if(values.get(i).getDay() == j){
@@ -111,7 +113,40 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 				}
 			}
 			if(!group.isEmpty()){
-				group.setHours();
+				group.setHours(tm);
+				tm.updateState();
+				switch(tm.getDayState()){
+					case Day.STATE_OUT_WEEKEND:
+						group.setIcon(Event.PRESENCE);
+						break;
+					case Day.STATE_IN_WEEKEND:
+						group.setIcon(Event.PRESENCE);
+						break;
+					case Day.STATE_OUT_ABSENT:
+						group.setIcon(Event.ABSENCE);
+						break;
+					case Day.STATE_IN_ABSENT:
+						group.setIcon(Event.ABSENCE);
+						break;
+					case Day.STATE_OUT_LUNCH:
+						group.setIcon(Event.PRESENCE);
+						break;
+					case Day.STATE_IN_LUNCH:
+						group.setIcon(Event.PRESENCE);
+						break;
+					case Day.STATE_OUT_OVERTIME:
+						group.setIcon(Event.OVERTIME_AWAY);
+						break;
+					case Day.STATE_IN_OVERTIME:
+						group.setIcon(Event.OVERTIME_AWAY);
+						break;
+					case Day.STATE_OUT_IN_TIME:
+						group.setIcon(Event.PRESENCE);
+						break;
+					case Day.STATE_IN_IN_TIME:
+						group.setIcon(Event.PRESENCE);
+						break;
+				}
 				briefedValues.add(group);
 				Log.i(TAG, "Add a group: " + group.getDay());
 			}
@@ -205,6 +240,20 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					// Then you set the today's time in the timeManager
 					// thru the datasource.
 					timeManager.setTodaysTime(getTodaysHours());
+					timeManager.setInside(true);
+					timeManager.setOutside(false);
+					if(event.isWeekend()){
+						timeManager.setWeekend(true);
+					}else{
+						timeManager.setWeekend(false);
+						if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
+							event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
+							timeManager.setLunch(true);
+						}else{
+							timeManager.setLunch(false);
+						}
+					}
+					timeManager.setLunchTime(getTodaysLunchTime());
 					// and finally, if the chrono is not started, start the
 					// timer.
 					if(!mStartedChrono)
@@ -217,6 +266,21 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					//previousEventType = Event.CHECK_OUT;
 					updatePreviousEventType();
 					timeManager.setTodaysTime(getTodaysHours());
+					timeManager.setInside(false);
+					timeManager.setOutside(true);
+					if(event.isWeekend()){
+						timeManager.setWeekend(true);
+					}else{
+						timeManager.setWeekend(false);
+						if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
+							event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
+							timeManager.setLunch(true);
+						}else{
+							timeManager.setLunch(false);
+						}
+					}
+					timeManager.setLunchTime(getTodaysLunchTime());
+
 					Log.i("FTM", "Add Event.CHECK_OUT");
 				}
 				try{
@@ -402,7 +466,20 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		}
 		
 		timeManager.setTodaysTime(getTodaysHours());
+		timeManager.setLunchTime(getTodaysLunchTime());
+
 		mTodayChrono.setText(TimeManager.longToString(timeManager.getTodaysTime()));
+		if(timeManager.isAbsent()){
+			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+		}else{
+			if(timeManager.isWeekend()){
+				mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+			}else{
+				if( timeManager.getTodaysTime() > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS){
+					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+				}
+			}
+		}
 
 		if(previousEventType.equals(Event.CHECK_IN)){
 			Log.i(TAG, "Last check: (" + timeManager.getLastCheckIn() + ") " + DateFormat.format("dd/mm kk:mm:ss", timeManager.getLastCheckIn() ) );
@@ -427,15 +504,45 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		
 		long thisTime = System.currentTimeMillis();
 		long fixedTimeStart = TimeManager.getFixedTimeStart();//Fixed time start (10:00:00hrs) value in long
+		long fixedTimeEnd = fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR);
 		long millis = 0;
 		//TODO: Use the remaining hours to calculate the chrono for that.
 		millis = mPauseTime + timeManager.getTodaysTime();	
 		mChrono.setText(TimeManager.longToString(millis));
 
-		millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+		if(timeManager.getLastCheckIn() > fixedTimeStart &&
+			timeManager.getLastCheckIn() < fixedTimeEnd ){
+				if(thisTime > fixedTimeEnd ){
+					millis = thisTime - fixedTimeEnd + timeManager.getTodaysTime();	
+				}
+			}else{
+				if(timeManager.getLastCheckIn() < fixedTimeStart){
+					if(thisTime > fixedTimeEnd)
+						millis = fixedTimeStart - timeManager.getLastCheckIn() + (thisTime - fixedTimeEnd) + timeManager.getTodaysTime();
+					else{
+						if(thisTime < fixedTimeStart)
+							millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+						else
+							millis = fixedTimeStart - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+					}
+				}else{
+					millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+				}
+			}
+			
+
+		//millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
 		mTodayChrono.setText(TimeManager.longToString(millis));
-		if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS ){
-			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+		if(timeManager.isAbsent()){
+			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+		}else{
+			if(timeManager.isWeekend()){
+				mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+			}else{
+				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS){
+					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+				}
+			}
 		}
 		//Log.i("FTM","Timer: (" + millis + ") " + TimeManager.longToString(millis));
 	}
@@ -465,11 +572,38 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		}
 	}
 	
-	//TODO: Get just the flex hours! 
+	public long getTodaysLunchTime(){
+		long todaysLunchTime = 0;
+		if(datasource.isOpen()){
+			List<Event> todaysEvents = datasource.getAllEvents();
+
+			Iterator<Event> iterator = todaysEvents.iterator();
+			while (iterator.hasNext()){
+				if( !DateUtils.isToday(iterator.next().getTime()))
+					iterator.remove();
+			}
+
+			timeManager.updateLunchTime(todaysEvents);
+			todaysLunchTime = timeManager.getLunchTime();
+		} else {
+			Log.w(TAG, "Datasource is not Open");
+			return 0;
+		}		
+		return todaysLunchTime;
+
+	}
+
 	public long getTodaysHours(){
 		long todaysTime = 0;
 		if(datasource.isOpen()){
 			List<Event> todaysEvents = datasource.getAllEvents();
+
+			Iterator<Event> iterator = todaysEvents.iterator();
+			while (iterator.hasNext()){
+				if( !DateUtils.isToday(iterator.next().getTime()))
+					iterator.remove();
+			}
+
 			todaysTime = TimeManager.getTodaysHours(todaysEvents);
 		} else {
 			Log.w(TAG, "Datasource is not Open");
@@ -552,26 +686,27 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		List<Event> values = datasource.getAllEvents();
 
 		long timeToSave = 0;
-		long previousCheckIn = 0;
-		for(int i=0; i<values.size(); i++){
-			long thisTime = values.get(i).getTime();
-			String thisType = values.get(i).getType();
-			if(thisType.equals(Event.CHECK_IN)){
-				// This is a CHECK_IN, save the time to compare it to the
-				// next event, a CHECK_OUT
-				//timeToSave =+ values.get(i).getTime();
-				previousCheckIn = thisTime;
-				Log.i(TAG, "previousCheckIn: (" + previousCheckIn + ") " + DateFormat.format("dd/mm kk:mm:ss", previousCheckIn));
-			} else {
-				// This is a CHECK_OUT
-				// Add the difference between the last check in and this
-				// check out. Only if this is NOT the first event in the list
-				if(previousCheckIn != 0){
-					timeToSave += thisTime - previousCheckIn;
-					Log.i(TAG, "timeToSave: (" + timeToSave + ") " + TimeManager.longToString(timeToSave));
-				}
-			}
-		}
+		timeToSave = TimeManager.getTodaysHours(values);
+	//	long previousCheckIn = 0;
+	//	for(int i=0; i<values.size(); i++){
+	//		long thisTime = values.get(i).getTime();
+	//		String thisType = values.get(i).getType();
+	//		if(thisType.equals(Event.CHECK_IN)){
+	//			// This is a CHECK_IN, save the time to compare it to the
+	//			// next event, a CHECK_OUT
+	//			//timeToSave =+ values.get(i).getTime();
+	//			previousCheckIn = thisTime;
+	//			Log.i(TAG, "previousCheckIn: (" + previousCheckIn + ") " + DateFormat.format("dd/mm kk:mm:ss", previousCheckIn));
+	//		} else {
+	//			// This is a CHECK_OUT
+	//			// Add the difference between the last check in and this
+	//			// check out. Only if this is NOT the first event in the list
+	//			if(previousCheckIn != 0){
+	//				timeToSave += thisTime - previousCheckIn;
+	//				Log.i(TAG, "timeToSave: (" + timeToSave + ") " + TimeManager.longToString(timeToSave));
+	//			}
+	//		}
+	//	}
 		Log.i(TAG, "So far you have " +  TimeManager.longToString(timeToSave) + " flex time covered");
 
 		try {

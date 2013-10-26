@@ -14,16 +14,16 @@ public class Day {
 	 *
 	 */
 
-	public static int STATE_OUT_IN_TIME 	= 0;
-	public static int STATE_IN_IN_TIME 		= 1;
-	public static int STATE_OUT_ABSENT 		= 2;
-	public static int STATE_IN_ABSENT 		= 3;
-	public static int STATE_OUT_OVERTIME 	= 4;
-	public static int STATE_IN_OVERTIME 	= 5;
-	public static int STATE_OUT_LUNCH 		= 6;
-	public static int STATE_IN_LUNCH 		= 7;
-	public static int STATE_OUT_WEEKEND 	= 8;
-	public static int STATE_IN_WEEKEND 		= 9;
+	public static final int STATE_OUT_IN_TIME 	= 0;
+	public static final int STATE_IN_IN_TIME 	= 1;
+	public static final int STATE_OUT_ABSENT 	= 2;
+	public static final int STATE_IN_ABSENT 	= 3;
+	public static final int STATE_OUT_OVERTIME 	= 4;
+	public static final int STATE_IN_OVERTIME 	= 5;
+	public static final int STATE_OUT_LUNCH 	= 6;
+	public static final int STATE_IN_LUNCH 		= 7;
+	public static final int STATE_OUT_WEEKEND 	= 8;
+	public static final int STATE_IN_WEEKEND 	= 9;
 
 	public Day(){
 	}

@@ -91,31 +91,33 @@ public class EventGroup extends Event {
 	public boolean isEmpty(){
 		return this.events.isEmpty();
 	}
-	
+
+	//TODO: GET THE RIGHT HOURS
 	public int getHours(){
 		int hours = 0;
 		long tempHours = 0;
-		String previousType = CHECK_OUT;
-		long previousEvent = 0;
-		for(int i = 0; i<this.events.size(); i++){
-			Log.i(TAG, "Event " + i + " from group");
-			if(this.events.get(i).getType().equals(CHECK_IN)){
-				Log.i(TAG, "is a " + CHECK_IN + " type Event");
-				if(previousEvent != 0 && previousType.equals(CHECK_OUT)){
-					Log.i(TAG, "previous event was a " + CHECK_OUT + " and has some time in it");
-					tempHours += previousEvent - this.events.get(i).getTime();
-					Log.i(TAG, "We have " + tempHours + " ms in hand.");
-				}
-				previousEvent = this.events.get(i).getTime();
-				previousType = this.events.get(i).getType();
-			}else{
-				if(this.events.get(i).getType().equals(CHECK_OUT)){
-					Log.i(TAG, "is a " + CHECK_OUT + " type Event");
-					previousEvent = this.events.get(i).getTime();
-					previousType = this.events.get(i).getType();
-				}
-			}
-		}
+		tempHours = TimeManager.getTodaysHours(this.events, true);
+		//String previousType = CHECK_OUT;
+		//long previousEvent = 0;
+		//for(int i = 0; i<this.events.size(); i++){
+		//	Log.i(TAG, "Event " + i + " from group");
+		//	if(this.events.get(i).getType().equals(CHECK_IN)){
+		//		Log.i(TAG, "is a " + CHECK_IN + " type Event");
+		//		if(previousEvent != 0 && previousType.equals(CHECK_OUT)){
+		//			Log.i(TAG, "previous event was a " + CHECK_OUT + " and has some time in it");
+		//			tempHours += previousEvent - this.events.get(i).getTime();
+		//			Log.i(TAG, "We have " + tempHours + " ms in hand.");
+		//		}
+		//		previousEvent = this.events.get(i).getTime();
+		//		previousType = this.events.get(i).getType();
+		//	}else{
+		//		if(this.events.get(i).getType().equals(CHECK_OUT)){
+		//			Log.i(TAG, "is a " + CHECK_OUT + " type Event");
+		//			previousEvent = this.events.get(i).getTime();
+		//			previousType = this.events.get(i).getType();
+		//		}
+		//	}
+		//}
 		Log.i(TAG, "Day " + getDay() + " has " + tempHours + " ms");
 		hours = TimeManager.getHourInt(tempHours);
 		minutes = TimeManager.getHourMinutesInt(tempHours);
@@ -125,6 +127,21 @@ public class EventGroup extends Event {
 	
 	public void setHours(){
 		this.hours = getHours();
+	}
+
+	public int getHours(TimeManager tm){
+		int hours = 0;
+		long tempHours = 0;
+		tempHours = tm.getGroupHours(this.events, true);
+		Log.i(TAG, "Day " + getDay() + " has " + tempHours + " ms");
+		hours = tm.getHourInt(tempHours);
+		minutes = tm.getHourMinutesInt(tempHours);
+		Log.i(TAG, "Day " + getDay() + " has " + hours + " hrs and " + minutes + " minutes");
+		return hours;
+	}
+
+	public void setHours(TimeManager tm){
+		this.hours = getHours(tm);
 	}
 	
 	public boolean isViewOpened(){
@@ -143,11 +160,6 @@ public class EventGroup extends Event {
 	
 	@Override
 	public int getIcon() {
-		if(this.type.equals(DAY_BRIEF)){
-			this.icon = PRESENCE;
-		} else {
-			this.icon = ABSENCE;
-		}
 		return icon;
 	}
 
