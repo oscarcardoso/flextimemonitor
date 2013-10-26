@@ -510,8 +510,11 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		millis = mPauseTime + timeManager.getTodaysTime();	
 		mChrono.setText(TimeManager.longToString(millis));
 
-		if(timeManager.getLastCheckIn() > fixedTimeStart &&
-			timeManager.getLastCheckIn() < fixedTimeEnd ){
+		if( timeManager.isWeekend() || timeManager.isAbsent() ){
+			millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
+		}else{
+			if(	timeManager.getLastCheckIn() > fixedTimeStart &&
+				timeManager.getLastCheckIn() < fixedTimeEnd ){
 				if(thisTime > fixedTimeEnd ){
 					millis = thisTime - fixedTimeEnd + timeManager.getTodaysTime();	
 				}
