@@ -154,7 +154,7 @@ public class EventGroup extends Event {
 	
 	@Override
 	public String getTitle() {
-		this.title = (String) DateFormat.format("dd/MMM", time) + " " + this.hours + ":" + this.minutes;
+		this.title = (String) DateFormat.format("dd/MMM", time) + " " + String.format("%02d", this.hours) + ":" + String.format("%02d", this.minutes);
 		return title;
 	}
 	
