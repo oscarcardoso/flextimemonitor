@@ -9,7 +9,7 @@
     <string name="event_list_header">Eventos</string>
     <string name="remaining_time">Remaining Time</string>
     <string name="today_time">"Today's Hours"</string>
-    <string name="empty_time">000:00:00</string>
+    <string name="empty_time">00:00:00</string>
     <string name="export">Export&#8230;</string>
     <string name="restore">Restore&#8230;</string>
     <string name="check_in">Check In</string>
