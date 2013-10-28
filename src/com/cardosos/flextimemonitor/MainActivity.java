@@ -684,35 +684,37 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	 * Right now it just saves all the time, not just flex time.
 	 *
 	 */
-	//TODO: SAVE JUST FLEXTIME
 	public void saveEventsInTempFile(){
+		Log.i(TAG, "saveEventsInTempFile()");
 		
 		List<Event> values = datasource.getAllEvents();
+		Collections.reverse(values);
 
 		long timeToSave = 0;
-		//TODO: GET THE VALUES FROM THE EVENTGROUPS!!!!
-		//timeToSave = TimeManager.getTodaysHours(values);
-		//
-	//	long previousCheckIn = 0;
-	//	for(int i=0; i<values.size(); i++){
-	//		long thisTime = values.get(i).getTime();
-	//		String thisType = values.get(i).getType();
-	//		if(thisType.equals(Event.CHECK_IN)){
-	//			// This is a CHECK_IN, save the time to compare it to the
-	//			// next event, a CHECK_OUT
-	//			//timeToSave =+ values.get(i).getTime();
-	//			previousCheckIn = thisTime;
-	//			Log.i(TAG, "previousCheckIn: (" + previousCheckIn + ") " + DateFormat.format("dd/mm kk:mm:ss", previousCheckIn));
-	//		} else {
-	//			// This is a CHECK_OUT
-	//			// Add the difference between the last check in and this
-	//			// check out. Only if this is NOT the first event in the list
-	//			if(previousCheckIn != 0){
-	//				timeToSave += thisTime - previousCheckIn;
-	//				Log.i(TAG, "timeToSave: (" + timeToSave + ") " + TimeManager.longToString(timeToSave));
-	//			}
-	//		}
-	//	}
+		
+		// Before attaching the adapter, get the previous day briefs
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		
+		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+		
+		for(int j = dayOfMonth - 1; j > 0; j--){
+			EventGroup group = new EventGroup();
+			TimeManager tm = new TimeManager();
+			for(int i=0; i < values.size(); i++){
+				if(values.get(i).getDay() < dayOfMonth){
+					if(values.get(i).getDay() == j){
+						group.addEvent(values.get(i));
+					}
+				}
+			}
+			if(!group.isEmpty()){
+				group.setHours(tm);
+				timeToSave += group.getGroupTime();
+				Log.i(TAG, "Add a group time: " + TimeManager.longToString(group.getGroupTime()));
+			}
+		}
 		Log.i(TAG, "So far you have " +  TimeManager.longToString(timeToSave) + " flex time covered");
 
 		try {
