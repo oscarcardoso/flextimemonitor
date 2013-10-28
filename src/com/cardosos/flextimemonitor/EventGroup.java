@@ -29,6 +29,7 @@ public class EventGroup extends Event {
 	protected List<Event> events = new ArrayList<Event>();
 	protected int hours;
 	protected int minutes;
+	protected long groupTime;
 	public boolean viewOpened = false;
 	public static final String TAG = "FTM";
 	
@@ -100,6 +101,7 @@ public class EventGroup extends Event {
 		Log.i(TAG, "Day " + getDay() + " has " + tempHours + " ms");
 		hours = TimeManager.getHourInt(tempHours);
 		minutes = TimeManager.getHourMinutesInt(tempHours);
+		this.groupTime = tempHours;
 		Log.i(TAG, "Day " + getDay() + " has " + hours + " hrs and " + minutes + " minutes");
 		return hours;
 	}
@@ -115,12 +117,17 @@ public class EventGroup extends Event {
 		Log.i(TAG, "Day " + getDay() + " has " + tempHours + " ms");
 		hours = tm.getHourInt(tempHours);
 		minutes = tm.getHourMinutesInt(tempHours);
+		this.groupTime = tempHours;
 		Log.i(TAG, "Day " + getDay() + " has " + hours + " hrs and " + minutes + " minutes");
 		return hours;
 	}
 
 	public void setHours(TimeManager tm){
 		this.hours = getHours(tm);
+	}
+
+	public long getGroupTime(){
+		return groupTime;
 	}
 	
 	public boolean isViewOpened(){
