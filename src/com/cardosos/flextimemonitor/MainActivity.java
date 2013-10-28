@@ -501,12 +501,12 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		if(previousEventType.equals(" ") || previousEventType.equals(Event.CHECK_OUT)){
 			return;
 		}
-		
+
 		long thisTime = System.currentTimeMillis();
 		long fixedTimeStart = TimeManager.getFixedTimeStart();//Fixed time start (10:00:00hrs) value in long
 		long fixedTimeEnd = fixedTimeStart + (TimeManager.FIXED_TIME_DURATION * TimeManager.HOUR);
 		long millis = 0;
-		//TODO: Use the remaining hours to calculate the chrono for that.
+
 		millis = mPauseTime + timeManager.getTodaysTime();	
 		mChrono.setText(TimeManager.longToString(millis));
 
@@ -532,6 +532,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 					millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
 				}
 			}
+		}
 			
 
 		//millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
@@ -689,7 +690,9 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		List<Event> values = datasource.getAllEvents();
 
 		long timeToSave = 0;
-		timeToSave = TimeManager.getTodaysHours(values);
+		//TODO: GET THE VALUES FROM THE EVENTGROUPS!!!!
+		//timeToSave = TimeManager.getTodaysHours(values);
+		//
 	//	long previousCheckIn = 0;
 	//	for(int i=0; i<values.size(); i++){
 	//		long thisTime = values.get(i).getTime();
@@ -744,7 +747,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 				e.printStackTrace();
 			}
 			mPauseTime = Long.parseLong(new String(fileContent));
-			Log.i(TAG, "Saved time: (" + mPauseTime + ") " + TimeManager.longToString(mPauseTime));
+			Log.i(TAG, "Saved time: (" + mPauseTime + ") " + TimeManager.longToString(mPauseTime, true));
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "File Not Found! Expected file->" + FILENAME);
 			e.printStackTrace();
