@@ -29,6 +29,7 @@ public class EventGroup extends Event {
 	protected List<Event> events = new ArrayList<Event>();
 	protected int hours;
 	protected int minutes;
+	protected long groupTime;
 	public boolean viewOpened = false;
 	public static final String TAG = "FTM";
 	
@@ -97,30 +98,10 @@ public class EventGroup extends Event {
 		int hours = 0;
 		long tempHours = 0;
 		tempHours = TimeManager.getTodaysHours(this.events, true);
-		//String previousType = CHECK_OUT;
-		//long previousEvent = 0;
-		//for(int i = 0; i<this.events.size(); i++){
-		//	Log.i(TAG, "Event " + i + " from group");
-		//	if(this.events.get(i).getType().equals(CHECK_IN)){
-		//		Log.i(TAG, "is a " + CHECK_IN + " type Event");
-		//		if(previousEvent != 0 && previousType.equals(CHECK_OUT)){
-		//			Log.i(TAG, "previous event was a " + CHECK_OUT + " and has some time in it");
-		//			tempHours += previousEvent - this.events.get(i).getTime();
-		//			Log.i(TAG, "We have " + tempHours + " ms in hand.");
-		//		}
-		//		previousEvent = this.events.get(i).getTime();
-		//		previousType = this.events.get(i).getType();
-		//	}else{
-		//		if(this.events.get(i).getType().equals(CHECK_OUT)){
-		//			Log.i(TAG, "is a " + CHECK_OUT + " type Event");
-		//			previousEvent = this.events.get(i).getTime();
-		//			previousType = this.events.get(i).getType();
-		//		}
-		//	}
-		//}
 		Log.i(TAG, "Day " + getDay() + " has " + tempHours + " ms");
 		hours = TimeManager.getHourInt(tempHours);
 		minutes = TimeManager.getHourMinutesInt(tempHours);
+		this.groupTime = tempHours;
 		Log.i(TAG, "Day " + getDay() + " has " + hours + " hrs and " + minutes + " minutes");
 		return hours;
 	}
@@ -136,12 +117,17 @@ public class EventGroup extends Event {
 		Log.i(TAG, "Day " + getDay() + " has " + tempHours + " ms");
 		hours = tm.getHourInt(tempHours);
 		minutes = tm.getHourMinutesInt(tempHours);
+		this.groupTime = tempHours;
 		Log.i(TAG, "Day " + getDay() + " has " + hours + " hrs and " + minutes + " minutes");
 		return hours;
 	}
 
 	public void setHours(TimeManager tm){
 		this.hours = getHours(tm);
+	}
+
+	public long getGroupTime(){
+		return groupTime;
 	}
 	
 	public boolean isViewOpened(){
@@ -154,7 +140,7 @@ public class EventGroup extends Event {
 	
 	@Override
 	public String getTitle() {
-		this.title = (String) DateFormat.format("dd/MMM", time) + " " + this.hours + ":" + this.minutes;
+		this.title = (String) DateFormat.format("dd/MMM", time) + " " + String.format("%02d", this.hours) + ":" + String.format("%02d", this.minutes);
 		return title;
 	}
 	
