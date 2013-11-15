@@ -516,7 +516,11 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			if(	timeManager.getLastCheckIn() > fixedTimeStart &&
 				timeManager.getLastCheckIn() < fixedTimeEnd ){
 				if(thisTime > fixedTimeEnd ){
+					//If time is after 3pm: get todays time plus the time between now and 3pm.
 					millis = thisTime - fixedTimeEnd + timeManager.getTodaysTime();	
+				}else{
+					//If time is before 3pm: get the todays time only
+					millis = timeManager.getTodaysTime();
 				}
 			}else{
 				if(timeManager.getLastCheckIn() < fixedTimeStart){
