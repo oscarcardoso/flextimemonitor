@@ -1,17 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item 
-        android:id="@+id/check_in" 
+        android:id="@+id/check_action" 
         android:title="@string/check_in"
         android:orderInCategory="1"
         android:showAsAction="always"
         android:icon="@drawable/ic_check_in_dark"/>
-    <item 
-        android:id="@+id/check_out" 
-        android:title="@string/check_out"
-        android:orderInCategory="1"
-        android:showAsAction="always"
-        android:icon="@drawable/ic_check_out_dark"/>
     <item 
         android:id="@+id/export" 
         android:orderInCategory="95"
