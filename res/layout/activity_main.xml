@@ -20,11 +20,21 @@
         android:textSize="25sp"
         android:onClick="onClick" />
 	-->
+	<LinearLayout 
+	    android:id="@+id/lifegroup"
+	    android:layout_width="fill_parent"
+	    android:layout_height="48dp"
+	    android:paddingTop="4dp"
+	    android:paddingBottom="4dp"
+	    android:orientation="horizontal"
+	    android:baselineAligned="false">
+	    
+	</LinearLayout>
     <LinearLayout
         android:id="@+id/chronogroup"
 	    android:layout_width="fill_parent"
 	    android:layout_height="48dp"
-	    android:layout_below="@+id/checkButton"
+	    android:layout_below="@+id/lifegroup"
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
 	    android:orientation="horizontal"
