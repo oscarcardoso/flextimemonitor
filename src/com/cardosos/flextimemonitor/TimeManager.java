@@ -20,6 +20,7 @@ public class TimeManager{
 	private boolean isAbsent 	= false;
 	private boolean isWeekend 	= false;
 	private boolean isLunch 	= false;
+	private boolean isIvanFix   = false;
 	private int flexMode = FLEX_MODE_NORMAL;
 	private Day today = new Day(Day.STATE_OUT_IN_TIME);
 
@@ -241,14 +242,14 @@ public class TimeManager{
 			for(Event e:todaysEvents){
 				//if(DateUtils.isToday(e.getTime())){
 					if(e.getType().equals(Event.CHECK_IN)){
-						Log.w(TAG, "HOURS: CHECK_IN");
+						//Log.w(TAG, "HOURS: CHECK_IN");
 						if(lastCheckOut > 0){
 							if( !isWeekend && !isAbsent ){
 								// Define case 2: Exit before fts and enter after fixedTimeStart 
 								if( e.getTime() > fixedTimeStart &&
 									e.getTime() < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
 									lastCheckOut < fixedTimeStart){
-									Log.w(TAG, "CASE 2");
+									//Log.w(TAG, "CASE 2");
 									lunchTime += e.getTime() - fixedTimeStart;
 								}
 								// Define case 4: Enter after fixedTimeStart and exit before fts+(FTD*HOURS)
@@ -256,7 +257,7 @@ public class TimeManager{
 									lastCheckOut < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ) && 
 									e.getTime() > lastCheckOut &&
 									e.getTime() < ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) ){
-									Log.w(TAG, "CASE 4");
+									//Log.w(TAG, "CASE 4");
 									lunchTime += e.getTime() - lastCheckOut;
 								}
 								// Define case 9: Enter before fte and exit after fte
@@ -264,7 +265,7 @@ public class TimeManager{
 									lastCheckOut < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ) &&
 									e.getTime() > lastCheckOut &&
 									e.getTime() > ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) ){
-									Log.w(TAG, "CASE 9");
+									//Log.w(TAG, "CASE 9");
 									lunchTime += ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) - lastCheckOut;
 								}
 							}
@@ -273,7 +274,7 @@ public class TimeManager{
 						lastCheckIn = e.getTime();
 					} else {
 						if(e.getType().equals(Event.CHECK_OUT)){
-							Log.w(TAG, "HOURS: CHECK_OUT");
+							//Log.w(TAG, "HOURS: CHECK_OUT");
 							if(lastCheckIn > 0){
 								// Define case 7: Enter in weekend
 								if( isWeekend || isAbsent ){
@@ -283,7 +284,7 @@ public class TimeManager{
 									if( lastCheckIn < fixedTimeStart && 
 										e.getTime() > fixedTimeStart && 
 										e.getTime() < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR))){
-										Log.w(TAG, "CASE 1");
+										//Log.w(TAG, "CASE 1");
 										todaysTime += fixedTimeStart - lastCheckIn;
 										isLunch = true;
 										//lastCheckOut = e.getTime();
@@ -291,7 +292,7 @@ public class TimeManager{
 									// Define case 3: Enter before fixedTimeStart and exit after fts+(FTD*HOURS)
 									if( lastCheckIn < fixedTimeStart && 
 										e.getTime() > ( fixedTimeStart + FIXED_TIME_DURATION * HOUR ) ){
-										Log.w(TAG, "CASE 3");
+										//Log.w(TAG, "CASE 3");
 										todaysTime += fixedTimeStart - lastCheckIn;
 										todaysTime += e.getTime() - fixedTimeStart + (FIXED_TIME_DURATION * HOUR);
 										isLunch = false;
@@ -299,14 +300,14 @@ public class TimeManager{
 									// Define case 5: Enter after fts+(FTD*HOURS) and exit after
 									if( lastCheckIn > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) && 
 										e.getTime() > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ){
-										Log.w(TAG, "CASE 5");
+										//Log.w(TAG, "CASE 5");
 										todaysTime += e.getTime() - lastCheckIn;
 										isLunch = false;
 									}
 									// Define case 6: Enter before fts and exit before fts
 									if( lastCheckIn < fixedTimeStart &&
 										e.getTime() < fixedTimeStart){
-										Log.w(TAG, "CASE 6");
+										//Log.w(TAG, "CASE 6");
 										todaysTime += e.getTime() - lastCheckIn;
 										isLunch = false;
 									}
@@ -314,7 +315,7 @@ public class TimeManager{
 									if( lastCheckIn > fixedTimeStart &&
 										lastCheckIn < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
 										e.getTime() > fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ){
-										Log.w(TAG, "CASE 7");
+										//Log.w(TAG, "CASE 7");
 										todaysTime += e.getTime() - (fixedTimeStart + ( FIXED_TIME_DURATION * HOUR )) ;
 										isLunch = false;
 										}
@@ -322,7 +323,7 @@ public class TimeManager{
 									if(lastCheckIn > fixedTimeStart &&
 									   lastCheckIn < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
 									   e.getTime() < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ){
-										Log.w(TAG, "CASE 8");
+										//Log.w(TAG, "CASE 8");
 										isLunch = true;
 									}
 								}
@@ -389,14 +390,14 @@ public class TimeManager{
 			for(Event e:groupEvents){
 				//if(DateUtils.isToday(e.getTime())){
 					if(e.getType().equals(Event.CHECK_IN)){
-						Log.w(TAG, "HOURS: CHECK_IN");
+						//Log.w(TAG, "HOURS: CHECK_IN");
 						if(lastCheckOut > 0){
 							if( !this.isWeekend && !this.isAbsent ){
 								// Define case 2: Exit before fts and enter after fixedTimeStart 
 								if( e.getTime() > fixedTimeStart &&
 									e.getTime() < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
 									lastCheckOut < fixedTimeStart){
-									Log.w(TAG, "CASE 2");
+									//Log.w(TAG, "CASE 2");
 									lunchTime += e.getTime() - fixedTimeStart;
 								}
 								// Define case 4: Enter after fixedTimeStart and exit before fts+(FTD*HOURS)
@@ -404,7 +405,7 @@ public class TimeManager{
 									lastCheckOut < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ) && 
 									e.getTime() > lastCheckOut &&
 									e.getTime() < ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) ){
-									Log.w(TAG, "CASE 4");
+									//Log.w(TAG, "CASE 4");
 									lunchTime += e.getTime() - lastCheckOut;
 								}
 								// Define case 9: Enter before fte and exit after fte
@@ -412,7 +413,7 @@ public class TimeManager{
 									lastCheckOut < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ) &&
 									e.getTime() > lastCheckOut &&
 									e.getTime() > ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) ){
-									Log.w(TAG, "CASE 9");
+									//Log.w(TAG, "CASE 9");
 									lunchTime += ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) - lastCheckOut;
 								}
 							}
@@ -423,7 +424,7 @@ public class TimeManager{
 						this.isInside = true;
 					} else {
 						if(e.getType().equals(Event.CHECK_OUT)){
-							Log.w(TAG, "HOURS: CHECK_OUT");
+							//Log.w(TAG, "HOURS: CHECK_OUT");
 							if(lastCheckIn > 0){
 								// Define case 7: Enter in weekend
 								if( this.isWeekend || this.isAbsent ){
@@ -433,7 +434,7 @@ public class TimeManager{
 									if( lastCheckIn < fixedTimeStart && 
 										e.getTime() > fixedTimeStart && 
 										e.getTime() < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR))){
-										Log.w(TAG, "CASE 1");
+										//Log.w(TAG, "CASE 1");
 										todaysTime += fixedTimeStart - lastCheckIn;
 										this.isLunch = true;
 										//lastCheckOut = e.getTime();
@@ -441,7 +442,7 @@ public class TimeManager{
 									// Define case 3: Enter before fixedTimeStart and exit after fts+(FTD*HOURS)
 									if( lastCheckIn < fixedTimeStart && 
 										e.getTime() > ( fixedTimeStart + FIXED_TIME_DURATION * HOUR ) ){
-										Log.w(TAG, "CASE 3");
+										//Log.w(TAG, "CASE 3");
 										todaysTime += fixedTimeStart - lastCheckIn;
 										todaysTime += e.getTime() - fixedTimeStart + (FIXED_TIME_DURATION * HOUR);
 										this.isLunch = false;
@@ -449,14 +450,14 @@ public class TimeManager{
 									// Define case 5: Enter after fts+(FTD*HOURS) and exit after
 									if( lastCheckIn > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) && 
 										e.getTime() > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ){
-										Log.w(TAG, "CASE 5");
+										//Log.w(TAG, "CASE 5");
 										todaysTime += e.getTime() - lastCheckIn;
 										this.isLunch = false;
 									}
 									// Define case 6: Enter before fts and exit before fts
 									if( lastCheckIn < fixedTimeStart &&
 										e.getTime() < fixedTimeStart){
-										Log.w(TAG, "CASE 6");
+										//Log.w(TAG, "CASE 6");
 										todaysTime += e.getTime() - lastCheckIn;
 										this.isLunch = false;
 									}
@@ -464,7 +465,7 @@ public class TimeManager{
 									if( lastCheckIn > fixedTimeStart &&
 										lastCheckIn < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
 										e.getTime() > fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ){
-										Log.w(TAG, "CASE 7");
+										//Log.w(TAG, "CASE 7");
 										todaysTime += e.getTime() - (fixedTimeStart + ( FIXED_TIME_DURATION * HOUR )) ;
 										this.isLunch = false;
 										}
@@ -472,7 +473,7 @@ public class TimeManager{
 									if(lastCheckIn > fixedTimeStart &&
 									   lastCheckIn < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
 									   e.getTime() < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ){
-										Log.w(TAG, "CASE 8");
+										//Log.w(TAG, "CASE 8");
 										this.isLunch = true;
 									}
 								}
@@ -609,7 +610,7 @@ public class TimeManager{
 								if( e.getTime() > fixedTimeStart &&
 									e.getTime() < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
 									lastCheckOut < fixedTimeStart){
-									Log.w(TAG, "CASE 2");
+									//Log.w(TAG, "CASE 2");
 									lunchTime += e.getTime() - fixedTimeStart;
 								}
 								// Define case 4: Enter after fixedTimeStart and exit before fts+(FTD*HOURS)
@@ -617,7 +618,7 @@ public class TimeManager{
 									lastCheckOut < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ) && 
 									e.getTime() > lastCheckOut &&
 									e.getTime() < ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) ){
-									Log.w(TAG, "CASE 4");
+									//Log.w(TAG, "CASE 4");
 									lunchTime += e.getTime() - lastCheckOut;
 								}
 								// Define case 9: Enter before fte and exit after fte
@@ -625,7 +626,7 @@ public class TimeManager{
 									lastCheckOut < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ) &&
 									e.getTime() > lastCheckOut &&
 									e.getTime() > ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) ){
-									Log.w(TAG, "CASE 9");
+									//Log.w(TAG, "CASE 9");
 									lunchTime += ( fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ) - lastCheckOut;
 								}
 							}
@@ -646,7 +647,7 @@ public class TimeManager{
 									if( lastCheckIn < fixedTimeStart && 
 										e.getTime() > fixedTimeStart && 
 										e.getTime() < ( fixedTimeStart + (FIXED_TIME_DURATION * HOUR))){
-										Log.w(TAG, "CASE 1");
+										//Log.w(TAG, "CASE 1");
 										todaysTime += fixedTimeStart - lastCheckIn;
 										this.isLunch = true;
 										//lastCheckOut = e.getTime();
@@ -654,7 +655,7 @@ public class TimeManager{
 									// Define case 3: Enter before fixedTimeStart and exit after fts+(FTD*HOURS)
 									if( lastCheckIn < fixedTimeStart && 
 										e.getTime() > ( fixedTimeStart + FIXED_TIME_DURATION * HOUR ) ){
-										Log.w(TAG, "CASE 3");
+										//Log.w(TAG, "CASE 3");
 										todaysTime += fixedTimeStart - lastCheckIn;
 										todaysTime += e.getTime() - fixedTimeStart + (FIXED_TIME_DURATION * HOUR);
 										this.isLunch = false;
@@ -662,14 +663,14 @@ public class TimeManager{
 									// Define case 5: Enter after fts+(FTD*HOURS) and exit after
 									if( lastCheckIn > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) && 
 										e.getTime() > fixedTimeStart + (FIXED_TIME_DURATION * HOUR) ){
-										Log.w(TAG, "CASE 5");
+										//Log.w(TAG, "CASE 5");
 										todaysTime += e.getTime() - lastCheckIn;
 										this.isLunch = false;
 									}
 									// Define case 6: Enter before fts and exit before fts
 									if( lastCheckIn < fixedTimeStart &&
 										e.getTime() < fixedTimeStart){
-										Log.w(TAG, "CASE 6");
+										//Log.w(TAG, "CASE 6");
 										todaysTime += e.getTime() - lastCheckIn;
 										this.isLunch = false;
 									}
@@ -677,7 +678,7 @@ public class TimeManager{
 									if( lastCheckIn > fixedTimeStart &&
 										lastCheckIn < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
 										e.getTime() > fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ){
-											Log.w(TAG, "CASE 7");
+											//Log.w(TAG, "CASE 7");
 											todaysTime += e.getTime() - (fixedTimeStart + ( FIXED_TIME_DURATION * HOUR )) ;
 											this.isLunch = false;
 										}
@@ -685,7 +686,7 @@ public class TimeManager{
 									if(lastCheckIn > fixedTimeStart &&
 									   lastCheckIn < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) &&
 									   e.getTime() < fixedTimeStart + ( FIXED_TIME_DURATION * HOUR ) ){
-										Log.w(TAG, "CASE 8");
+										//Log.w(TAG, "CASE 8");
 										this.isLunch = true;
 									}
 								}
