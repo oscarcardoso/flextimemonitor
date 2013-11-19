@@ -3,11 +3,10 @@
 A small Android app for keeping track of flex time hours without having to wait for HR table update.
 
 ## TODO in v0.0.4
+- Set fixed initial flex time.
+- Save previous month events in a monthly database.
 - Get the working days in a month.
 - Show the due hours in this month, at the start of the month.
-- Save previous month events in a monthly database.
-- Proper action bar usage.
-- Set fixed initial flex time.
 - Make a Ivan-Fix: Count the absent days as todaysTime - fixedTime - lateTime
 
 ## v0.0.4
@@ -15,6 +14,7 @@ A small Android app for keeping track of flex time hours without having to wait 
 - Count just the Flex Time Hours.
 - Deal with absent state when the first check in is after 10am.
 - Use day class to stablish the state of the chronometer.
+- Proper action bar usage.
 
 ## v0.0.3 STABLE
 - Update each check event individually.
