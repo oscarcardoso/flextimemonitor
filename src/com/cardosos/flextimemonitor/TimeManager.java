@@ -22,6 +22,7 @@ public class TimeManager{
 	private boolean isLunch 	= false;
 	private boolean isIvanFix   = false;
 	private int flexMode = FLEX_MODE_NORMAL;
+	private int daysOff = 0;
 	private Day today = new Day(Day.STATE_OUT_IN_TIME);
 
 	public static long MAX_FLEX_HOURS = 5;
@@ -758,6 +759,14 @@ public class TimeManager{
 
 	public int getDayState(){
 		return this.today.getState();
+	}
+
+	public void setDaysOff(int days){
+		this.daysOff = days;
+	}
+
+	public int getDaysOff(){
+		return this.daysOff;
 	}
 
 	public void updateState(){
