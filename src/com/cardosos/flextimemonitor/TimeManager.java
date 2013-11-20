@@ -118,6 +118,29 @@ public class TimeManager{
 		return Integer.parseInt((String) DateFormat.format("yyyy", time));
 	}
 	
+	public static Date getMonthDate(boolean startOfMonth){
+		Calendar cal = Calendar.getInstance();
+		if(startOfMonth){
+			cal.set(Calendar.DAY_OF_MONTH, 1);//First day of month is 1
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+		}else{
+			int max = cal.getMaximum(Calendar.DAY_OF_MONTH);
+			cal.set(Calendar.DAY_OF_MONTH, max);//First day of month is 1
+			max = cal.getMaximum(Calendar.HOUR_OF_DAY);
+			cal.set(Calendar.HOUR_OF_DAY, max);
+			max = cal.getMaximum(Calendar.MINUTE);
+			cal.set(Calendar.MINUTE, max);
+			max = cal.getMaximum(Calendar.SECOND);
+			cal.set(Calendar.SECOND, max);
+			max = cal.getMaximum(Calendar.MILLISECOND);
+			cal.set(Calendar.MILLISECOND, max);
+			Log.i(TAG, "endDate: " +  cal.toString());
+		}
+		return cal.getTime();
+	}
 	
 	/**
 	 * Gets the amount of workdays between <b>startDate</b> and <b>endDate</b>. Imported from <a href="https://gist.github.com/digitalpardoe/1086772#file-calculateduration-java">digitalpardoe</a> gists.

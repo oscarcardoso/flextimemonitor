@@ -92,6 +92,12 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		cal.set(Calendar.MINUTE, 0);
 		
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+
+		int workDays = TimeManager.calculateDuration(TimeManager.getMonthDate(true), TimeManager.getMonthDate(false));
+		int hoursByNow = (int) TimeManager.MAX_FLEX_HOURS * TimeManager.calculateDuration(TimeManager.getMonthDate(true), cal.getTime());
+		Log.i(TAG, "Work Days: " + workDays);
+		Log.i(TAG, "This Months Flex Hours: " + (workDays * TimeManager.MAX_FLEX_HOURS));
+		Log.i(TAG, "Hours by now: " + hoursByNow);
 		
 		for(int k=0 ; k < values.size(); k++){
 			if(values.get(k).getDay() == dayOfMonth){
