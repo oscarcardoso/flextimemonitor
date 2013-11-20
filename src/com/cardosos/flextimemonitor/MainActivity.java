@@ -99,6 +99,8 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		Log.i(TAG, "This Months Flex Hours: " + (workDays * TimeManager.MAX_FLEX_HOURS));
 		Log.i(TAG, "Hours by now: " + hoursByNow);
 		
+		long timeToSave = 0;
+
 		for(int k=0 ; k < values.size(); k++){
 			if(values.get(k).getDay() == dayOfMonth){
 				briefedValues.add(values.get(k));
@@ -120,6 +122,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			}
 			if(!group.isEmpty()){
 				group.setHours(tm);
+				timeToSave += group.getGroupTime();
 				tm.updateState();
 				switch(tm.getDayState()){
 					case Day.STATE_OUT_WEEKEND:
@@ -157,6 +160,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 				Log.i(TAG, "Add a group: " + group.getDay());
 			}
 		}
+		Log.i(TAG, "Due hours: " + (hoursByNow - (TimeManager.getHourInt(timeToSave))) );
 		
 		EventAdapter adapter= new EventAdapter(this, R.layout.listview_item_row,(List<Event>) briefedValues);
 		//EventAdapter adapter= new EventAdapter(this, R.layout.listview_item_row,(List<Event>) values);
