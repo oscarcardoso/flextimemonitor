@@ -2,7 +2,13 @@
 
 A small Android app for keeping track of flex time hours without having to wait for HR table update.
 
+## TODO in v0.0.5
+- Setup the Edit Mode View.
+- Add buttons to delete or modify day/event status.
+- Restructure the database access procedure to show a loading screen and make load/read more efficiently.
+
 ## TODO in v0.0.4
+- Add, remove and edit a Day Off (vacations, special permits, days off, reposition days).
 - Get the working days in a month.
 - Show the due hours in this month, at the start of the month.
 - Make a Ivan-Fix: Count the absent days as todaysTime - fixedTime - lateTime
