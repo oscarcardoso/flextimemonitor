@@ -93,7 +93,10 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
 
-		int workDays = TimeManager.calculateDuration(TimeManager.getMonthDate(true), TimeManager.getMonthDate(false));
+		//TODO: Add setting for this months days off.
+		timeManager.setDaysOff(1);//dxd hardcode
+
+		int workDays = TimeManager.calculateDuration(TimeManager.getMonthDate(true), TimeManager.getMonthDate(false)) - timeManager.getDaysOff();
 		int hoursByNow = (int) TimeManager.MAX_FLEX_HOURS * TimeManager.calculateDuration(TimeManager.getMonthDate(true), cal.getTime());
 		Log.i(TAG, "Work Days: " + workDays);
 		Log.i(TAG, "This Months Flex Hours: " + (workDays * TimeManager.MAX_FLEX_HOURS));
