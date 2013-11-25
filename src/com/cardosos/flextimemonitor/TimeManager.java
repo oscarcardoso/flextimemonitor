@@ -14,6 +14,7 @@ public class TimeManager{
 	private long lastCheckIn = 0;
 	private long todaysTime = 0;
 	private long lunchTime = 0;
+	private long hoursByNow = 0;
 	private boolean isInside 	= false;
 	private boolean isOutside 	= false;
 	private boolean isOvertime 	= false;
@@ -767,6 +768,14 @@ public class TimeManager{
 
 	public int getDaysOff(){
 		return this.daysOff;
+	}
+
+	public void setHoursByNow(int hoursByNow){
+		this.hoursByNow = hoursByNow;
+	}
+
+	public int getHoursByNow(){
+		return this.hoursByNow;
 	}
 
 	public void updateState(){
