@@ -92,6 +92,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		cal.set(Calendar.MINUTE, 0);
 		
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+		int month = cal.get(Calendar.MONTH);
 
 		//TODO: Add setting for this months days off.
 		timeManager.setDaysOff(1);//dxd hardcode
@@ -105,7 +106,8 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		long timeToSave = 0;
 
 		for(int k=0 ; k < values.size(); k++){
-			if(values.get(k).getDay() == dayOfMonth){
+			if(values.get(k).getMonth() == month && 
+			   values.get(k).getDay() == dayOfMonth){
 				briefedValues.add(values.get(k));
 			}else{
 				break;
@@ -116,7 +118,8 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			EventGroup group = new EventGroup();
 			TimeManager tm = new TimeManager();
 			for(int i=0; i < values.size(); i++){
-				if(values.get(i).getDay() < dayOfMonth){
+				if(values.get(k).getMonth() == month &&
+				   values.get(i).getDay() < dayOfMonth){
 					if(values.get(i).getDay() == j){
 						group.addEvent(values.get(i));
 						Log.i(TAG, "Add a " + values.get(i).getType() + " event from: " + j);
@@ -790,12 +793,14 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		cal.set(Calendar.MINUTE, 0);
 		
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+		int month = cal.get(Calendar.MONTH);
 		
 		for(int j = dayOfMonth - 1; j > 0; j--){
 			EventGroup group = new EventGroup();
 			TimeManager tm = new TimeManager();
 			for(int i=0; i < values.size(); i++){
-				if(values.get(i).getDay() < dayOfMonth){
+				if(values.get(k).getMonth() == month &&
+				   values.get(i).getDay() < dayOfMonth){
 					if(values.get(i).getDay() == j){
 						group.addEvent(values.get(i));
 					}
