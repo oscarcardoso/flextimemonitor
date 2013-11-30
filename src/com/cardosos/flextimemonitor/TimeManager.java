@@ -770,11 +770,11 @@ public class TimeManager{
 		return this.daysOff;
 	}
 
-	public void setHoursByNow(int hoursByNow){
+	public void setHoursByNow(long hoursByNow){
 		this.hoursByNow = hoursByNow;
 	}
 
-	public int getHoursByNow(){
+	public long getHoursByNow(){
 		return this.hoursByNow;
 	}
 
