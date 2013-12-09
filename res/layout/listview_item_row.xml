@@ -39,6 +39,6 @@
         android:textIsSelectable="false"
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
-        android:text="23/04 00:00:00"
+        android:text="@string/empty_time"
         />
 </LinearLayout>
