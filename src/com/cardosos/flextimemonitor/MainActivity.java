@@ -10,12 +10,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
 
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+//import android.app.DialogFragment;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
-import android.app.ListActivity;
+//import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -43,7 +46,7 @@ import com.cardosos.flextimemonitor.TimePickerFragment.TimePickedListener;
 
 @SuppressLint("NewApi")
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class MainActivity extends ListActivity implements TimePickedListener, DatePickedListener{
+public class MainActivity extends FragmentListActivity implements TimePickedListener, DatePickedListener{
 
 	private EventsDataSource datasource; // Vogella
 	private String previousEventType = " ";
@@ -361,13 +364,13 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 				case 0: {
 					// Edit the event time.
 					DialogFragment timeFragment = new TimePickerFragment(longListItemClickPosition, event.getDayTimeHours(), event.getDayTimeMinutes());
-					timeFragment.show(getFragmentManager(), "timePicker");
+					timeFragment.show(getSupportFragmentManager(), "timePicker");
 				}
 				break;
 				case 1: {
 					// Edit the event date.
 				    DialogFragment dateFragment = new DatePickerFragment(longListItemClickPosition, event.getDay(), event.getMonth(), event.getYear());
-				    dateFragment.show(getFragmentManager(), "datePicker");
+				    dateFragment.show(getSupportFragmentManager(), "datePicker");
 				}
 					break;
 				case 2: {
@@ -713,7 +716,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	
 	public void showTimePickerDialog(View v) {
 	    DialogFragment newFragment = new TimePickerFragment();
-	    newFragment.show(getFragmentManager(), "timePicker");
+	    newFragment.show(getSupportFragmentManager(), "timePicker");
 	}
 
 	@Override

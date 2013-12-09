@@ -5,7 +5,6 @@ package com.cardosos.flextimemonitor;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.os.Bundle;
@@ -13,6 +12,9 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import android.support.v4.app.DialogFragment;
+//import android.app.DialogFragment;
 
 /**
  * @author oscar.cardoso
