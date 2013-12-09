@@ -96,6 +96,7 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 		
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
 		int month = cal.get(Calendar.MONTH);
+		//TODO: Use the year to filter out too.
 
 		//TODO: Add setting for this months days off.
 		timeManager.setDaysOff(1);//dxd hardcode
@@ -121,7 +122,7 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 			EventGroup group = new EventGroup();
 			TimeManager tm = new TimeManager();
 			for(int i=0; i < values.size(); i++){
-				if(values.get(k).getMonth() == month &&
+				if(values.get(i).getMonth() == month &&
 				   values.get(i).getDay() < dayOfMonth){
 					if(values.get(i).getDay() == j){
 						group.addEvent(values.get(i));
@@ -797,12 +798,13 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 		
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
 		int month = cal.get(Calendar.MONTH);
+		//TODO: Use the year to filter out too.
 		
 		for(int j = dayOfMonth - 1; j > 0; j--){
 			EventGroup group = new EventGroup();
 			TimeManager tm = new TimeManager();
 			for(int i=0; i < values.size(); i++){
-				if(values.get(k).getMonth() == month &&
+				if(values.get(i).getMonth() == month &&
 				   values.get(i).getDay() < dayOfMonth){
 					if(values.get(i).getDay() == j){
 						group.addEvent(values.get(i));
