@@ -25,6 +25,7 @@ A small Android app for keeping track of flex time hours without having to wait 
 - Use day class to stablish the state of the chronometer.
 - Proper action bar usage.
 - MainActivity List shows only this month events.
+- Gingerbread and older support.
 
 ## v0.0.3 STABLE
 - Update each check event individually.
