@@ -111,30 +111,42 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 		
 		long timeToSave = 0;
 
+		//loop all the events
 		for(int k=0 ; k < values.size(); k++){
 			if(values.get(k).getMonth() == month && 
 			   values.get(k).getDay() == dayOfMonth){
+				//when is TODAY, just add the event
 				briefedValues.add(values.get(k));
 			}else{
-				break;
+				//if it's not today, don't add anything.
+				Log.i(TAG, "This event is not TODAY.");
+				//break;
 			}
 		}
 		
+		// Now, loop all the events from TODAY to the beginning of the month.
 		for(int j = dayOfMonth - 1; j > 0; j--){
 			EventGroup group = new EventGroup();
 			TimeManager tm = new TimeManager();
+			// Loop the list, for each day
 			for(int i=0; i < values.size(); i++){
 				if(values.get(i).getMonth() == month &&
 				   values.get(i).getDay() < dayOfMonth){
+					// This day must be before TODAY
 					if(values.get(i).getDay() == j){
+						// If the Event is equals to the day being searched, add the event to the EventGroup
 						group.addEvent(values.get(i));
 						Log.i(TAG, "Add a " + values.get(i).getType() + " event from: " + j);
 					}
 				}
 			}
 			if(!group.isEmpty()){
+				// If the EventGroup is NOT empty, set the hours
+				//group.sortEvents();
 				group.setHours(tm);
+				// Add the day or EventGroup time to the time to save.
 				timeToSave += group.getGroupTime();
+				// Update the state of the day and set the icon.
 				tm.updateState();
 				switch(tm.getDayState()){
 					case Day.STATE_OUT_WEEKEND:
@@ -168,6 +180,7 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 						group.setIcon(Event.PRESENCE);
 						break;
 				}
+				// Finally add the group to the briefed values.
 				briefedValues.add(group);
 				Log.i(TAG, "Add a group: " + group.getDay());
 			}
@@ -833,6 +846,7 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 				}
 			}
 			if(!group.isEmpty()){
+				//group.sortEvents();
 				group.setHours(tm);
 				timeToSave += group.getGroupTime();
 				Log.i(TAG, "Add a group time: " + TimeManager.longToString(group.getGroupTime()));
