@@ -99,7 +99,7 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 		//TODO: Use the year to filter out too.
 
 		//TODO: Add setting for this months days off.
-		timeManager.setDaysOff(1);//dxd hardcode
+		timeManager.setDaysOff(0);//dxd hardcode
 
 		int workDays = TimeManager.calculateDuration(TimeManager.getMonthDate(true), TimeManager.getMonthDate(false)) - timeManager.getDaysOff();
 		int hoursByNow = (int) TimeManager.MAX_FLEX_HOURS * TimeManager.calculateDuration(TimeManager.getMonthDate(true), cal.getTime());
