@@ -196,14 +196,6 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 		mChrono = (TextView) findViewById(R.id.chronometer1);
 		mTodayChrono = (TextView) findViewById(R.id.chronometer2);
 		
-		//TODO: Remove checkButton
-		/*
-		Button checkButton = (Button)findViewById(R.id.checkButton);
-		if(previousEventType.equals(Event.CHECK_IN))
-			checkButton.setText("CHECK OUT");
-		else
-			checkButton.setText("CHECK IN");
-			*/
 
 		mChrono.setText(R.string.empty_time);
 
@@ -212,10 +204,22 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 			mChrono.setText(TimeManager.longToString(mPauseTime));
 		}
 
-		if(!mStartedChrono && previousEventType.equals(Event.CHECK_IN)){
-			startTimer();
-			//TODO: Remove checkButton
-			//checkButton.setText("CHECK OUT");
+		Button checkButton = (Button)findViewById(R.id.checkButton);
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			if(previousEventType.equals(Event.CHECK_IN))
+				checkButton.setText("CHECK OUT");
+			else
+				checkButton.setText("CHECK IN");
+
+			if(!mStartedChrono && previousEventType.equals(Event.CHECK_IN)){
+				checkButton.setText("CHECK OUT");
+			}
+		}else{
+			checkButton.setEnabled(false);
+			checkButton.setVisibility(View.INVISIBLE);
+			if(!mStartedChrono && previousEventType.equals(Event.CHECK_IN)){
+				startTimer();
+			}
 		}
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -247,72 +251,76 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 		Event event = null;
 		Button b = (Button) view;
 		switch(view.getId()){
-//			case R.id.checkButton:
-//				// just check that the button has the proper name
-//				if(previousEventType.equals(Event.CHECK_OUT)){
-//					// You are doing a CHECK_IN
-//					// So, set the button text to CHECK_OUT.
-//					b.setText("CHECK OUT");
-//					// Then you create a new event with the current time
-//					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-//					// Then you set the previousEventType to CHECK_IN
-//					// this is probably unnecesary
-//					//previousEventType = Event.CHECK_IN;
-//					// Then you update the previous event type 
-//					// thru the datasource
-//					updatePreviousEventType();
-//					// Then you set the today's time in the timeManager
-//					// thru the datasource.
-//					timeManager.setTodaysTime(getTodaysHours());
-//					timeManager.setInside(true);
-//					timeManager.setOutside(false);
-//					if(event.isWeekend()){
-//						timeManager.setWeekend(true);
-//					}else{
-//						timeManager.setWeekend(false);
-//						if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
-//							event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
-//							timeManager.setLunch(true);
-//						}else{
-//							timeManager.setLunch(false);
-//						}
-//					}
-//					timeManager.setLunchTime(getTodaysLunchTime());
-//					// and finally, if the chrono is not started, start the
-//					// timer.
-//					if(!mStartedChrono)
-//						startTimer();
-//					Log.i("FTM", "Add Event.CHECK_IN");
-//				} else {
-//					b.setText("CHECK IN");
-//					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
-//					// this is probably unnecesary
-//					//previousEventType = Event.CHECK_OUT;
-//					updatePreviousEventType();
-//					timeManager.setTodaysTime(getTodaysHours());
-//					timeManager.setInside(false);
-//					timeManager.setOutside(true);
-//					if(event.isWeekend()){
-//						timeManager.setWeekend(true);
-//					}else{
-//						timeManager.setWeekend(false);
-//						if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
-//							event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
-//							timeManager.setLunch(true);
-//						}else{
-//							timeManager.setLunch(false);
-//						}
-//					}
-//					timeManager.setLunchTime(getTodaysLunchTime());
-//
-//					Log.i("FTM", "Add Event.CHECK_OUT");
-//				}
-//				try{
-//					adapter.insert(event, 0);
-//				}catch(Exception e){
-//					e.printStackTrace();
-//				}
-//				break;
+			//TODO: USE THIS FOR GINGERBREAD OR OLDER
+			case R.id.checkButton:
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+					// just check that the button has the proper name
+					if(previousEventType.equals(Event.CHECK_OUT) || !previousEventType.equals(Event.CHECK_IN) ){
+						// You are doing a CHECK_IN
+						// So, set the button text to CHECK_OUT.
+						b.setText("CHECK OUT");
+						// Then you create a new event with the current time
+						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
+						// Then you set the previousEventType to CHECK_IN
+						// this is probably unnecesary
+						//previousEventType = Event.CHECK_IN;
+						// Then you update the previous event type 
+						// thru the datasource
+						updatePreviousEventType();
+						// Then you set the today's time in the timeManager
+						// thru the datasource.
+						timeManager.setTodaysTime(getTodaysHours());
+						timeManager.setInside(true);
+						timeManager.setOutside(false);
+						if(event.isWeekend()){
+							timeManager.setWeekend(true);
+						}else{
+							timeManager.setWeekend(false);
+							if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
+								event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
+								timeManager.setLunch(true);
+							}else{
+								timeManager.setLunch(false);
+							}
+						}
+						timeManager.setLunchTime(getTodaysLunchTime());
+						// and finally, if the chrono is not started, start the
+						// timer.
+						if(!mStartedChrono)
+							startTimer();
+						Log.i("FTM", "Add Event.CHECK_IN");
+					} else {
+						b.setText("CHECK IN");
+						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
+						// this is probably unnecesary
+						//previousEventType = Event.CHECK_OUT;
+						updatePreviousEventType();
+						timeManager.setTodaysTime(getTodaysHours());
+						timeManager.setInside(false);
+						timeManager.setOutside(true);
+						if(event.isWeekend()){
+							timeManager.setWeekend(true);
+						}else{
+							timeManager.setWeekend(false);
+							if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
+								event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
+								timeManager.setLunch(true);
+							}else{
+								timeManager.setLunch(false);
+							}
+						}
+						timeManager.setLunchTime(getTodaysLunchTime());
+
+						Log.i("FTM", "Add Event.CHECK_OUT");
+					}
+					try{
+						Log.i("FTM", "Trying to Add Event");
+						adapter.insert(event, 0);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+				break;
 		}
 		adapter.notifyDataSetChanged();
 	}
@@ -429,72 +437,74 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 		case R.id.check_action:
 			EventAdapter adapter = (EventAdapter) getListAdapter();
 			Event event = null;
-			
-				if(previousEventType.equals(Event.CHECK_OUT)){
-					// You are doing a CHECK_IN
-					// So, set the button text to CHECK_OUT.
-					menuItem.setTitle(R.string.check_out);
-					//menuItem.setIcon(R.drawable.ic_check_out_dark);
-					// Then you create a new event with the current time
-					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-					// Then you set the previousEventType to CHECK_IN
-					// this is probably unnecesary
-					//previousEventType = Event.CHECK_IN;
-					// Then you update the previous event type 
-					// thru the datasource
-					updatePreviousEventType();
-					// Then you set the today's time in the timeManager
-					// thru the datasource.
-					timeManager.setTodaysTime(getTodaysHours());
-					timeManager.setInside(true);
-					timeManager.setOutside(false);
-					if(event.isWeekend()){
-						timeManager.setWeekend(true);
-					}else{
-						timeManager.setWeekend(false);
-						if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
-							event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
-							timeManager.setLunch(true);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				
+					if(previousEventType.equals(Event.CHECK_OUT) || !previousEventType.equals(Event.CHECK_IN) ){
+						// You are doing a CHECK_IN
+						// So, set the button text to CHECK_OUT.
+						menuItem.setTitle(R.string.check_out);
+						//menuItem.setIcon(R.drawable.ic_check_out_dark);
+						// Then you create a new event with the current time
+						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
+						// Then you set the previousEventType to CHECK_IN
+						// this is probably unnecesary
+						//previousEventType = Event.CHECK_IN;
+						// Then you update the previous event type 
+						// thru the datasource
+						updatePreviousEventType();
+						// Then you set the today's time in the timeManager
+						// thru the datasource.
+						timeManager.setTodaysTime(getTodaysHours());
+						timeManager.setInside(true);
+						timeManager.setOutside(false);
+						if(event.isWeekend()){
+							timeManager.setWeekend(true);
 						}else{
-							timeManager.setLunch(false);
+							timeManager.setWeekend(false);
+							if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
+								event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
+								timeManager.setLunch(true);
+							}else{
+								timeManager.setLunch(false);
+							}
 						}
-					}
-					timeManager.setLunchTime(getTodaysLunchTime());
-					// and finally, if the chrono is not started, start the
-					// timer.
-					if(!mStartedChrono)
-						startTimer();
-					Log.i("FTM", "Add Event.CHECK_IN");
-				} else {
-					menuItem.setTitle(R.string.check_in);
-					//menuItem.setIcon(R.drawable.ic_check_in_dark);
-					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
-					// this is probably unnecesary
-					//previousEventType = Event.CHECK_OUT;
-					updatePreviousEventType();
-					timeManager.setTodaysTime(getTodaysHours());
-					timeManager.setInside(false);
-					timeManager.setOutside(true);
-					if(event.isWeekend()){
-						timeManager.setWeekend(true);
-					}else{
-						timeManager.setWeekend(false);
-						if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
-							event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
-							timeManager.setLunch(true);
+						timeManager.setLunchTime(getTodaysLunchTime());
+						// and finally, if the chrono is not started, start the
+						// timer.
+						if(!mStartedChrono)
+							startTimer();
+						Log.i("FTM", "Add Event.CHECK_IN");
+					} else {
+						menuItem.setTitle(R.string.check_in);
+						//menuItem.setIcon(R.drawable.ic_check_in_dark);
+						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
+						// this is probably unnecesary
+						//previousEventType = Event.CHECK_OUT;
+						updatePreviousEventType();
+						timeManager.setTodaysTime(getTodaysHours());
+						timeManager.setInside(false);
+						timeManager.setOutside(true);
+						if(event.isWeekend()){
+							timeManager.setWeekend(true);
 						}else{
-							timeManager.setLunch(false);
+							timeManager.setWeekend(false);
+							if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
+								event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
+								timeManager.setLunch(true);
+							}else{
+								timeManager.setLunch(false);
+							}
 						}
-					}
-					timeManager.setLunchTime(getTodaysLunchTime());
+						timeManager.setLunchTime(getTodaysLunchTime());
 
-					Log.i("FTM", "Add Event.CHECK_OUT");
-				}
-				try{
-					adapter.insert(event, 0);
-				}catch(Exception e){
-					e.printStackTrace();
-				}
+						Log.i("FTM", "Add Event.CHECK_OUT");
+					}
+					try{
+						adapter.insert(event, 0);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+			}
 			adapter.notifyDataSetChanged();
 			return true;
 		default:
@@ -513,16 +523,22 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 	public boolean onPrepareOptionsMenu(Menu menu){
 		Log.d(TAG, "onPrepareOptionsMenu");
 		MenuItem check_action_item = menu.findItem(R.id.check_action);
-		datasource.open();
-		if(!datasource.isEmpty()){
-			updatePreviousEventType();
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			check_action_item.setVisible(false);
+			check_action_item.setEnabled(false);
 		}
-		if(previousEventType.equals(Event.CHECK_IN)){
-			//check_action_item.setIcon(R.drawable.ic_check_out_dark);
-			check_action_item.setTitle(R.string.check_out);
-		}else{
-			//check_action_item.setIcon(R.drawable.ic_check_in_dark);
-			check_action_item.setTitle(R.string.check_in);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			datasource.open();
+			if(!datasource.isEmpty()){
+				updatePreviousEventType();
+			}
+			if(previousEventType.equals(Event.CHECK_IN)){
+				//check_action_item.setIcon(R.drawable.ic_check_out_dark);
+				check_action_item.setTitle(R.string.check_out);
+			}else{
+				//check_action_item.setIcon(R.drawable.ic_check_in_dark);
+				check_action_item.setTitle(R.string.check_in);
+			}
 		}
 		super.onPrepareOptionsMenu(menu);
 		return true;
