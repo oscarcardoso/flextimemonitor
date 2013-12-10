@@ -3,9 +3,11 @@
 A small Android app for keeping track of flex time hours without having to wait for HR table update.
 
 ## TODO in v0.0.5
+- Setup the Flex2 schedule: Saturdays count as a regular day, lunch time is just half an hour.
 - Setup the Edit Mode View.
 - Add buttons to delete or modify day/event status.
 - Restructure the database access procedure to show a loading screen and make load/read more efficiently.
+- Add a status bar notification for quick access. (With check action if possible).
 
 ## TODO in v0.0.4
 - Add, remove and edit a Day Off (vacations, special permits, days off, reposition days).
@@ -14,6 +16,7 @@ A small Android app for keeping track of flex time hours without having to wait 
 - Make a Ivan-Fix: Count the absent days as todaysTime - fixedTime - lateTime
 - Set fixed initial flex time.
 - Save previous month events in a monthly database.
+- Sort events when loading for group event.
 
 ## v0.0.4
 - Average each previous day into a single list element.
@@ -21,6 +24,7 @@ A small Android app for keeping track of flex time hours without having to wait 
 - Deal with absent state when the first check in is after 10am.
 - Use day class to stablish the state of the chronometer.
 - Proper action bar usage.
+- MainActivity List shows only this month events.
 
 ## v0.0.3 STABLE
 - Update each check event individually.
