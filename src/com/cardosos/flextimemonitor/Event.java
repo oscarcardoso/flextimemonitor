@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 import android.text.format.DateFormat;
 
-public class Event {
+public class Event implements Comparable{
 	private long id;
 	protected long time = 0;
 	protected String type = " ";
@@ -195,6 +195,18 @@ public class Event {
 		cal.set(Calendar.MONTH, month);
 		cal.set(Calendar.YEAR, year);
 		this.time = cal.getTimeInMillis();
+	}
+
+	public int compareTo(Object o){
+		Event e = (Event) o;
+
+		if (this.time > e.getTime()) {
+			return 1;
+		}else if(this.time < e.getTime()){
+			return -1;
+		}else{
+			return 0;
+		}
 	}
 
 }
