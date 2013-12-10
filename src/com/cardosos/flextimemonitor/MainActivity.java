@@ -580,13 +580,13 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 
 		mTodayChrono.setText(TimeManager.longToString(timeManager.getTodaysTime()));
 		if(timeManager.isAbsent()){
-			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+			mTodayChrono.setTextColor(getResources().getColor(R.color.holo_red_dark));
 		}else{
 			if(timeManager.isWeekend()){
-				mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+				mTodayChrono.setTextColor(getResources().getColor(R.color.holo_blue_dark));
 			}else{
 				if( timeManager.getTodaysTime() > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS){
-					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+					mTodayChrono.setTextColor(getResources().getColor(R.color.holo_green_dark));
 				}
 			}
 		}
@@ -653,13 +653,13 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 		//millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
 		mTodayChrono.setText(TimeManager.longToString(millis));
 		if(timeManager.isAbsent()){
-			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+			mTodayChrono.setTextColor(getResources().getColor(R.color.holo_red_dark));
 		}else{
 			if(timeManager.isWeekend()){
-				mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+				mTodayChrono.setTextColor(getResources().getColor(R.color.holo_blue_dark));
 			}else{
 				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS){
-					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+					mTodayChrono.setTextColor(getResources().getColor(R.color.holo_green_dark));
 				}
 			}
 		}
