@@ -15,5 +15,7 @@
     <string name="check_in">Check In</string>
     <string name="check_out">Check Out</string>
     <string name="delete_previous_month">Delete Previous Month</string>
+    <string name="absence_fix_title">Use "Absence Fix"</string>
+    <string name="absence_fix_sumary">Automatically mark absence days as "On Time" with proper calculations.</string>
     
 </resources>
