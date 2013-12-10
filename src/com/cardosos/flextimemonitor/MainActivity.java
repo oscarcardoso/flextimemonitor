@@ -79,6 +79,8 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 
 		List<Event> values = datasource.getAllEvents();
 		
+		// Sort by time and then reverse the Events.
+		Collections.sort(values);
 		Collections.reverse(values);
 
 		// Use the SimpleCursorAdapter to show the
@@ -695,6 +697,7 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 		long todaysLunchTime = 0;
 		if(datasource.isOpen()){
 			List<Event> todaysEvents = datasource.getAllEvents();
+			Collections.sort(todaysEvents);
 
 			Iterator<Event> iterator = todaysEvents.iterator();
 			while (iterator.hasNext()){
@@ -716,6 +719,7 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 		long todaysTime = 0;
 		if(datasource.isOpen()){
 			List<Event> todaysEvents = datasource.getAllEvents();
+			Collections.sort(todaysEvents);
 
 			Iterator<Event> iterator = todaysEvents.iterator();
 			while (iterator.hasNext()){
@@ -803,6 +807,7 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 		Log.i(TAG, "saveEventsInTempFile()");
 		
 		List<Event> values = datasource.getAllEvents();
+		Collections.sort(values);
 		Collections.reverse(values);
 
 		long timeToSave = 0;
@@ -879,6 +884,7 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 		List<Event> eventList = new ArrayList<Event>();
 		if(datasource.isOpen() && !datasource.isEmpty()){
 			List<Event> values = datasource.getAllEvents();
+			Collections.sort(values);
 			Calendar cal = Calendar.getInstance();
 			cal.set(Calendar.DAY_OF_MONTH, 1);
 			cal.set(Calendar.HOUR_OF_DAY, 0);
