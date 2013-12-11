@@ -9,12 +9,17 @@ import android.preference.PreferenceActivity;
 public class SettingsActivity extends PreferenceActivity 
 	implements OnSharedPreferenceChangeListener {
 
-	public static final String KEY_PREF_SYNC_CONN = "pref_syncConnectionType";
+	public static final String KEY_PREF_FLEX_MODE = "pref_flexMode";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+
+		// Setting the summary for ListPreference
+		Preference flexModePref = findPreference(KEY_PREF_FLEX_MODE);
+		// Set summary to be the user-description for the selected value
+		flexModePref.setSummary(getPreferenceManager().getSharedPreferences().getString(KEY_PREF_FLEX_MODE, ""));
 	}
 
 	@Override
@@ -32,10 +37,10 @@ public class SettingsActivity extends PreferenceActivity
 	}
 
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals(KEY_PREF_SYNC_CONN)){
-			Preference connectionPref = findPreference(key);
+		if (key.equals(KEY_PREF_FLEX_MODE)){
+			Preference flexModePref = findPreference(key);
 			// Set summary to be the user-description for the selected value
-			connectionPref.setSummary(sharedPreferences.getString(key, ""));
+			flexModePref.setSummary(sharedPreferences.getString(key, ""));
 		}
 	}
 }
