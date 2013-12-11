@@ -22,9 +22,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -72,6 +74,7 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		
 		// Vogella start
 		datasource = new EventsDataSource(this);
@@ -427,7 +430,8 @@ public class MainActivity extends FragmentListActivity implements TimePickedList
 			}
 			return true;
 		case R.id.menu_settings:
-			Toast.makeText(MainActivity.this, "The settings activity is not yet implemented :P", Toast.LENGTH_SHORT).show();
+			Intent intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);
 			return true;
 		case R.id.delete_previous_month:
 			Toast.makeText(MainActivity.this, "Trying to delete previous months events.", Toast.LENGTH_SHORT).show();
