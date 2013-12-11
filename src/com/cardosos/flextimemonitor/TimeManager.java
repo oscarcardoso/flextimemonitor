@@ -35,7 +35,8 @@ public class TimeManager{
 	public static int FIXED_TIME_DURATION = 5;
 	public static int FLEX_MODE_NORMAL 		= 0;
 	public static int FLEX_MODE_REDUX 		= 1;
-	public static int FLEX_MODE_TOTAL 		= 2;
+	public static int FLEX_MODE_EVENING		= 2;
+	public static int FLEX_MODE_MORNING		= 3;
 	public static final String TAG = "FTM";
 
 
