@@ -10,6 +10,7 @@ public class SettingsActivity extends PreferenceActivity
 	implements OnSharedPreferenceChangeListener {
 
 	public static final String KEY_PREF_FLEX_MODE = "pref_flexMode";
+	public static final String KEY_PREF_ABSENCE_FIX = "pref_absenceFix";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
