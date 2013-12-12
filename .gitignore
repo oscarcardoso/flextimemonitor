@@ -34,3 +34,6 @@ patches/
 events.db
 events.csv
 README-MarkdownPadPreview.html
+
+# Document files
+*.od*\#
