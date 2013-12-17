@@ -21,7 +21,7 @@ public class TimeManager{
 	private boolean isAbsent 	= false;
 	private boolean isWeekend 	= false;
 	private boolean isLunch 	= false;
-	private boolean isIvanFix   = false;
+	private boolean isDelayFix  = false;
 	private int flexMode = FLEX_MODE_NORMAL;
 	private int daysOff = 0;
 	private Day today = new Day(Day.STATE_OUT_IN_TIME);
@@ -605,6 +605,14 @@ public class TimeManager{
 
 	public long getLunchTime(){
 		return this.lunchTime;
+	}
+
+	public void setDelayFix(boolean isDelayFix){
+		this.isDelayFix = isDelayFix;
+	}
+
+	public boolean isDelayFix(){
+		return this.isDelayFix;
 	}
 
 	public void updateLunchTime(List<Event> events){
