@@ -3,6 +3,7 @@ package com.cardosos.flextimemonitor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Collections;
 
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -61,6 +62,15 @@ public class EventGroup extends Event {
 
 	public int countEvents(){
 		return events.size();
+	}
+
+	public void sortEvents(){
+		Log.i(TAG, "Sorting...");
+		Collections.sort(events);
+		Log.i(TAG, "Sorted!!!");
+		for(Event sorted : events){
+			Log.i(TAG, sorted.toString());
+		}
 	}
 
 	public List<Event> getEventList(){

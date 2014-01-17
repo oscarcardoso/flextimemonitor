@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<CheckBoxPreference
+		android:key="pref_absenceFix"
+		android:title="@string/absence_fix_title"
+		android:summary="@string/absence_fix_sumary"
+		android:defaultValue="false" />
+	<ListPreference
+		android:key="pref_flexMode"
+		android:title="@string/flex_mode_title"
+		android:dialogTitle="@string/flex_mode_dialog"
+		android:entries="@array/flex_mode_entries"
+		android:entryValues="@array/flex_mode_values"
+		android:defaultValue="@string/flex_mode_default" />
+</PreferenceScreen>

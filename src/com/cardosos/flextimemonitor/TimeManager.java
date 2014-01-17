@@ -14,6 +14,7 @@ public class TimeManager{
 	private long lastCheckIn = 0;
 	private long todaysTime = 0;
 	private long lunchTime = 0;
+	private long hoursByNow = 0;
 	private boolean isInside 	= false;
 	private boolean isOutside 	= false;
 	private boolean isOvertime 	= false;
@@ -22,6 +23,7 @@ public class TimeManager{
 	private boolean isLunch 	= false;
 	private boolean isIvanFix   = false;
 	private int flexMode = FLEX_MODE_NORMAL;
+	private int daysOff = 0;
 	private Day today = new Day(Day.STATE_OUT_IN_TIME);
 
 	public static long MAX_FLEX_HOURS = 5;
@@ -33,7 +35,8 @@ public class TimeManager{
 	public static int FIXED_TIME_DURATION = 5;
 	public static int FLEX_MODE_NORMAL 		= 0;
 	public static int FLEX_MODE_REDUX 		= 1;
-	public static int FLEX_MODE_TOTAL 		= 2;
+	public static int FLEX_MODE_EVENING		= 2;
+	public static int FLEX_MODE_MORNING		= 3;
 	public static final String TAG = "FTM";
 
 
@@ -118,6 +121,29 @@ public class TimeManager{
 		return Integer.parseInt((String) DateFormat.format("yyyy", time));
 	}
 	
+	public static Date getMonthDate(boolean startOfMonth){
+		Calendar cal = Calendar.getInstance();
+		if(startOfMonth){
+			cal.set(Calendar.DAY_OF_MONTH, 1);//First day of month is 1
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+		}else{
+			int max = cal.getMaximum(Calendar.DAY_OF_MONTH);
+			cal.set(Calendar.DAY_OF_MONTH, max);//First day of month is 1
+			max = cal.getMaximum(Calendar.HOUR_OF_DAY);
+			cal.set(Calendar.HOUR_OF_DAY, max);
+			max = cal.getMaximum(Calendar.MINUTE);
+			cal.set(Calendar.MINUTE, max);
+			max = cal.getMaximum(Calendar.SECOND);
+			cal.set(Calendar.SECOND, max);
+			max = cal.getMaximum(Calendar.MILLISECOND);
+			cal.set(Calendar.MILLISECOND, max);
+			Log.i(TAG, "endDate: " +  cal.toString());
+		}
+		return cal.getTime();
+	}
 	
 	/**
 	 * Gets the amount of workdays between <b>startDate</b> and <b>endDate</b>. Imported from <a href="https://gist.github.com/digitalpardoe/1086772#file-calculateduration-java">digitalpardoe</a> gists.
@@ -735,6 +761,22 @@ public class TimeManager{
 
 	public int getDayState(){
 		return this.today.getState();
+	}
+
+	public void setDaysOff(int days){
+		this.daysOff = days;
+	}
+
+	public int getDaysOff(){
+		return this.daysOff;
+	}
+
+	public void setHoursByNow(long hoursByNow){
+		this.hoursByNow = hoursByNow;
+	}
+
+	public long getHoursByNow(){
+		return this.hoursByNow;
 	}
 
 	public void updateState(){

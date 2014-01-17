@@ -142,4 +142,7 @@
  <color name="Black">#000000</color>
  <color name="holo_red_light">#f44</color>
  <color name="holo_green_light">#9c0</color>
+ <color name="holo_red_dark">#C00</color>
+ <color name="holo_green_dark">#690</color>
+ <color name="holo_blue_dark">#09C</color>
 </resources>

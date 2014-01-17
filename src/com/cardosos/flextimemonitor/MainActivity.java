@@ -10,18 +10,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
 
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+//import android.app.DialogFragment;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
-import android.app.ListActivity;
+//import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -43,7 +48,7 @@ import com.cardosos.flextimemonitor.TimePickerFragment.TimePickedListener;
 
 @SuppressLint("NewApi")
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class MainActivity extends ListActivity implements TimePickedListener, DatePickedListener{
+public class MainActivity extends FragmentListActivity implements TimePickedListener, DatePickedListener{
 
 	private EventsDataSource datasource; // Vogella
 	private String previousEventType = " ";
@@ -69,6 +74,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		
 		// Vogella start
 		datasource = new EventsDataSource(this);
@@ -76,6 +82,8 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 
 		List<Event> values = datasource.getAllEvents();
 		
+		// Sort by time and then reverse the Events.
+		Collections.sort(values);
 		Collections.reverse(values);
 
 		// Use the SimpleCursorAdapter to show the
@@ -92,28 +100,56 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		cal.set(Calendar.MINUTE, 0);
 		
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+		int month = cal.get(Calendar.MONTH);
+		//TODO: Use the year to filter out too.
+
+		//TODO: Add setting for this months days off.
+		timeManager.setDaysOff(0);//dxd hardcode
+
+		int workDays = TimeManager.calculateDuration(TimeManager.getMonthDate(true), TimeManager.getMonthDate(false)) - timeManager.getDaysOff();
+		int hoursByNow = (int) TimeManager.MAX_FLEX_HOURS * TimeManager.calculateDuration(TimeManager.getMonthDate(true), cal.getTime());
+		Log.i(TAG, "Work Days: " + workDays);
+		Log.i(TAG, "This Months Flex Hours: " + (workDays * TimeManager.MAX_FLEX_HOURS));
+		Log.i(TAG, "Hours by now: " + hoursByNow);
 		
+		long timeToSave = 0;
+
+		//loop all the events
 		for(int k=0 ; k < values.size(); k++){
-			if(values.get(k).getDay() == dayOfMonth){
+			if(values.get(k).getMonth() == month && 
+			   values.get(k).getDay() == dayOfMonth){
+				//when is TODAY, just add the event
 				briefedValues.add(values.get(k));
 			}else{
-				break;
+				//if it's not today, don't add anything.
+				Log.i(TAG, "This event is not TODAY.");
+				//break;
 			}
 		}
 		
+		// Now, loop all the events from TODAY to the beginning of the month.
 		for(int j = dayOfMonth - 1; j > 0; j--){
 			EventGroup group = new EventGroup();
 			TimeManager tm = new TimeManager();
+			// Loop the list, for each day
 			for(int i=0; i < values.size(); i++){
-				if(values.get(i).getDay() < dayOfMonth){
+				if(values.get(i).getMonth() == month &&
+				   values.get(i).getDay() < dayOfMonth){
+					// This day must be before TODAY
 					if(values.get(i).getDay() == j){
+						// If the Event is equals to the day being searched, add the event to the EventGroup
 						group.addEvent(values.get(i));
 						Log.i(TAG, "Add a " + values.get(i).getType() + " event from: " + j);
 					}
 				}
 			}
 			if(!group.isEmpty()){
+				// If the EventGroup is NOT empty, set the hours
+				//group.sortEvents();
 				group.setHours(tm);
+				// Add the day or EventGroup time to the time to save.
+				timeToSave += group.getGroupTime();
+				// Update the state of the day and set the icon.
 				tm.updateState();
 				switch(tm.getDayState()){
 					case Day.STATE_OUT_WEEKEND:
@@ -147,10 +183,12 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 						group.setIcon(Event.PRESENCE);
 						break;
 				}
+				// Finally add the group to the briefed values.
 				briefedValues.add(group);
 				Log.i(TAG, "Add a group: " + group.getDay());
 			}
 		}
+		Log.i(TAG, "Due hours: " + (hoursByNow - (TimeManager.getHourInt(timeToSave))) );
 		
 		EventAdapter adapter= new EventAdapter(this, R.layout.listview_item_row,(List<Event>) briefedValues);
 		//EventAdapter adapter= new EventAdapter(this, R.layout.listview_item_row,(List<Event>) values);
@@ -176,14 +214,6 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		mChrono = (TextView) findViewById(R.id.chronometer1);
 		mTodayChrono = (TextView) findViewById(R.id.chronometer2);
 		
-		//TODO: Remove checkButton
-		/*
-		Button checkButton = (Button)findViewById(R.id.checkButton);
-		if(previousEventType.equals(Event.CHECK_IN))
-			checkButton.setText("CHECK OUT");
-		else
-			checkButton.setText("CHECK IN");
-			*/
 
 		mChrono.setText(R.string.empty_time);
 
@@ -192,10 +222,22 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			mChrono.setText(TimeManager.longToString(mPauseTime));
 		}
 
-		if(!mStartedChrono && previousEventType.equals(Event.CHECK_IN)){
-			startTimer();
-			//TODO: Remove checkButton
-			//checkButton.setText("CHECK OUT");
+		Button checkButton = (Button)findViewById(R.id.checkButton);
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			if(previousEventType.equals(Event.CHECK_IN))
+				checkButton.setText("CHECK OUT");
+			else
+				checkButton.setText("CHECK IN");
+
+			if(!mStartedChrono && previousEventType.equals(Event.CHECK_IN)){
+				checkButton.setText("CHECK OUT");
+			}
+		}else{
+			checkButton.setEnabled(false);
+			checkButton.setVisibility(View.INVISIBLE);
+			if(!mStartedChrono && previousEventType.equals(Event.CHECK_IN)){
+				startTimer();
+			}
 		}
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -227,72 +269,76 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		Event event = null;
 		Button b = (Button) view;
 		switch(view.getId()){
-//			case R.id.checkButton:
-//				// just check that the button has the proper name
-//				if(previousEventType.equals(Event.CHECK_OUT)){
-//					// You are doing a CHECK_IN
-//					// So, set the button text to CHECK_OUT.
-//					b.setText("CHECK OUT");
-//					// Then you create a new event with the current time
-//					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-//					// Then you set the previousEventType to CHECK_IN
-//					// this is probably unnecesary
-//					//previousEventType = Event.CHECK_IN;
-//					// Then you update the previous event type 
-//					// thru the datasource
-//					updatePreviousEventType();
-//					// Then you set the today's time in the timeManager
-//					// thru the datasource.
-//					timeManager.setTodaysTime(getTodaysHours());
-//					timeManager.setInside(true);
-//					timeManager.setOutside(false);
-//					if(event.isWeekend()){
-//						timeManager.setWeekend(true);
-//					}else{
-//						timeManager.setWeekend(false);
-//						if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
-//							event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
-//							timeManager.setLunch(true);
-//						}else{
-//							timeManager.setLunch(false);
-//						}
-//					}
-//					timeManager.setLunchTime(getTodaysLunchTime());
-//					// and finally, if the chrono is not started, start the
-//					// timer.
-//					if(!mStartedChrono)
-//						startTimer();
-//					Log.i("FTM", "Add Event.CHECK_IN");
-//				} else {
-//					b.setText("CHECK IN");
-//					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
-//					// this is probably unnecesary
-//					//previousEventType = Event.CHECK_OUT;
-//					updatePreviousEventType();
-//					timeManager.setTodaysTime(getTodaysHours());
-//					timeManager.setInside(false);
-//					timeManager.setOutside(true);
-//					if(event.isWeekend()){
-//						timeManager.setWeekend(true);
-//					}else{
-//						timeManager.setWeekend(false);
-//						if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
-//							event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
-//							timeManager.setLunch(true);
-//						}else{
-//							timeManager.setLunch(false);
-//						}
-//					}
-//					timeManager.setLunchTime(getTodaysLunchTime());
-//
-//					Log.i("FTM", "Add Event.CHECK_OUT");
-//				}
-//				try{
-//					adapter.insert(event, 0);
-//				}catch(Exception e){
-//					e.printStackTrace();
-//				}
-//				break;
+			//TODO: USE THIS FOR GINGERBREAD OR OLDER
+			case R.id.checkButton:
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+					// just check that the button has the proper name
+					if(previousEventType.equals(Event.CHECK_OUT) || !previousEventType.equals(Event.CHECK_IN) ){
+						// You are doing a CHECK_IN
+						// So, set the button text to CHECK_OUT.
+						b.setText("CHECK OUT");
+						// Then you create a new event with the current time
+						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
+						// Then you set the previousEventType to CHECK_IN
+						// this is probably unnecesary
+						//previousEventType = Event.CHECK_IN;
+						// Then you update the previous event type 
+						// thru the datasource
+						updatePreviousEventType();
+						// Then you set the today's time in the timeManager
+						// thru the datasource.
+						timeManager.setTodaysTime(getTodaysHours());
+						timeManager.setInside(true);
+						timeManager.setOutside(false);
+						if(event.isWeekend()){
+							timeManager.setWeekend(true);
+						}else{
+							timeManager.setWeekend(false);
+							if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
+								event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
+								timeManager.setLunch(true);
+							}else{
+								timeManager.setLunch(false);
+							}
+						}
+						timeManager.setLunchTime(getTodaysLunchTime());
+						// and finally, if the chrono is not started, start the
+						// timer.
+						if(!mStartedChrono)
+							startTimer();
+						Log.i("FTM", "Add Event.CHECK_IN");
+					} else {
+						b.setText("CHECK IN");
+						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
+						// this is probably unnecesary
+						//previousEventType = Event.CHECK_OUT;
+						updatePreviousEventType();
+						timeManager.setTodaysTime(getTodaysHours());
+						timeManager.setInside(false);
+						timeManager.setOutside(true);
+						if(event.isWeekend()){
+							timeManager.setWeekend(true);
+						}else{
+							timeManager.setWeekend(false);
+							if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
+								event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
+								timeManager.setLunch(true);
+							}else{
+								timeManager.setLunch(false);
+							}
+						}
+						timeManager.setLunchTime(getTodaysLunchTime());
+
+						Log.i("FTM", "Add Event.CHECK_OUT");
+					}
+					try{
+						Log.i("FTM", "Trying to Add Event");
+						adapter.insert(event, 0);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+				break;
 		}
 		adapter.notifyDataSetChanged();
 	}
@@ -345,13 +391,13 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 				case 0: {
 					// Edit the event time.
 					DialogFragment timeFragment = new TimePickerFragment(longListItemClickPosition, event.getDayTimeHours(), event.getDayTimeMinutes());
-					timeFragment.show(getFragmentManager(), "timePicker");
+					timeFragment.show(getSupportFragmentManager(), "timePicker");
 				}
 				break;
 				case 1: {
 					// Edit the event date.
 				    DialogFragment dateFragment = new DatePickerFragment(longListItemClickPosition, event.getDay(), event.getMonth(), event.getYear());
-				    dateFragment.show(getFragmentManager(), "datePicker");
+				    dateFragment.show(getSupportFragmentManager(), "datePicker");
 				}
 					break;
 				case 2: {
@@ -384,7 +430,8 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 			}
 			return true;
 		case R.id.menu_settings:
-			Toast.makeText(MainActivity.this, "The settings activity is not yet implemented :P", Toast.LENGTH_SHORT).show();
+			Intent intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);
 			return true;
 		case R.id.delete_previous_month:
 			Toast.makeText(MainActivity.this, "Trying to delete previous months events.", Toast.LENGTH_SHORT).show();
@@ -409,72 +456,74 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		case R.id.check_action:
 			EventAdapter adapter = (EventAdapter) getListAdapter();
 			Event event = null;
-			
-				if(previousEventType.equals(Event.CHECK_OUT)){
-					// You are doing a CHECK_IN
-					// So, set the button text to CHECK_OUT.
-					menuItem.setTitle(R.string.check_out);
-					//menuItem.setIcon(R.drawable.ic_check_out_dark);
-					// Then you create a new event with the current time
-					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
-					// Then you set the previousEventType to CHECK_IN
-					// this is probably unnecesary
-					//previousEventType = Event.CHECK_IN;
-					// Then you update the previous event type 
-					// thru the datasource
-					updatePreviousEventType();
-					// Then you set the today's time in the timeManager
-					// thru the datasource.
-					timeManager.setTodaysTime(getTodaysHours());
-					timeManager.setInside(true);
-					timeManager.setOutside(false);
-					if(event.isWeekend()){
-						timeManager.setWeekend(true);
-					}else{
-						timeManager.setWeekend(false);
-						if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
-							event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
-							timeManager.setLunch(true);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				
+					if(previousEventType.equals(Event.CHECK_OUT) || !previousEventType.equals(Event.CHECK_IN) ){
+						// You are doing a CHECK_IN
+						// So, set the button text to CHECK_OUT.
+						menuItem.setTitle(R.string.check_out);
+						//menuItem.setIcon(R.drawable.ic_check_out_dark);
+						// Then you create a new event with the current time
+						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_IN);
+						// Then you set the previousEventType to CHECK_IN
+						// this is probably unnecesary
+						//previousEventType = Event.CHECK_IN;
+						// Then you update the previous event type 
+						// thru the datasource
+						updatePreviousEventType();
+						// Then you set the today's time in the timeManager
+						// thru the datasource.
+						timeManager.setTodaysTime(getTodaysHours());
+						timeManager.setInside(true);
+						timeManager.setOutside(false);
+						if(event.isWeekend()){
+							timeManager.setWeekend(true);
 						}else{
-							timeManager.setLunch(false);
+							timeManager.setWeekend(false);
+							if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
+								event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
+								timeManager.setLunch(true);
+							}else{
+								timeManager.setLunch(false);
+							}
 						}
-					}
-					timeManager.setLunchTime(getTodaysLunchTime());
-					// and finally, if the chrono is not started, start the
-					// timer.
-					if(!mStartedChrono)
-						startTimer();
-					Log.i("FTM", "Add Event.CHECK_IN");
-				} else {
-					menuItem.setTitle(R.string.check_in);
-					//menuItem.setIcon(R.drawable.ic_check_in_dark);
-					event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
-					// this is probably unnecesary
-					//previousEventType = Event.CHECK_OUT;
-					updatePreviousEventType();
-					timeManager.setTodaysTime(getTodaysHours());
-					timeManager.setInside(false);
-					timeManager.setOutside(true);
-					if(event.isWeekend()){
-						timeManager.setWeekend(true);
-					}else{
-						timeManager.setWeekend(false);
-						if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
-							event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
-							timeManager.setLunch(true);
+						timeManager.setLunchTime(getTodaysLunchTime());
+						// and finally, if the chrono is not started, start the
+						// timer.
+						if(!mStartedChrono)
+							startTimer();
+						Log.i("FTM", "Add Event.CHECK_IN");
+					} else {
+						menuItem.setTitle(R.string.check_in);
+						//menuItem.setIcon(R.drawable.ic_check_in_dark);
+						event = datasource.createEvent(System.currentTimeMillis(), Event.CHECK_OUT);
+						// this is probably unnecesary
+						//previousEventType = Event.CHECK_OUT;
+						updatePreviousEventType();
+						timeManager.setTodaysTime(getTodaysHours());
+						timeManager.setInside(false);
+						timeManager.setOutside(true);
+						if(event.isWeekend()){
+							timeManager.setWeekend(true);
 						}else{
-							timeManager.setLunch(false);
+							timeManager.setWeekend(false);
+							if( event.getDayTimeHours() >= TimeManager.FIXED_TIME_START &&
+								event.getDayTimeHours() < ( TimeManager.FIXED_TIME_START + TimeManager.FIXED_TIME_DURATION ) ){
+								timeManager.setLunch(true);
+							}else{
+								timeManager.setLunch(false);
+							}
 						}
-					}
-					timeManager.setLunchTime(getTodaysLunchTime());
+						timeManager.setLunchTime(getTodaysLunchTime());
 
-					Log.i("FTM", "Add Event.CHECK_OUT");
-				}
-				try{
-					adapter.insert(event, 0);
-				}catch(Exception e){
-					e.printStackTrace();
-				}
+						Log.i("FTM", "Add Event.CHECK_OUT");
+					}
+					try{
+						adapter.insert(event, 0);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+			}
 			adapter.notifyDataSetChanged();
 			return true;
 		default:
@@ -493,16 +542,22 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	public boolean onPrepareOptionsMenu(Menu menu){
 		Log.d(TAG, "onPrepareOptionsMenu");
 		MenuItem check_action_item = menu.findItem(R.id.check_action);
-		datasource.open();
-		if(!datasource.isEmpty()){
-			updatePreviousEventType();
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			check_action_item.setVisible(false);
+			check_action_item.setEnabled(false);
 		}
-		if(previousEventType.equals(Event.CHECK_IN)){
-			//check_action_item.setIcon(R.drawable.ic_check_out_dark);
-			check_action_item.setTitle(R.string.check_out);
-		}else{
-			//check_action_item.setIcon(R.drawable.ic_check_in_dark);
-			check_action_item.setTitle(R.string.check_in);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			datasource.open();
+			if(!datasource.isEmpty()){
+				updatePreviousEventType();
+			}
+			if(previousEventType.equals(Event.CHECK_IN)){
+				//check_action_item.setIcon(R.drawable.ic_check_out_dark);
+				check_action_item.setTitle(R.string.check_out);
+			}else{
+				//check_action_item.setIcon(R.drawable.ic_check_in_dark);
+				check_action_item.setTitle(R.string.check_in);
+			}
 		}
 		super.onPrepareOptionsMenu(menu);
 		return true;
@@ -544,13 +599,13 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 
 		mTodayChrono.setText(TimeManager.longToString(timeManager.getTodaysTime()));
 		if(timeManager.isAbsent()){
-			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+			mTodayChrono.setTextColor(getResources().getColor(R.color.holo_red_dark));
 		}else{
 			if(timeManager.isWeekend()){
-				mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+				mTodayChrono.setTextColor(getResources().getColor(R.color.holo_blue_dark));
 			}else{
 				if( timeManager.getTodaysTime() > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS){
-					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+					mTodayChrono.setTextColor(getResources().getColor(R.color.holo_green_dark));
 				}
 			}
 		}
@@ -617,13 +672,13 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		//millis = thisTime - timeManager.getLastCheckIn() + timeManager.getTodaysTime();
 		mTodayChrono.setText(TimeManager.longToString(millis));
 		if(timeManager.isAbsent()){
-			mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+			mTodayChrono.setTextColor(getResources().getColor(R.color.holo_red_dark));
 		}else{
 			if(timeManager.isWeekend()){
-				mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+				mTodayChrono.setTextColor(getResources().getColor(R.color.holo_blue_dark));
 			}else{
 				if( millis > TimeManager.HOUR * TimeManager.MAX_FLEX_HOURS){
-					mTodayChrono.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+					mTodayChrono.setTextColor(getResources().getColor(R.color.holo_green_dark));
 				}
 			}
 		}
@@ -659,6 +714,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		long todaysLunchTime = 0;
 		if(datasource.isOpen()){
 			List<Event> todaysEvents = datasource.getAllEvents();
+			Collections.sort(todaysEvents);
 
 			Iterator<Event> iterator = todaysEvents.iterator();
 			while (iterator.hasNext()){
@@ -680,6 +736,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		long todaysTime = 0;
 		if(datasource.isOpen()){
 			List<Event> todaysEvents = datasource.getAllEvents();
+			Collections.sort(todaysEvents);
 
 			Iterator<Event> iterator = todaysEvents.iterator();
 			while (iterator.hasNext()){
@@ -697,7 +754,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 	
 	public void showTimePickerDialog(View v) {
 	    DialogFragment newFragment = new TimePickerFragment();
-	    newFragment.show(getFragmentManager(), "timePicker");
+	    newFragment.show(getSupportFragmentManager(), "timePicker");
 	}
 
 	@Override
@@ -767,6 +824,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		Log.i(TAG, "saveEventsInTempFile()");
 		
 		List<Event> values = datasource.getAllEvents();
+		Collections.sort(values);
 		Collections.reverse(values);
 
 		long timeToSave = 0;
@@ -777,18 +835,22 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		cal.set(Calendar.MINUTE, 0);
 		
 		int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+		int month = cal.get(Calendar.MONTH);
+		//TODO: Use the year to filter out too.
 		
 		for(int j = dayOfMonth - 1; j > 0; j--){
 			EventGroup group = new EventGroup();
 			TimeManager tm = new TimeManager();
 			for(int i=0; i < values.size(); i++){
-				if(values.get(i).getDay() < dayOfMonth){
+				if(values.get(i).getMonth() == month &&
+				   values.get(i).getDay() < dayOfMonth){
 					if(values.get(i).getDay() == j){
 						group.addEvent(values.get(i));
 					}
 				}
 			}
 			if(!group.isEmpty()){
+				//group.sortEvents();
 				group.setHours(tm);
 				timeToSave += group.getGroupTime();
 				Log.i(TAG, "Add a group time: " + TimeManager.longToString(group.getGroupTime()));
@@ -840,6 +902,7 @@ public class MainActivity extends ListActivity implements TimePickedListener, Da
 		List<Event> eventList = new ArrayList<Event>();
 		if(datasource.isOpen() && !datasource.isEmpty()){
 			List<Event> values = datasource.getAllEvents();
+			Collections.sort(values);
 			Calendar cal = Calendar.getInstance();
 			cal.set(Calendar.DAY_OF_MONTH, 1);
 			cal.set(Calendar.HOUR_OF_DAY, 0);

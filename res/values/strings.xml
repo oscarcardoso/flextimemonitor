@@ -15,5 +15,23 @@
     <string name="check_in">Check In</string>
     <string name="check_out">Check Out</string>
     <string name="delete_previous_month">Delete Previous Month</string>
+    <string name="absence_fix_title">Delay Fix</string>
+    <string name="absence_fix_sumary">Ignore late entry and substract delayed time</string>
+    <string name="flex_mode_title">Schedule</string>
+    <string name="flex_mode_dialog">Select your Schedule</string>
+    <string-array name="flex_mode_entries">
+        <item>Flex Normal</item>
+        <item>Flex Dos</item>
+        <item>Flex Morning</item>
+        <item>Flex Evening</item>
+    </string-array>
+    <string-array name="flex_mode_values">
+        <item>Flex Normal</item>
+        <item>Flex Normal 2</item>
+        <item>Flex Morning</item>
+        <item>Flex Evening</item>
+    </string-array>
+    <string name="flex_mode_default">Flex Normal</string>
+	<string name="settingsTitle">Settings</string>
     
 </resources>
