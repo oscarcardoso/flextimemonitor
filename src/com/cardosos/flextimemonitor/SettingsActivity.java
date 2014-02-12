@@ -43,5 +43,8 @@ public class SettingsActivity extends PreferenceActivity
 			// Set summary to be the user-description for the selected value
 			flexModePref.setSummary(sharedPreferences.getString(key, ""));
 		}
+		if (key.equals(KEY_PREF_ABSENCE_FIX)){
+
+		}
 	}
 }

@@ -29,12 +29,15 @@ public class TimeManager{
 	public static long MAX_FLEX_HOURS = 5;
 	public static long DAY = 86400000;
 	public static long HOUR = 3600000;
+	public static long HALFHOUR = 1800000;
 	public static long MINUTE = 60000;
 	public static int FIXED_TIME_START = 10;
 	public static int FIXED_TIME_BREAK = 1;
 	public static int FIXED_TIME_DURATION = 5;
+	//public static int FIXED_TIME_BREAK_TWO = HALFHOUR;
+	public static int FIXED_TIME_DURATION_TWO = 4;
 	public static int FLEX_MODE_NORMAL 		= 0;
-	public static int FLEX_MODE_REDUX 		= 1;
+	public static int FLEX_MODE_TWO 		= 1;
 	public static int FLEX_MODE_EVENING		= 2;
 	public static int FLEX_MODE_MORNING		= 3;
 	public static final String TAG = "FTM";
